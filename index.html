@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MACRA | Your Fitness. Your Data. Your Way.</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --void: #000000;
+            --obsidian: #0a0a0f;
+            --onyx: #12121a;
+            --carbon: #1a1a24;
+            --graphite: #24242e;
+            --prism-violet: #8B5CF6;
+            --prism-indigo: #6366F1;
+            --prism-blue: #3B82F6;
+            --prism-cyan: #06B6D4;
+            --prism-teal: #14B8A6;
+            --prism-emerald: #10B981;
+            --prism-lime: #84CC16;
+            --prism-amber: #F59E0B;
+            --prism-orange: #F97316;
+            --prism-rose: #F43F5E;
+            --prism-pink: #EC4899;
+            --white: #FFFFFF;
+            --white-90: rgba(255,255,255,0.9);
+            --white-70: rgba(255,255,255,0.7);
+            --white-50: rgba(255,255,255,0.5);
+            --white-30: rgba(255,255,255,0.3);
+            --white-20: rgba(255,255,255,0.2);
+            --white-10: rgba(255,255,255,0.1);
+            --white-05: rgba(255,255,255,0.05);
+            --font-display: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --sidebar-width: 240px;
+            --sidebar-collapsed: 70px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--void);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        .splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--void); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .splash-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .splash-logo {
+            font-family: var(--font-display); font-size: 72px; font-weight: 800;
+            letter-spacing: 16px;
+            background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet), var(--prism-rose));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 8px; animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(6, 182, 212, 0.3)); }
+            to { filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.5)); }
+        }
+        .splash-tagline {
+            font-family: var(--font-display); font-size: 12px; letter-spacing: 6px;
+            color: var(--white-30); text-transform: uppercase; margin-bottom: 48px;
+        }
+        .splash-loader { width: 200px; height: 3px; background: var(--white-10); border-radius: 3px; overflow: hidden; }
+        .splash-loader-bar {
+            width: 0%; height: 100%; background: linear-gradient(90deg, var(--prism-cyan), var(--prism-violet));
+            border-radius: 3px; animation: loading 1.5s ease-out forwards;
+        }
+        @keyframes loading { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+        .splash-version { position: absolute; bottom: 32px; font-size: 10px; color: var(--white-20); letter-spacing: 2px; }
+        .prismatic-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
+        .aurora {
+            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+            background: radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 70%, rgba(244, 63, 94, 0.06) 0%, transparent 50%);
+            animation: auroraShift 20s ease-in-out infinite;
+        }
+        @keyframes auroraShift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2%, 1%) rotate(1deg); }
+            50% { transform: translate(-1%, 2%) rotate(-1deg); }
+            75% { transform: translate(1%, -1%) rotate(0.5deg); }
+        }
+        .grid-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+        }
+        .app-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: var(--sidebar-collapsed); min-width: var(--sidebar-collapsed);
+            background: var(--onyx); border-right: 1px solid var(--white-10);
+            padding: 24px 12px; display: flex; flex-direction: column;
+            height: 100vh; position: fixed; top: 0; left: 0;
+            overflow-y: auto; overflow-x: hidden; z-index: 100;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+        .sidebar:hover, .sidebar.expanded {
+            width: var(--sidebar-width); min-width: var(--sidebar-width);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .sidebar .nav-text, .sidebar .logo-text, .sidebar .logo-version, .sidebar .sidebar-section-title, .sidebar .user-info {
+            opacity: 0; white-space: nowrap; transition: opacity 0.2s ease 0s;
+        }
+        .sidebar:hover .nav-text, .sidebar:hover .logo-text, .sidebar:hover .logo-version, .sidebar:hover .sidebar-section-title, .sidebar:hover .user-info,
+        .sidebar.expanded .nav-text, .sidebar.expanded .logo-text, .sidebar.expanded .logo-version, .sidebar.expanded .sidebar-section-title, .sidebar.expanded .user-info {
+            opacity: 1; transition: opacity 0.2s ease 0.1s;
+        }
+        .sidebar .logo-icon {
+            font-size: 28px; display: block; text-align: center;
+            background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
+        }
+        .sidebar:hover .logo-icon, .sidebar.expanded .logo-icon { display: none; }
+        .sidebar .logo-text { display: none; }
+        .sidebar:hover .logo-text, .sidebar.expanded .logo-text { display: block; }
+        .main-content {
+            flex: 1; min-width: 0; padding: 24px 32px;
+            margin-left: var(--sidebar-collapsed);
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-toggle {
+            display: none; position: fixed; top: 16px; left: 16px; z-index: 200;
+            width: 44px; height: 44px; background: var(--onyx);
+            border: 1px solid var(--white-20); border-radius: 10px;
+            color: var(--white); font-size: 24px; cursor: pointer;
+            align-items: center; justify-content: center;
+        }
+        .sidebar-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
+            z-index: 90; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.visible { display: block; opacity: 1; }
+        @media (max-width: 768px) {
+            .sidebar-toggle { display: flex; }
+            .sidebar { width: var(--sidebar-width); min-width: var(--sidebar-width); transform: translateX(-100%); }
+            .sidebar.expanded { transform: translateX(0); }
+            .sidebar .nav-text, .sidebar .logo-text, .sidebar .logo-version, .sidebar .sidebar-section-title, .sidebar .user-info { opacity: 1; }
+            .sidebar .logo-icon { display: none; }
+            .sidebar .logo-text { display: block; }
+            .main-content { margin-left: 0; padding: 80px 16px 24px; }
+        }
+        .logo { display: flex; flex-direction: column; margin-bottom: 32px; padding: 0 8px; align-items: center; }
+        .sidebar:hover .logo, .sidebar.expanded .logo { align-items: flex-start; }
+        .logo-text {
+            font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: 6px;
+            background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet), var(--prism-rose));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .logo-version { font-size: 9px; color: var(--white-30); letter-spacing: 1px; margin-top: 4px; }
+        .sidebar-nav { list-style: none; flex: 1; }
+        .sidebar-nav li { margin-bottom: 4px; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            color: var(--white-50); text-decoration: none; font-size: 13px;
+            font-weight: 500; border-radius: 10px; transition: all 0.3s ease; cursor: pointer;
+        }
+        .sidebar-nav a:hover { background: var(--white-05); color: var(--white-70); }
+        .sidebar-nav a.active {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.15), transparent);
+            color: var(--white); border-left: 3px solid var(--prism-cyan);
+        }
+        .sidebar-nav .icon { font-size: 18px; width: 24px; text-align: center; }
+        .sidebar-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--white-10); }
+        .sidebar-section-title {
+            font-size: 10px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1.5px; color: var(--white-30); padding: 0 16px; margin-bottom: 12px;
+        }
+        .user-info {
+            margin-top: auto; padding: 16px; background: var(--carbon);
+            border-radius: 12px; border: 1px solid var(--white-05);
+        }
+        .user-name { font-family: var(--font-display); font-size: 14px; font-weight: 600; letter-spacing: 1px; margin-bottom: 4px; }
+        .user-code { font-size: 11px; color: var(--prism-cyan); font-family: monospace; margin-bottom: 4px; }
+        .user-streak { font-size: 12px; color: var(--prism-amber); display: flex; align-items: center; gap: 6px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+        .header-left h1 { font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; }
+        .header-left p { color: var(--white-50); font-size: 13px; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn {
+            padding: 10px 20px; font-family: var(--font-display); font-size: 10px;
+            font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+            border: none; cursor: pointer; transition: all 0.3s ease;
+            border-radius: 8px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); color: var(--void); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(6, 182, 212, 0.3); }
+        .btn-ghost { background: var(--white-05); border: 1px solid var(--white-20); color: var(--white); }
+        .btn-ghost:hover { border-color: var(--prism-cyan); background: rgba(6, 182, 212, 0.1); }
+        .btn-success { background: var(--prism-emerald); color: var(--void); }
+        .btn-sm { padding: 6px 12px; font-size: 9px; }
+        .card { background: var(--carbon); border: 1px solid var(--white-10); border-radius: 12px; padding: 24px; margin-bottom: 20px; width: 100%; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+        .card-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+        .view { display: none; width: 100%; }
+        .view.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 1400px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        .stat-card {
+            background: var(--carbon); border: 1px solid var(--white-10); border-radius: 12px;
+            padding: 20px; position: relative; overflow: hidden; transition: all 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-2px); border-color: var(--white-20); }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+        .stat-card.cyan::before { background: var(--prism-cyan); }
+        .stat-card.violet::before { background: var(--prism-violet); }
+        .stat-card.emerald::before { background: var(--prism-emerald); }
+        .stat-card.amber::before { background: var(--prism-amber); }
+        .stat-card.rose::before { background: var(--prism-rose); }
+        .stat-card.orange::before { background: var(--prism-orange); }
+        .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--white-50); margin-bottom: 8px; }
+        .stat-value { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-bottom: 4px; line-height: 1.2; }
+        .stat-card.cyan .stat-value { color: var(--prism-cyan); }
+        .stat-card.violet .stat-value { color: var(--prism-violet); }
+        .stat-card.emerald .stat-value { color: var(--prism-emerald); }
+        .stat-card.amber .stat-value { color: var(--prism-amber); }
+        .stat-card.rose .stat-value { color: var(--prism-rose); }
+        .stat-card.orange .stat-value { color: var(--prism-orange); }
+        .stat-change { font-size: 11px; color: var(--white-50); }
+        .unified-input-card {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 16px; padding: 24px; margin-bottom: 24px;
+        }
+        .unified-input-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .unified-input-header h3 {
+            font-family: var(--font-display); font-size: 16px; font-weight: 600;
+            background: linear-gradient(90deg, var(--prism-cyan), var(--prism-violet));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .unified-input-header span { font-size: 12px; color: var(--white-50); }
+        .unified-input-wrapper { position: relative; }
+        .unified-input {
+            width: 100%; min-height: 60px; padding: 16px; padding-right: 140px;
+            background: var(--obsidian); border: 1px solid var(--white-20); border-radius: 12px;
+            color: var(--white); font-size: 15px; font-family: var(--font-body);
+            resize: none; transition: border-color 0.3s ease;
+        }
+        .unified-input:focus { outline: none; border-color: var(--prism-cyan); }
+        .unified-input::placeholder { color: var(--white-30); }
+        .unified-input-actions { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; gap: 8px; }
+        .unified-btn {
+            padding: 10px 16px; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet));
+            border: none; border-radius: 8px; color: var(--white); font-size: 12px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;
+        }
+        .unified-btn:hover { transform: scale(1.05); }
+        .unified-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .photo-btn {
+            padding: 10px; background: var(--white-10); border: 1px solid var(--white-20);
+            border-radius: 8px; color: var(--white); font-size: 18px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .photo-btn:hover { background: rgba(16, 185, 129, 0.2); border-color: var(--prism-emerald); }
+        .unified-hints { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .hint-chip {
+            padding: 6px 12px; background: var(--white-05); border: 1px solid var(--white-10);
+            border-radius: 20px; font-size: 11px; color: var(--white-50); cursor: pointer; transition: all 0.2s ease;
+        }
+        .hint-chip:hover { background: var(--white-10); color: var(--white-70); }
+        .macro-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 800px) { .macro-summary { grid-template-columns: repeat(2, 1fr); } }
+        .macro-card { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 10px; padding: 16px; text-align: center; }
+        .macro-card-value { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .macro-card-label { font-size: 11px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; }
+        .macro-card-bar { height: 4px; background: var(--white-10); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+        .macro-card-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+        .macro-card.calories .macro-card-value { color: var(--white); }
+        .macro-card.calories .macro-card-bar-fill { background: linear-gradient(90deg, var(--prism-cyan), var(--prism-violet)); }
+        .macro-card.protein .macro-card-value { color: var(--prism-rose); }
+        .macro-card.protein .macro-card-bar-fill { background: var(--prism-rose); }
+        .macro-card.carbs .macro-card-value { color: var(--prism-cyan); }
+        .macro-card.carbs .macro-card-bar-fill { background: var(--prism-cyan); }
+        .macro-card.fat .macro-card-value { color: var(--prism-amber); }
+        .macro-card.fat .macro-card-bar-fill { background: var(--prism-amber); }
+        .timeline-card { background: var(--carbon); border: 1px solid var(--white-10); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .timeline-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+        .timeline-empty { text-align: center; padding: 32px; color: var(--white-30); }
+        .timeline-empty-icon { font-size: 40px; margin-bottom: 12px; }
+        .timeline-list { display: flex; flex-direction: column; gap: 12px; }
+        .timeline-item { display: flex; align-items: flex-start; gap: 16px; padding: 16px; background: var(--onyx); border-radius: 10px; border-left: 3px solid; position: relative; }
+        .timeline-item.food { border-left-color: var(--prism-emerald); }
+        .timeline-item.workout { border-left-color: var(--prism-violet); }
+        .timeline-item.cardio { border-left-color: var(--prism-orange); }
+        .timeline-time { font-size: 11px; color: var(--white-30); font-family: monospace; min-width: 50px; }
+        .timeline-icon { font-size: 20px; width: 32px; text-align: center; }
+        .timeline-content { flex: 1; }
+        .timeline-content-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .timeline-content-details { font-size: 12px; color: var(--white-50); }
+        .timeline-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .timeline-badge.food { background: rgba(16, 185, 129, 0.2); color: var(--prism-emerald); }
+        .timeline-badge.workout { background: rgba(139, 92, 246, 0.2); color: var(--prism-violet); }
+        .timeline-delete { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: transparent; border: none; color: var(--white-20); cursor: pointer; border-radius: 4px; opacity: 0; transition: all 0.2s ease; }
+        .timeline-item:hover .timeline-delete { opacity: 1; }
+        .timeline-delete:hover { background: rgba(244, 63, 94, 0.2); color: var(--prism-rose); }
+        .athlete-code-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;
+        }
+        .athlete-code-label { font-size: 11px; color: var(--white-50); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+        .athlete-code-value {
+            font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--prism-cyan), var(--prism-violet));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px;
+        }
+        .athlete-code-share { display: flex; justify-content: center; gap: 12px; }
+        .add-friend-form { display: flex; gap: 12px; margin-bottom: 20px; }
+        .add-friend-input { flex: 1; padding: 12px 16px; background: var(--onyx); border: 1px solid var(--white-20); border-radius: 8px; color: var(--white); font-size: 14px; font-family: monospace; text-transform: uppercase; }
+        .add-friend-input::placeholder { text-transform: none; font-family: var(--font-body); }
+        .activity-feed { display: flex; flex-direction: column; gap: 16px; }
+        .activity-item { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 20px; }
+        .activity-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .activity-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--prism-violet), var(--prism-cyan)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+        .activity-meta { flex: 1; }
+        .activity-user { font-weight: 600; font-size: 14px; }
+        .activity-time { font-size: 11px; color: var(--white-30); }
+        .activity-badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+        .activity-badge.workout { background: rgba(139, 92, 246, 0.15); color: var(--prism-violet); }
+        .activity-badge.nutrition { background: rgba(16, 185, 129, 0.15); color: var(--prism-emerald); }
+        .activity-content { margin-bottom: 12px; }
+        .activity-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .activity-details { font-size: 12px; color: var(--white-50); }
+        .activity-stats { display: flex; gap: 20px; padding: 12px 16px; background: var(--carbon); border-radius: 8px; margin-bottom: 12px; }
+        .activity-stat { text-align: center; }
+        .activity-stat-value { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--prism-cyan); }
+        .activity-stat-label { font-size: 9px; color: var(--white-30); text-transform: uppercase; }
+        .activity-actions { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--white-05); }
+        .activity-btn { padding: 8px 14px; background: transparent; border: 1px solid var(--white-10); border-radius: 20px; color: var(--white-50); font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+        .activity-btn:hover { border-color: var(--white-30); color: var(--white-70); }
+        .activity-btn.liked { background: rgba(244, 63, 94, 0.1); border-color: var(--prism-rose); color: var(--prism-rose); }
+        .leaderboard-list { display: flex; flex-direction: column; gap: 8px; }
+        .leaderboard-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: var(--onyx); border-radius: 10px; }
+        .leaderboard-item.rank-1 { background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), transparent); border-left: 3px solid var(--prism-amber); }
+        .leaderboard-item.rank-2 { background: linear-gradient(90deg, rgba(156, 163, 175, 0.1), transparent); border-left: 3px solid #9CA3AF; }
+        .leaderboard-item.rank-3 { background: linear-gradient(90deg, rgba(180, 83, 9, 0.1), transparent); border-left: 3px solid #B45309; }
+        .leaderboard-item.you { border: 1px solid var(--prism-cyan); background: rgba(6, 182, 212, 0.05); }
+        .leaderboard-rank { width: 32px; font-family: var(--font-display); font-size: 18px; font-weight: 700; text-align: center; }
+        .leaderboard-item.rank-1 .leaderboard-rank { color: var(--prism-amber); }
+        .leaderboard-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--prism-violet), var(--prism-rose)); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .leaderboard-info { flex: 1; }
+        .leaderboard-name { font-weight: 600; font-size: 14px; }
+        .leaderboard-subtitle { font-size: 11px; color: var(--white-30); }
+        .leaderboard-score { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--prism-cyan); }
+        .pr-celebration {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(249, 115, 22, 0.95));
+            border-radius: 20px; padding: 40px 60px; text-align: center; z-index: 10000;
+            animation: prPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.4);
+        }
+        @keyframes prPop { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        .pr-celebration-icon { font-size: 64px; margin-bottom: 16px; }
+        .pr-celebration-title { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--void); margin-bottom: 8px; }
+        .pr-celebration-detail { font-size: 18px; color: rgba(0,0,0,0.7); margin-bottom: 4px; }
+        .pr-celebration-value { font-family: var(--font-display); font-size: 36px; font-weight: 800; color: var(--void); }
+        .pr-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .pr-item { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; }
+        .pr-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--prism-amber), var(--prism-orange)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .pr-info { flex: 1; }
+        .pr-exercise { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .pr-date { font-size: 11px; color: var(--white-30); }
+        .pr-value { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--prism-amber); }
+        .history-filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .history-filter { padding: 8px 16px; background: var(--white-05); border: 1px solid var(--white-10); border-radius: 20px; font-size: 12px; color: var(--white-50); cursor: pointer; transition: all 0.2s ease; }
+        .history-filter:hover { border-color: var(--white-30); color: var(--white-70); }
+        .history-filter.active { background: var(--prism-cyan); border-color: var(--prism-cyan); color: var(--void); }
+        .history-list { display: flex; flex-direction: column; gap: 12px; }
+        .history-item { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 20px; }
+        .history-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .history-item-date { font-size: 12px; color: var(--white-30); }
+        .history-item-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+        .history-item-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+        .history-stat { font-size: 13px; }
+        .history-stat-label { color: var(--white-50); }
+        .history-stat-value { color: var(--prism-cyan); font-weight: 600; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--white-50); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 12px 16px; background: var(--onyx); border: 1px solid var(--white-20); border-radius: 8px; color: var(--white); font-size: 14px; transition: border-color 0.2s ease; }
+        .form-input:focus { outline: none; border-color: var(--prism-cyan); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .empty-state { text-align: center; padding: 48px 24px; color: var(--white-30); }
+        .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-state-text { font-size: 14px; margin-bottom: 8px; }
+        .empty-state-subtext { font-size: 12px; color: var(--white-20); }
+        .photo-input { display: none; }
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--white-30); border-top-color: var(--white); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           INTELLIGENCE HUB STYLES
+        ═══════════════════════════════════════════════════════════════ */
+        .recommendations-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 1000px) { .recommendations-grid { grid-template-columns: 1fr; } }
+        .recommendation-card { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 20px; display: flex; gap: 16px; transition: all 0.3s ease; }
+        .recommendation-card:hover { border-color: var(--white-20); transform: translateY(-2px); }
+        .recommendation-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        .recommendation-icon.sleep { background: linear-gradient(135deg, var(--prism-violet), var(--prism-indigo)); }
+        .recommendation-icon.protein { background: linear-gradient(135deg, var(--prism-rose), var(--prism-pink)); }
+        .recommendation-icon.training { background: linear-gradient(135deg, var(--prism-cyan), var(--prism-blue)); }
+        .recommendation-icon.recovery { background: linear-gradient(135deg, var(--prism-emerald), var(--prism-teal)); }
+        .recommendation-icon.hydration { background: linear-gradient(135deg, var(--prism-blue), var(--prism-cyan)); }
+        .recommendation-icon.balance { background: linear-gradient(135deg, var(--prism-amber), var(--prism-orange)); }
+        .recommendation-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .recommendation-content p { font-size: 12px; color: var(--white-50); line-height: 1.5; }
+        
+        .insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1200px) { .insights-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 800px) { .insights-grid { grid-template-columns: 1fr; } }
+        .insight-card { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 20px; border-top: 3px solid; }
+        .insight-card.positive { border-top-color: var(--prism-emerald); }
+        .insight-card.negative { border-top-color: var(--prism-rose); }
+        .insight-card.neutral { border-top-color: var(--prism-cyan); }
+        .insight-card.warning { border-top-color: var(--prism-amber); }
+        .insight-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .insight-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--white-50); }
+        .insight-badge { font-size: 9px; padding: 4px 8px; border-radius: 10px; font-weight: 600; }
+        .insight-badge.strong { background: rgba(16, 185, 129, 0.2); color: var(--prism-emerald); }
+        .insight-badge.moderate { background: rgba(6, 182, 212, 0.2); color: var(--prism-cyan); }
+        .insight-badge.trending { background: rgba(245, 158, 11, 0.2); color: var(--prism-amber); }
+        .insight-value { font-family: var(--font-display); font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        .insight-card.positive .insight-value { color: var(--prism-emerald); }
+        .insight-card.negative .insight-value { color: var(--prism-rose); }
+        .insight-card.neutral .insight-value { color: var(--prism-cyan); }
+        .insight-card.warning .insight-value { color: var(--prism-amber); }
+        .insight-description { font-size: 12px; color: var(--white-50); line-height: 1.5; margin-bottom: 16px; }
+        .insight-bars { display: flex; flex-direction: column; gap: 8px; }
+        .insight-bar-row { display: flex; align-items: center; gap: 12px; font-size: 11px; }
+        .insight-bar-label { width: 70px; color: var(--white-30); }
+        .insight-bar { flex: 1; height: 8px; background: var(--white-10); border-radius: 4px; overflow: hidden; }
+        .insight-bar-fill { height: 100%; border-radius: 4px; }
+        .insight-bar-fill.negative { background: var(--prism-rose); }
+        .insight-bar-fill.baseline { background: var(--prism-cyan); }
+        .insight-bar-fill.positive { background: var(--prism-emerald); }
+        .insight-bar-value { width: 50px; text-align: right; color: var(--white-50); }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           ANALYTICS TIME PERIOD TABS
+        ═══════════════════════════════════════════════════════════════ */
+        .period-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .period-tab { padding: 10px 20px; background: var(--white-05); border: 1px solid var(--white-10); border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--white-50); cursor: pointer; transition: all 0.2s ease; font-family: var(--font-display); letter-spacing: 1px; }
+        .period-tab:hover { border-color: var(--white-30); color: var(--white-70); }
+        .period-tab.active { background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); border-color: transparent; color: var(--void); }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           NUTRITION ANALYTICS STYLES
+        ═══════════════════════════════════════════════════════════════ */
+        .nutrition-overview { display: grid; grid-template-columns: 280px 1fr; gap: 24px; margin-bottom: 24px; }
+        @media (max-width: 900px) { .nutrition-overview { grid-template-columns: 1fr; } }
+        .calorie-ring-container { display: flex; flex-direction: column; align-items: center; }
+        .calorie-ring { position: relative; width: 200px; height: 200px; }
+        .calorie-ring svg { transform: rotate(-90deg); width: 200px; height: 200px; }
+        .calorie-ring-bg { fill: none; stroke: var(--white-10); stroke-width: 12; }
+        .calorie-ring-progress { fill: none; stroke: url(#calorieGradient); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
+        .calorie-ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .calorie-current { font-family: var(--font-display); font-size: 36px; font-weight: 700; color: var(--white); line-height: 1; }
+        .calorie-goal { font-size: 12px; color: var(--white-50); margin-top: 4px; }
+        .calorie-remaining { font-size: 11px; color: var(--prism-emerald); margin-top: 8px; }
+        .macro-breakdown { flex: 1; }
+        .macro-bar-item { margin-bottom: 20px; }
+        .macro-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .macro-bar-label { font-size: 13px; font-weight: 600; }
+        .macro-bar-label.protein { color: var(--prism-rose); }
+        .macro-bar-label.carbs { color: var(--prism-cyan); }
+        .macro-bar-label.fat { color: var(--prism-amber); }
+        .macro-bar-values { font-size: 12px; color: var(--white-50); }
+        .macro-bar-track { height: 10px; background: var(--white-10); border-radius: 5px; overflow: hidden; }
+        .macro-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        .macro-bar-fill.protein { background: linear-gradient(90deg, var(--prism-rose), var(--prism-pink)); }
+        .macro-bar-fill.carbs { background: linear-gradient(90deg, var(--prism-cyan), var(--prism-blue)); }
+        .macro-bar-fill.fat { background: linear-gradient(90deg, var(--prism-amber), var(--prism-orange)); }
+        
+        .snapshot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 1200px) { .snapshot-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .snapshot-grid { grid-template-columns: 1fr; } }
+        .snapshot-card { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 20px; text-align: center; }
+        .snapshot-value { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+        .snapshot-label { font-size: 11px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .snapshot-change { font-size: 11px; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+        .snapshot-change.up { background: rgba(16, 185, 129, 0.2); color: var(--prism-emerald); }
+        .snapshot-change.down { background: rgba(244, 63, 94, 0.2); color: var(--prism-rose); }
+        .snapshot-change.neutral { background: rgba(255, 255, 255, 0.1); color: var(--white-50); }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           FITNESS ANALYTICS STYLES
+        ═══════════════════════════════════════════════════════════════ */
+        .fitness-stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 1200px) { .fitness-stats-row { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 700px) { .fitness-stats-row { grid-template-columns: repeat(2, 1fr); } }
+        .fitness-stat-card { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid; }
+        .fitness-stat-card.volume { border-left-color: var(--prism-cyan); }
+        .fitness-stat-card.workouts { border-left-color: var(--prism-violet); }
+        .fitness-stat-card.exercises { border-left-color: var(--prism-emerald); }
+        .fitness-stat-card.prs { border-left-color: var(--prism-amber); }
+        .fitness-stat-card.cardio { border-left-color: var(--prism-orange); }
+        .fitness-stat-value { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+        .fitness-stat-card.volume .fitness-stat-value { color: var(--prism-cyan); }
+        .fitness-stat-card.workouts .fitness-stat-value { color: var(--prism-violet); }
+        .fitness-stat-card.exercises .fitness-stat-value { color: var(--prism-emerald); }
+        .fitness-stat-card.prs .fitness-stat-value { color: var(--prism-amber); }
+        .fitness-stat-card.cardio .fitness-stat-value { color: var(--prism-orange); }
+        .fitness-stat-label { font-size: 10px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+        
+        .muscle-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        @media (max-width: 800px) { .muscle-breakdown { grid-template-columns: repeat(2, 1fr); } }
+        .muscle-item { background: var(--carbon); border: 1px solid var(--white-10); border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .muscle-name { font-size: 13px; font-weight: 500; }
+        .muscle-sets { font-family: var(--font-display); font-size: 14px; color: var(--prism-cyan); }
+        
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 1000px) { .content-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo">MACRA</div>
+        <div class="splash-tagline">Your Fitness. Your Data. Your Way.</div>
+        <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+        <div class="splash-version">v1.3 BETA</div>
+    </div>
+    <div class="prismatic-bg"><div class="aurora"></div><div class="grid-overlay"></div></div>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <input type="file" accept="image/*" capture="environment" class="photo-input" id="photoInput" onchange="handlePhotoCapture(event)">
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="logo"><div class="logo-icon">M</div><div class="logo-text">MACRA</div><div class="logo-version">v1.3 BETA</div></div>
+            <ul class="sidebar-nav">
+                <li><a href="#" data-view="dashboard" class="active"><span class="icon">📊</span><span class="nav-text">Dashboard</span></a></li>
+                <li><a href="#" data-view="intelligence"><span class="icon">🧠</span><span class="nav-text">Intelligence</span></a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Analytics</div>
+                <ul class="sidebar-nav">
+                    <li><a href="#" data-view="nutrition"><span class="icon">🥗</span><span class="nav-text">Nutrition</span></a></li>
+                    <li><a href="#" data-view="fitness"><span class="icon">💪</span><span class="nav-text">Fitness</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Tracking</div>
+                <ul class="sidebar-nav">
+                    <li><a href="#" data-view="history"><span class="icon">🗓️</span><span class="nav-text">History</span></a></li>
+                    <li><a href="#" data-view="prs"><span class="icon">🏆</span><span class="nav-text">PRs</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Community</div>
+                <ul class="sidebar-nav">
+                    <li><a href="#" data-view="social"><span class="icon">👥</span><span class="nav-text">Activity</span></a></li>
+                    <li><a href="#" data-view="leaderboard"><span class="icon">🥇</span><span class="nav-text">Leaderboard</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <ul class="sidebar-nav">
+                    <li><a href="#" data-view="settings"><span class="icon">⚙️</span><span class="nav-text">Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="userName">ATHLETE</div>
+                <div class="user-code" id="userCode">MACRA-XXXX</div>
+                <div class="user-streak">🔥 <span id="userStreak">0</span> day streak</div>
+            </div>
+        </nav>
+        <main class="main-content">
+            <div class="view active" id="view-dashboard">
+                <header class="header"><div class="header-left"><h1>Command Center</h1><p id="todayDate"></p></div></header>
+                <div class="stats-grid">
+                    <div class="stat-card cyan"><div class="stat-label">Streak</div><div class="stat-value" id="statStreak">0</div><div class="stat-change">Days</div></div>
+                    <div class="stat-card emerald"><div class="stat-label">Calories</div><div class="stat-value" id="statCalories">0</div><div class="stat-change">of 2000</div></div>
+                    <div class="stat-card rose"><div class="stat-label">Protein</div><div class="stat-value" id="statProtein">0g</div><div class="stat-change">of 150g</div></div>
+                    <div class="stat-card violet"><div class="stat-label">Workouts</div><div class="stat-value" id="statWorkouts">0</div><div class="stat-change">This week</div></div>
+                    <div class="stat-card amber"><div class="stat-label">PRs</div><div class="stat-value" id="statPRs">0</div><div class="stat-change">All time</div></div>
+                    <div class="stat-card orange"><div class="stat-label">Points</div><div class="stat-value" id="statPoints">0</div><div class="stat-change">This week</div></div>
+                </div>
+                <div class="unified-input-card">
+                    <div class="unified-input-header"><span style="font-size: 24px;">✨</span><h3>Log Anything</h3><span>— Food, workouts, or activities</span></div>
+                    <div class="unified-input-wrapper">
+                        <textarea class="unified-input" id="unifiedInput" placeholder="What did you do? Try: 'protein shake and banana' or 'bench press 185lbs 3x8' or 'morning run 3 miles'" rows="2"></textarea>
+                        <div class="unified-input-actions">
+                            <button class="photo-btn" onclick="openPhotoScanner()" title="Scan food photo">📸</button>
+                            <button class="unified-btn" id="unifiedLogBtn" onclick="parseUnifiedInput()"><span class="btn-text">✨ Log</span><span class="btn-loading" style="display: none;"><span class="spinner"></span></span></button>
+                        </div>
+                    </div>
+                    <div class="unified-hints">
+                        <span class="hint-chip" onclick="setHint('2 eggs and toast for breakfast')">🥚 Breakfast</span>
+                        <span class="hint-chip" onclick="setHint('bench press 135lbs 3x10')">🏋️ Lifting</span>
+                        <span class="hint-chip" onclick="setHint('30 min jog')">🏃 Cardio</span>
+                        <span class="hint-chip" onclick="setHint('chicken salad with ranch')">🥗 Lunch</span>
+                        <span class="hint-chip" onclick="setHint('protein shake')">🥤 Shake</span>
+                    </div>
+                </div>
+                <div class="macro-summary">
+                    <div class="macro-card calories"><div class="macro-card-value" id="macroCalories">0</div><div class="macro-card-label">Calories</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroCaloriesBar" style="width: 0%;"></div></div></div>
+                    <div class="macro-card protein"><div class="macro-card-value" id="macroProtein">0g</div><div class="macro-card-label">Protein</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroProteinBar" style="width: 0%;"></div></div></div>
+                    <div class="macro-card carbs"><div class="macro-card-value" id="macroCarbs">0g</div><div class="macro-card-label">Carbs</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroCarbsBar" style="width: 0%;"></div></div></div>
+                    <div class="macro-card fat"><div class="macro-card-value" id="macroFat">0g</div><div class="macro-card-label">Fat</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroFatBar" style="width: 0%;"></div></div></div>
+                </div>
+                <div class="timeline-card">
+                    <div class="timeline-header"><div class="timeline-title">📅 Today's Activity</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
+                    <div id="todayTimeline"><div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food or workouts</div></div></div>
+                </div>
+            </div>
+            <div class="view" id="view-history">
+                <header class="header"><div class="header-left"><h1>History</h1><p>All your logged activities</p></div></header>
+                <div class="history-filters">
+                    <button class="history-filter active" onclick="filterHistory('all')">All</button>
+                    <button class="history-filter" onclick="filterHistory('food')">🥗 Food</button>
+                    <button class="history-filter" onclick="filterHistory('workout')">💪 Workouts</button>
+                    <button class="history-filter" onclick="filterHistory('cardio')">🏃 Cardio</button>
+                </div>
+                <div class="card"><div id="historyList"><div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No history yet</div><div class="empty-state-subtext">Start logging to build your history</div></div></div></div>
+            </div>
+            <div class="view" id="view-prs">
+                <header class="header"><div class="header-left"><h1>Personal Records</h1><p>Your best lifts</p></div></header>
+                <div class="card"><div id="prsList"><div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-text">No PRs yet</div><div class="empty-state-subtext">Log strength workouts to track your records</div></div></div></div>
+            </div>
+            <div class="view" id="view-social">
+                <header class="header"><div class="header-left"><h1>Community</h1><p>Connect with your crew</p></div></header>
+                <div class="athlete-code-card">
+                    <div class="athlete-code-label">Your Athlete Code</div>
+                    <div class="athlete-code-value" id="displayAthleteCode">MACRA-XXXX</div>
+                    <div class="athlete-code-share"><button class="btn btn-ghost btn-sm" onclick="copyAthleteCode()">📋 Copy</button><button class="btn btn-primary btn-sm" onclick="shareAthleteCode()">📤 Share</button></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><div class="card-title">👥 Add Friend</div></div>
+                    <div class="add-friend-form"><input type="text" class="add-friend-input" id="friendCodeInput" placeholder="Enter friend's Athlete Code (MACRA-XXXX)"><button class="btn btn-primary" onclick="addFriend()">Add</button></div>
+                    <div id="friendsList" style="margin-top: 16px;"></div>
+                </div>
+                <div class="card"><div class="card-header"><div class="card-title">📰 Activity Feed</div></div><div class="activity-feed" id="activityFeed"></div></div>
+            </div>
+            <div class="view" id="view-leaderboard">
+                <header class="header"><div class="header-left"><h1>Leaderboard</h1><p>Weekly rankings</p></div></header>
+                <div class="card"><div class="card-header"><div class="card-title">🏆 Points This Week</div></div><div class="leaderboard-list" id="leaderboardList"></div></div>
+            </div>
+            
+            <!-- ═══════════════════════════════════════════════════════════
+                 INTELLIGENCE HUB VIEW
+            ═══════════════════════════════════════════════════════════ -->
+            <div class="view" id="view-intelligence">
+                <header class="header"><div class="header-left"><h1>Intelligence Hub</h1><p>AI-powered insights from your data</p></div></header>
+                
+                <div class="card">
+                    <div class="card-header"><div><div class="card-title">🎯 Personalized Recommendations</div><p style="font-size: 12px; color: var(--white-50); margin-top: 4px;">Based on your recent patterns</p></div></div>
+                    <div class="recommendations-grid" id="recommendationsGrid">
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon sleep">😴</div>
+                            <div class="recommendation-content">
+                                <h4>Track Your Sleep</h4>
+                                <p>Start logging daily check-ins to unlock sleep-performance correlations and personalized recommendations.</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon protein">🥩</div>
+                            <div class="recommendation-content">
+                                <h4>Protein Tracking</h4>
+                                <p>Log more meals to see how your protein intake affects workout recovery and muscle growth.</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon training">💪</div>
+                            <div class="recommendation-content">
+                                <h4>Workout Consistency</h4>
+                                <p>Build your workout history to receive personalized training frequency and muscle balance suggestions.</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon balance">⚖️</div>
+                            <div class="recommendation-content">
+                                <h4>Macro Balance</h4>
+                                <p>Continue tracking nutrition to optimize your macronutrient ratios for your fitness goals.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header"><div class="card-title">📊 Correlation Insights</div></div>
+                    <div class="insights-grid" id="insightsGrid">
+                        <div class="insight-card neutral">
+                            <div class="insight-header">
+                                <div class="insight-title">Protein → Recovery</div>
+                                <span class="insight-badge moderate">Building Data</span>
+                            </div>
+                            <div class="insight-value" id="insightProtein">--</div>
+                            <div class="insight-description">Log more data to see how protein intake affects your recovery time.</div>
+                            <div class="insight-bars">
+                                <div class="insight-bar-row"><div class="insight-bar-label">&lt;100g</div><div class="insight-bar"><div class="insight-bar-fill baseline" style="width: 30%;"></div></div><div class="insight-bar-value">--</div></div>
+                                <div class="insight-bar-row"><div class="insight-bar-label">100-140g</div><div class="insight-bar"><div class="insight-bar-fill baseline" style="width: 50%;"></div></div><div class="insight-bar-value">--</div></div>
+                                <div class="insight-bar-row"><div class="insight-bar-label">140g+</div><div class="insight-bar"><div class="insight-bar-fill baseline" style="width: 40%;"></div></div><div class="insight-bar-value">--</div></div>
+                            </div>
+                        </div>
+                        <div class="insight-card warning">
+                            <div class="insight-header">
+                                <div class="insight-title">Training Volume</div>
+                                <span class="insight-badge trending">This Week</span>
+                            </div>
+                            <div class="insight-value" id="insightVolume">0</div>
+                            <div class="insight-description">Total weekly volume in lbs. Build your training history to see trends.</div>
+                        </div>
+                        <div class="insight-card positive">
+                            <div class="insight-header">
+                                <div class="insight-title">Consistency Score</div>
+                                <span class="insight-badge strong">Streak</span>
+                            </div>
+                            <div class="insight-value" id="insightStreak">0</div>
+                            <div class="insight-description">Days in a row you've logged activity. Keep it going!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ═══════════════════════════════════════════════════════════
+                 NUTRITION ANALYTICS VIEW
+            ═══════════════════════════════════════════════════════════ -->
+            <div class="view" id="view-nutrition">
+                <header class="header"><div class="header-left"><h1>Nutrition Analytics</h1><p>Track and optimize your intake</p></div></header>
+                
+                <div class="period-tabs">
+                    <div class="period-tab active" onclick="setNutritionPeriod('daily')">Daily</div>
+                    <div class="period-tab" onclick="setNutritionPeriod('weekly')">Weekly</div>
+                    <div class="period-tab" onclick="setNutritionPeriod('monthly')">Monthly</div>
+                    <div class="period-tab" onclick="setNutritionPeriod('quarterly')">Quarterly</div>
+                    <div class="period-tab" onclick="setNutritionPeriod('annual')">Annual</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header"><div class="card-title" id="nutritionPeriodTitle">📅 Today's Nutrition</div></div>
+                    <div class="nutrition-overview">
+                        <div class="calorie-ring-container">
+                            <div class="calorie-ring">
+                                <svg viewBox="0 0 200 200">
+                                    <defs>
+                                        <linearGradient id="calorieGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color: #06B6D4"/>
+                                            <stop offset="50%" style="stop-color: #8B5CF6"/>
+                                            <stop offset="100%" style="stop-color: #F43F5E"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="calorie-ring-bg" cx="100" cy="100" r="85"/>
+                                    <circle class="calorie-ring-progress" id="nutritionCalorieRing" cx="100" cy="100" r="85" stroke-dasharray="534" stroke-dashoffset="534"/>
+                                </svg>
+                                <div class="calorie-ring-center">
+                                    <div class="calorie-current" id="nutritionCalorieCurrent">0</div>
+                                    <div class="calorie-goal" id="nutritionCalorieGoal">of 2000 cal</div>
+                                    <div class="calorie-remaining" id="nutritionCalorieRemaining">2000 remaining</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="macro-breakdown">
+                            <div class="macro-bar-item">
+                                <div class="macro-bar-header"><span class="macro-bar-label protein">Protein</span><span class="macro-bar-values"><span id="nutritionProtein">0</span>g / <span id="nutritionProteinGoal">150</span>g</span></div>
+                                <div class="macro-bar-track"><div class="macro-bar-fill protein" id="nutritionProteinBar" style="width: 0%;"></div></div>
+                            </div>
+                            <div class="macro-bar-item">
+                                <div class="macro-bar-header"><span class="macro-bar-label carbs">Carbs</span><span class="macro-bar-values"><span id="nutritionCarbs">0</span>g / <span id="nutritionCarbsGoal">200</span>g</span></div>
+                                <div class="macro-bar-track"><div class="macro-bar-fill carbs" id="nutritionCarbsBar" style="width: 0%;"></div></div>
+                            </div>
+                            <div class="macro-bar-item">
+                                <div class="macro-bar-header"><span class="macro-bar-label fat">Fat</span><span class="macro-bar-values"><span id="nutritionFat">0</span>g / <span id="nutritionFatGoal">65</span>g</span></div>
+                                <div class="macro-bar-track"><div class="macro-bar-fill fat" id="nutritionFatBar" style="width: 0%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="snapshot-grid" id="nutritionSnapshots">
+                    <div class="snapshot-card">
+                        <div class="snapshot-value" style="color: var(--prism-emerald);" id="snapshotAvgCalories">--</div>
+                        <div class="snapshot-label">Avg Calories</div>
+                        <div class="snapshot-change neutral">vs previous</div>
+                    </div>
+                    <div class="snapshot-card">
+                        <div class="snapshot-value" style="color: var(--prism-rose);" id="snapshotAvgProtein">--</div>
+                        <div class="snapshot-label">Avg Protein</div>
+                        <div class="snapshot-change neutral">vs previous</div>
+                    </div>
+                    <div class="snapshot-card">
+                        <div class="snapshot-value" style="color: var(--prism-cyan);" id="snapshotMealsLogged">0</div>
+                        <div class="snapshot-label">Meals Logged</div>
+                        <div class="snapshot-change neutral">this period</div>
+                    </div>
+                    <div class="snapshot-card">
+                        <div class="snapshot-value" style="color: var(--prism-amber);" id="snapshotDaysTracked">0</div>
+                        <div class="snapshot-label">Days Tracked</div>
+                        <div class="snapshot-change neutral">this period</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header"><div class="card-title">🍽️ Recent Meals</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
+                    <div id="nutritionMealsList"><div class="empty-state"><div class="empty-state-icon">🥗</div><div class="empty-state-text">No meals logged yet</div><div class="empty-state-subtext">Log food from the Dashboard to see your meal history</div></div></div>
+                </div>
+            </div>
+            
+            <!-- ═══════════════════════════════════════════════════════════
+                 FITNESS ANALYTICS VIEW
+            ═══════════════════════════════════════════════════════════ -->
+            <div class="view" id="view-fitness">
+                <header class="header"><div class="header-left"><h1>Fitness Analytics</h1><p>Track your training progress</p></div></header>
+                
+                <div class="period-tabs">
+                    <div class="period-tab active" onclick="setFitnessPeriod('daily')">Daily</div>
+                    <div class="period-tab" onclick="setFitnessPeriod('weekly')">Weekly</div>
+                    <div class="period-tab" onclick="setFitnessPeriod('monthly')">Monthly</div>
+                    <div class="period-tab" onclick="setFitnessPeriod('quarterly')">Quarterly</div>
+                    <div class="period-tab" onclick="setFitnessPeriod('annual')">Annual</div>
+                </div>
+                
+                <div class="fitness-stats-row" id="fitnessStatsRow">
+                    <div class="fitness-stat-card volume">
+                        <div class="fitness-stat-value" id="fitnessTotalVolume">0</div>
+                        <div class="fitness-stat-label">Total Volume (lbs)</div>
+                    </div>
+                    <div class="fitness-stat-card workouts">
+                        <div class="fitness-stat-value" id="fitnessWorkoutCount">0</div>
+                        <div class="fitness-stat-label">Workouts</div>
+                    </div>
+                    <div class="fitness-stat-card exercises">
+                        <div class="fitness-stat-value" id="fitnessExerciseCount">0</div>
+                        <div class="fitness-stat-label">Exercises</div>
+                    </div>
+                    <div class="fitness-stat-card prs">
+                        <div class="fitness-stat-value" id="fitnessPRCount">0</div>
+                        <div class="fitness-stat-label">New PRs</div>
+                    </div>
+                    <div class="fitness-stat-card cardio">
+                        <div class="fitness-stat-value" id="fitnessCardioMins">0</div>
+                        <div class="fitness-stat-label">Cardio (min)</div>
+                    </div>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header"><div class="card-title">💪 Muscle Breakdown</div></div>
+                        <div class="muscle-breakdown" id="muscleBreakdown">
+                            <div class="muscle-item"><span class="muscle-name">Chest</span><span class="muscle-sets">0 sets</span></div>
+                            <div class="muscle-item"><span class="muscle-name">Back</span><span class="muscle-sets">0 sets</span></div>
+                            <div class="muscle-item"><span class="muscle-name">Shoulders</span><span class="muscle-sets">0 sets</span></div>
+                            <div class="muscle-item"><span class="muscle-name">Arms</span><span class="muscle-sets">0 sets</span></div>
+                            <div class="muscle-item"><span class="muscle-name">Legs</span><span class="muscle-sets">0 sets</span></div>
+                            <div class="muscle-item"><span class="muscle-name">Core</span><span class="muscle-sets">0 sets</span></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><div class="card-title">🏃 Recent Workouts</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
+                        <div id="fitnessWorkoutsList"><div class="empty-state"><div class="empty-state-icon">💪</div><div class="empty-state-text">No workouts logged yet</div><div class="empty-state-subtext">Log workouts from the Dashboard to track progress</div></div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="view" id="view-settings">
+                <header class="header"><div class="header-left"><h1>Settings</h1><p>Customize your experience</p></div></header>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Profile</div><div class="form-group"><label class="form-label">Display Name</label><input type="text" class="form-input" id="settingsName" placeholder="Your name"></div><button class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">🤖 AI Features</div><div class="form-group"><label class="form-label">Claude API Key</label><input type="password" class="form-input" id="aiApiKey" placeholder="sk-ant-api03-..."><p style="font-size: 11px; color: var(--white-30); margin-top: 6px;">Required for AI logging and photo scanning. Stored locally only.</p></div><div class="form-group" style="margin-top: 16px;"><label class="form-label">🥗 USDA FoodData Central API Key <span style="color: var(--prism-emerald);">(Recommended)</span></label><input type="text" class="form-input" id="usdaApiKey" placeholder="Your USDA API key"><p style="font-size: 11px; color: var(--white-30); margin-top: 6px;">Enhances nutrition accuracy with official USDA data. <a href="https://fdc.nal.usda.gov/api-key-signup" target="_blank" style="color: var(--prism-cyan);">Get free key →</a></p></div><div style="display: flex; gap: 12px;"><button class="btn btn-primary" onclick="saveAISettings()">Save & Test</button><button class="btn btn-ghost" onclick="clearAISettings()">Clear</button></div><div id="aiStatus" style="margin-top: 12px; font-size: 12px;"></div></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Data</div><div style="display: flex; gap: 12px; flex-wrap: wrap;"><button class="btn btn-ghost" onclick="exportAllData()">📤 Export Data</button><button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">🗑️ Clear All Data</button></div></div>
+            </div>
+        </main>
+    </div>
+    <div id="prCelebration" style="display: none;"><div class="pr-celebration"><div class="pr-celebration-icon">🏆</div><div class="pr-celebration-title">NEW PR!</div><div class="pr-celebration-detail" id="prCelebrationExercise"></div><div class="pr-celebration-value" id="prCelebrationValue"></div></div></div>
+    
+    <script>
+        const STORAGE_KEY = 'macra-v1.3';
+        const AI_SETTINGS_KEY = 'macra_ai_settings';
+        const USDA_API_BASE = 'https://api.nal.usda.gov/fdc/v1';
+        
+        let appData = {
+            profile: { name: 'Athlete', athleteCode: '' },
+            goals: { calories: 2000, protein: 150, carbs: 200, fat: 65 },
+            activities: {},
+            prs: {},
+            friends: [],
+            stats: { streak: 0, points: 0, weeklyPoints: 0 }
+        };
+
+        function init() {
+            loadData();
+            if (!appData.profile.athleteCode) {
+                appData.profile.athleteCode = 'MACRA-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+                saveData();
+            }
+            document.getElementById('userCode').textContent = appData.profile.athleteCode;
+            document.getElementById('displayAthleteCode').textContent = appData.profile.athleteCode;
+            document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            calculateStreak();
+            resetWeeklyPointsIfNeeded();
+            renderDashboard();
+            renderTimeline();
+            renderHistory();
+            renderPRs();
+            renderSocial();
+            renderLeaderboard();
+            renderIntelligence();
+            renderNutritionAnalytics();
+            renderFitnessAnalytics();
+            loadSettingsForm();
+            loadAISettings();
+            setupNavigation();
+            setTimeout(() => document.getElementById('splashScreen').classList.add('hidden'), 1800);
+            initSentinel();
+        }
+
+        function initSentinel() {
+            if (typeof SENTINEL !== 'undefined') {
+                SENTINEL.init({
+                    appId: 'macra',
+                    appVersion: '1.3.0-beta',
+                    endpoint: 'https://sentinel-production-ae86.up.railway.app/api/telemetry',
+                    enableSelfHealing: true
+                });
+            }
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                appData = { ...appData, ...parsed };
+            }
+            // Migrate from previous versions if exists
+            const migrations = ['macra-v1.2', 'macra-v1.1'];
+            for (const oldKey of migrations) {
+                const oldStored = localStorage.getItem(oldKey);
+                if (oldStored && !stored) {
+                    const parsed = JSON.parse(oldStored);
+                    appData = { ...appData, ...parsed };
+                    saveData();
+                    break;
+                }
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        }
+
+        function resetWeeklyPointsIfNeeded() {
+            const now = new Date();
+            const lastReset = localStorage.getItem('macra_weekly_reset');
+            const lastResetDate = lastReset ? new Date(lastReset) : null;
+            
+            // Reset on Monday
+            if (!lastResetDate || (now.getDay() === 1 && now.toDateString() !== lastResetDate.toDateString())) {
+                appData.stats.weeklyPoints = 0;
+                appData.friends.forEach(f => f.weeklyPoints = Math.floor(Math.random() * 100));
+                localStorage.setItem('macra_weekly_reset', now.toISOString());
+                saveData();
+            }
+        }
+
+        function getTodayKey() {
+            // Use local timezone for date key
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function setupNavigation() {
+            document.querySelectorAll('[data-view]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchView(link.dataset.view);
+                    closeSidebar();
+                });
+            });
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('[data-view]').forEach(l => l.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            const navLink = document.querySelector(`[data-view="${viewId}"]`);
+            if (navLink) navLink.classList.add('active');
+            
+            // Render view-specific data
+            if (viewId === 'intelligence') renderIntelligence();
+            if (viewId === 'nutrition') renderNutritionAnalytics();
+            if (viewId === 'fitness') renderFitnessAnalytics();
+            if (viewId === 'dashboard') { renderDashboard(); renderTimeline(); }
+            if (viewId === 'history') renderHistory();
+            if (viewId === 'prs') renderPRs();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('expanded');
+            overlay.classList.toggle('visible');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.remove('expanded');
+            overlay.classList.remove('visible');
+        }
+
+        function setHint(text) {
+            document.getElementById('unifiedInput').value = text;
+            document.getElementById('unifiedInput').focus();
+        }
+
+        // Robust JSON extraction from AI response (handles markdown backticks)
+        function extractJSON(text) {
+            if (!text) return null;
+            
+            // Try direct parse first
+            try {
+                return JSON.parse(text.trim());
+            } catch (e) {}
+            
+            // Remove markdown code blocks
+            let cleaned = text
+                .replace(/```json\s*/gi, '')
+                .replace(/```\s*/g, '')
+                .trim();
+            
+            try {
+                return JSON.parse(cleaned);
+            } catch (e) {}
+            
+            // Try to find JSON object in the text
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                try {
+                    return JSON.parse(jsonMatch[0]);
+                } catch (e) {}
+            }
+            
+            return null;
+        }
+
+        // ============ USDA FoodData Central Integration ============
+        
+        function getUSDASettings() {
+            const settings = getAISettings();
+            return settings.usdaApiKey || null;
+        }
+
+        async function searchUSDAFoods(query, maxResults = 5) {
+            const apiKey = getUSDASettings();
+            if (!apiKey) return null;
+            
+            try {
+                const response = await fetch(`${USDA_API_BASE}/foods/search?api_key=${apiKey}&query=${encodeURIComponent(query)}&pageSize=${maxResults}&dataType=Foundation,SR%20Legacy,Branded`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) return null;
+                
+                const data = await response.json();
+                return data.foods || [];
+            } catch (error) {
+                console.error('USDA API Error:', error);
+                return null;
+            }
+        }
+
+        async function getUSDAFoodDetails(fdcId) {
+            const apiKey = getUSDASettings();
+            if (!apiKey) return null;
+            
+            try {
+                const response = await fetch(`${USDA_API_BASE}/food/${fdcId}?api_key=${apiKey}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) return null;
+                return await response.json();
+            } catch (error) {
+                console.error('USDA Food Details Error:', error);
+                return null;
+            }
+        }
+
+        function extractUSDANutrients(food) {
+            // Extract key nutrients from USDA food data
+            // Nutrient IDs: 1008=Calories, 1003=Protein, 1005=Carbs, 1004=Fat
+            const nutrients = food.foodNutrients || [];
+            
+            const findNutrient = (ids) => {
+                for (const id of ids) {
+                    const nutrient = nutrients.find(n => 
+                        n.nutrientId === id || 
+                        n.nutrient?.id === id ||
+                        n.nutrientNumber === String(id)
+                    );
+                    if (nutrient) {
+                        return nutrient.value || nutrient.amount || 0;
+                    }
+                }
+                return 0;
+            };
+            
+            return {
+                calories: Math.round(findNutrient([1008, 208])),
+                protein: Math.round(findNutrient([1003, 203])),
+                carbs: Math.round(findNutrient([1005, 205])),
+                fat: Math.round(findNutrient([1004, 204])),
+                servingSize: food.servingSize || 100,
+                servingUnit: food.servingSizeUnit || 'g',
+                source: 'USDA FoodData Central',
+                fdcId: food.fdcId
+            };
+        }
+
+        async function enrichFoodWithUSDA(foodItems) {
+            const apiKey = getUSDASettings();
+            if (!apiKey) return foodItems;
+            
+            const enrichedItems = [];
+            
+            for (const item of foodItems) {
+                const searchResults = await searchUSDAFoods(item.name, 1);
+                
+                if (searchResults && searchResults.length > 0) {
+                    const usdaFood = searchResults[0];
+                    const nutrients = extractUSDANutrients(usdaFood);
+                    
+                    enrichedItems.push({
+                        ...item,
+                        name: item.name,
+                        calories: nutrients.calories || item.calories,
+                        protein: nutrients.protein || item.protein,
+                        carbs: nutrients.carbs || item.carbs,
+                        fat: nutrients.fat || item.fat,
+                        usdaVerified: true,
+                        fdcId: nutrients.fdcId,
+                        source: nutrients.source
+                    });
+                } else {
+                    enrichedItems.push({ ...item, usdaVerified: false });
+                }
+            }
+            
+            return enrichedItems;
+        }
+
+        // ============ End USDA Integration ============
+
+        async function parseUnifiedInput() {
+            const input = document.getElementById('unifiedInput');
+            const text = input.value.trim();
+            if (!text) { alert('Please enter something to log'); return; }
+            
+            const settings = getAISettings();
+            if (!settings.apiKey) {
+                alert('Please configure your Claude API key in Settings first');
+                switchView('settings');
+                return;
+            }
+
+            const btn = document.getElementById('unifiedLogBtn');
+            btn.querySelector('.btn-text').style.display = 'none';
+            btn.querySelector('.btn-loading').style.display = 'inline-flex';
+            btn.disabled = true;
+
+            try {
+                // Check if USDA API is configured and this looks like food
+                let usdaContext = '';
+                const usdaKey = getUSDASettings();
+                const looksLikeFood = !text.match(/\b(bench|squat|deadlift|press|curl|run|jog|bike|swim|walk|workout|exercise|cardio|sets|reps|lbs|kg|miles|km|minutes|min)\b/i);
+                
+                if (usdaKey && looksLikeFood) {
+                    // Search USDA for mentioned foods to provide accurate data
+                    const searchResults = await searchUSDAFoods(text, 3);
+                    if (searchResults && searchResults.length > 0) {
+                        const usdaData = searchResults.slice(0, 3).map(food => {
+                            const nutrients = extractUSDANutrients(food);
+                            return `${food.description}: ${nutrients.calories} cal, ${nutrients.protein}g protein, ${nutrients.carbs}g carbs, ${nutrients.fat}g fat per ${nutrients.servingSize}${nutrients.servingUnit}`;
+                        }).join('\n');
+                        
+                        usdaContext = `\n\nUSDA FoodData Central Reference (use these values for accuracy):\n${usdaData}\n`;
+                    }
+                }
+
+                const prompt = `You are a fitness tracking assistant. Analyze this user input and determine if it's about FOOD/NUTRITION or EXERCISE/WORKOUT or CARDIO, then parse it accordingly.
+
+User input: "${text}"
+${usdaContext}
+IMPORTANT: Respond with ONLY valid JSON. No markdown, no backticks, no explanation.
+${usdaContext ? 'Use the USDA reference data above for accurate nutrition values when applicable.' : 'Use realistic nutrition estimates based on standard values.'}
+
+For FOOD, use this format:
+{"type":"food","confidence":0.9,"data":{"items":[{"name":"food name","calories":0,"protein":0,"carbs":0,"fat":0}],"totals":{"calories":0,"protein":0,"carbs":0,"fat":0},"mealType":"breakfast|lunch|dinner|snack"}}
+
+For WORKOUT (strength training), use this format:
+{"type":"workout","confidence":0.9,"data":{"exercises":[{"name":"Exercise Name","sets":3,"reps":10,"weight":135,"category":"chest|back|legs|shoulders|arms|core"}],"duration":45,"caloriesBurned":200}}
+
+For CARDIO, use this format:
+{"type":"cardio","confidence":0.9,"data":{"activity":"Running","duration":30,"distance":3,"caloriesBurned":300}}`;
+
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': settings.apiKey,
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1024,
+                        messages: [{ role: 'user', content: prompt }]
+                    })
+                });
+
+                if (!response.ok) throw new Error('API request failed');
+                
+                const data = await response.json();
+                const resultText = data.content[0].text;
+                const result = extractJSON(resultText);
+                
+                if (!result) {
+                    throw new Error('Could not parse AI response');
+                }
+                
+                // Mark as USDA-enhanced if we used USDA data
+                if (usdaContext && result.type === 'food') {
+                    result.data.usdaEnhanced = true;
+                }
+                
+                processUnifiedResult(result, text);
+                input.value = '';
+                
+            } catch (error) {
+                console.error('Parsing error:', error);
+                alert('Failed to parse input: ' + error.message);
+            }
+
+            btn.querySelector('.btn-text').style.display = 'inline';
+            btn.querySelector('.btn-loading').style.display = 'none';
+            btn.disabled = false;
+        }
+
+        function processUnifiedResult(result, rawInput) {
+            const today = getTodayKey();
+            if (!appData.activities[today]) appData.activities[today] = [];
+            
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            
+            const activity = {
+                id: Date.now(),
+                time: timeStr,
+                timestamp: now.toISOString(),
+                type: result.type,
+                raw: rawInput,
+                data: result.data
+            };
+            
+            appData.activities[today].push(activity);
+            
+            // Award points
+            let points = 0;
+            if (result.type === 'food') points = 10;
+            else if (result.type === 'cardio') points = 20;
+            else if (result.type === 'workout') points = 25;
+            
+            appData.stats.points += points;
+            appData.stats.weeklyPoints += points;
+            
+            // Check for PRs if workout
+            if (result.type === 'workout' && result.data.exercises) {
+                checkForPRs(result.data.exercises);
+            }
+            
+            saveData();
+            calculateStreak();
+            renderDashboard();
+            renderTimeline();
+            renderHistory();
+            renderSocial();
+            
+            const icon = result.type === 'food' ? '🥗' : result.type === 'workout' ? '💪' : '🏃';
+            showToast(`${icon} +${points} points`);
+        }
+
+        function openPhotoScanner() { const settings = getAISettings(); if (!settings.apiKey) { alert('Please configure your Claude API key in Settings'); switchView('settings'); return; } document.getElementById('photoInput').click(); }
+        
+        async function handlePhotoCapture(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const btn = document.getElementById('unifiedLogBtn');
+            btn.querySelector('.btn-text').style.display = 'none';
+            btn.querySelector('.btn-loading').style.display = 'inline-flex';
+            btn.disabled = true;
+            try {
+                const base64 = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); });
+                const base64Data = base64.split(',')[1];
+                const settings = getAISettings();
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': settings.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+                    body: JSON.stringify({ 
+                        model: 'claude-sonnet-4-20250514', 
+                        max_tokens: 1024, 
+                        messages: [{ 
+                            role: 'user', 
+                            content: [
+                                { type: 'image', source: { type: 'base64', media_type: file.type, data: base64Data } }, 
+                                { type: 'text', text: 'Analyze this food image and estimate nutritional information. Respond with ONLY valid JSON, no markdown or backticks:\n{"type":"food","confidence":0.9,"data":{"items":[{"name":"food name","calories":0,"protein":0,"carbs":0,"fat":0}],"totals":{"calories":0,"protein":0,"carbs":0,"fat":0},"mealType":"snack"}}\n\nBe accurate with estimates based on typical portion sizes.' }
+                            ] 
+                        }] 
+                    })
+                });
+                if (response.ok) { 
+                    const data = await response.json(); 
+                    const result = extractJSON(data.content[0].text); 
+                    if (!result) throw new Error('Could not parse photo analysis');
+                    processUnifiedResult(result, 'Photo scan'); 
+                }
+                else throw new Error('API request failed');
+            } catch (error) { console.error('Photo scan error:', error); alert('Failed to analyze photo: ' + error.message); }
+            btn.querySelector('.btn-text').style.display = 'inline';
+            btn.querySelector('.btn-loading').style.display = 'none';
+            btn.disabled = false;
+            event.target.value = '';
+        }
+
+        function checkForPRs(exercises) {
+            exercises.forEach(ex => {
+                if (!ex.weight || ex.weight === 0) return;
+                const exerciseName = ex.name.toLowerCase();
+                const currentPR = appData.prs[exerciseName];
+                const currentVolume = ex.weight * (ex.sets || 1) * (ex.reps || 1);
+                const existingVolume = currentPR ? (currentPR.weight * (currentPR.sets || 1) * (currentPR.reps || 1)) : 0;
+                
+                // Track PR by highest weight OR highest volume (whichever is a new record)
+                const isWeightPR = !currentPR || ex.weight > currentPR.weight;
+                const isVolumePR = !currentPR || currentVolume > existingVolume;
+                
+                if (isWeightPR || isVolumePR) {
+                    const prType = isWeightPR ? 'weight' : 'volume';
+                    appData.prs[exerciseName] = { 
+                        weight: ex.weight, 
+                        reps: ex.reps, 
+                        sets: ex.sets,
+                        volume: currentVolume,
+                        date: getTodayKey(), 
+                        displayName: ex.name,
+                        prType: prType
+                    };
+                    celebratePR(ex.name, ex.weight, ex.reps, ex.sets, prType);
+                    appData.stats.points += 50;
+                    appData.stats.weeklyPoints += 50;
+                }
+            });
+            saveData();
+        }
+
+        function celebratePR(exercise, weight, reps, sets, prType) {
+            const celebration = document.getElementById('prCelebration');
+            document.getElementById('prCelebrationExercise').textContent = exercise;
+            const volume = weight * (sets || 1) * (reps || 1);
+            if (prType === 'volume') {
+                document.getElementById('prCelebrationValue').innerHTML = `${weight} lbs × ${sets || 1}×${reps}<br><span style="font-size: 18px; opacity: 0.8;">Volume: ${volume.toLocaleString()} lbs</span>`;
+            } else {
+                document.getElementById('prCelebrationValue').textContent = `${weight} lbs × ${reps}`;
+            }
+            celebration.style.display = 'block';
+            setTimeout(() => celebration.style.display = 'none', 3500);
+        }
+
+        function renderDashboard() {
+            const today = getTodayKey();
+            const todayActivities = appData.activities[today] || [];
+            let calories = 0, protein = 0, carbs = 0, fat = 0, workoutCount = 0;
+            todayActivities.forEach(a => {
+                if (a.type === 'food' && a.data.totals) { calories += a.data.totals.calories || 0; protein += a.data.totals.protein || 0; carbs += a.data.totals.carbs || 0; fat += a.data.totals.fat || 0; }
+                if (a.type === 'workout' || a.type === 'cardio') workoutCount++;
+            });
+            const weekWorkouts = getWeekWorkouts();
+            document.getElementById('statStreak').textContent = appData.stats.streak;
+            document.getElementById('statCalories').textContent = calories;
+            document.getElementById('statProtein').textContent = Math.round(protein) + 'g';
+            document.getElementById('statWorkouts').textContent = weekWorkouts;
+            document.getElementById('statPRs').textContent = Object.keys(appData.prs).length;
+            document.getElementById('statPoints').textContent = appData.stats.weeklyPoints;
+            document.getElementById('userStreak').textContent = appData.stats.streak;
+            document.getElementById('userName').textContent = appData.profile.name || 'ATHLETE';
+            const goals = appData.goals;
+            document.getElementById('macroCalories').textContent = calories;
+            document.getElementById('macroProtein').textContent = Math.round(protein) + 'g';
+            document.getElementById('macroCarbs').textContent = Math.round(carbs) + 'g';
+            document.getElementById('macroFat').textContent = Math.round(fat) + 'g';
+            document.getElementById('macroCaloriesBar').style.width = Math.min((calories / goals.calories) * 100, 100) + '%';
+            document.getElementById('macroProteinBar').style.width = Math.min((protein / goals.protein) * 100, 100) + '%';
+            document.getElementById('macroCarbsBar').style.width = Math.min((carbs / goals.carbs) * 100, 100) + '%';
+            document.getElementById('macroFatBar').style.width = Math.min((fat / goals.fat) * 100, 100) + '%';
+        }
+
+        function getWeekWorkouts() { let count = 0; for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() - i); const key = d.toISOString().split('T')[0]; const acts = appData.activities[key] || []; count += acts.filter(a => a.type === 'workout' || a.type === 'cardio').length; } return count; }
+
+        function renderTimeline() {
+            const today = getTodayKey();
+            const activities = appData.activities[today] || [];
+            const container = document.getElementById('todayTimeline');
+            if (activities.length === 0) { container.innerHTML = '<div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food or workouts</div></div>'; return; }
+            const sorted = [...activities].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            container.innerHTML = '<div class="timeline-list">' + sorted.map(activity => {
+                let icon, title, details, badgeClass, usdaBadge = '';
+                if (activity.type === 'food') { 
+                    icon = '🥗'; badgeClass = 'food'; 
+                    const items = activity.data.items || []; 
+                    title = items.map(i => i.name).join(', ') || 'Food'; 
+                    const totals = activity.data.totals || {}; 
+                    details = `${totals.calories || 0} cal • ${totals.protein || 0}g protein`;
+                    if (activity.data.usdaEnhanced) {
+                        usdaBadge = '<span style="font-size: 9px; background: rgba(16, 185, 129, 0.2); color: var(--prism-emerald); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">USDA ✓</span>';
+                    }
+                }
+                else if (activity.type === 'workout') { icon = '💪'; badgeClass = 'workout'; const exercises = activity.data.exercises || []; title = exercises.map(e => e.name).join(', ') || 'Workout'; const totalVolume = exercises.reduce((sum, e) => sum + (e.weight * e.sets * e.reps), 0); details = `${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs volume`; }
+                else if (activity.type === 'cardio') { icon = '🏃'; badgeClass = 'workout'; title = activity.data.activity || 'Cardio'; details = `${activity.data.duration || 0} min`; if (activity.data.distance) details += ` • ${activity.data.distance} miles`; }
+                return `<div class="timeline-item ${activity.type}"><div class="timeline-time">${activity.time}</div><div class="timeline-icon">${icon}</div><div class="timeline-content"><div class="timeline-content-title">${title}${usdaBadge}</div><div class="timeline-content-details">${details}</div></div><span class="timeline-badge ${badgeClass}">${activity.type}</span><button class="timeline-delete" onclick="deleteActivity('${today}', ${activity.id})">×</button></div>`;
+            }).join('') + '</div>';
+        }
+
+        function deleteActivity(date, id) { if (!confirm('Delete this entry?')) return; appData.activities[date] = appData.activities[date].filter(a => a.id !== id); saveData(); renderDashboard(); renderTimeline(); renderHistory(); }
+
+        let historyFilter = 'all';
+        function filterHistory(filter) { historyFilter = filter; document.querySelectorAll('.history-filter').forEach(btn => btn.classList.toggle('active', btn.textContent.toLowerCase().includes(filter) || (filter === 'all' && btn.textContent === 'All'))); renderHistory(); }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            const dates = Object.keys(appData.activities).sort((a, b) => new Date(b) - new Date(a));
+            if (dates.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No history yet</div><div class="empty-state-subtext">Start logging to build your history</div></div>'; return; }
+            let html = '<div class="history-list">';
+            dates.forEach(date => {
+                let activities = appData.activities[date] || [];
+                if (historyFilter !== 'all') activities = activities.filter(a => a.type === historyFilter);
+                if (activities.length === 0) return;
+                const dateObj = new Date(date + 'T12:00:00');
+                const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const isToday = date === getTodayKey();
+                activities.forEach(activity => {
+                    let title, stats = [];
+                    if (activity.type === 'food') { title = '🥗 ' + ((activity.data.items || []).map(i => i.name).join(', ') || 'Food'); const totals = activity.data.totals || {}; stats.push({ label: 'Calories', value: totals.calories || 0 }); stats.push({ label: 'Protein', value: (totals.protein || 0) + 'g' }); }
+                    else if (activity.type === 'workout') { title = '💪 ' + ((activity.data.exercises || []).map(e => e.name).join(', ') || 'Workout'); const exercises = activity.data.exercises || []; const totalVolume = exercises.reduce((sum, e) => sum + (e.weight * e.sets * e.reps), 0); stats.push({ label: 'Exercises', value: exercises.length }); stats.push({ label: 'Volume', value: totalVolume.toLocaleString() + ' lbs' }); }
+                    else if (activity.type === 'cardio') { title = '🏃 ' + (activity.data.activity || 'Cardio'); stats.push({ label: 'Duration', value: (activity.data.duration || 0) + ' min' }); if (activity.data.distance) stats.push({ label: 'Distance', value: activity.data.distance + ' mi' }); }
+                    html += `<div class="history-item"><div class="history-item-header"><div><div class="history-item-title">${title}</div><div class="history-item-date">${isToday ? 'Today' : dateStr} at ${activity.time}</div></div></div><div class="history-item-stats">${stats.map(s => `<div class="history-stat"><span class="history-stat-label">${s.label}:</span> <span class="history-stat-value">${s.value}</span></div>`).join('')}</div></div>`;
+                });
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function renderPRs() {
+            const container = document.getElementById('prsList');
+            const prs = Object.entries(appData.prs);
+            if (prs.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-text">No PRs yet</div><div class="empty-state-subtext">Log strength workouts to track your records</div></div>'; return; }
+            prs.sort((a, b) => b[1].weight - a[1].weight);
+            container.innerHTML = '<div class="pr-list">' + prs.map(([key, pr]) => {
+                const dateStr = new Date(pr.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const volume = pr.weight * (pr.sets || 1) * (pr.reps || 1);
+                return `<div class="pr-item"><div class="pr-icon">🏆</div><div class="pr-info"><div class="pr-exercise">${pr.displayName}</div><div class="pr-date">${dateStr}</div><div style="font-size: 10px; color: var(--white-30); margin-top: 2px;">Vol: ${volume.toLocaleString()} lbs</div></div><div class="pr-value">${pr.weight} × ${pr.sets || 1}×${pr.reps}</div></div>`;
+            }).join('') + '</div>';
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // INTELLIGENCE HUB
+        // ═══════════════════════════════════════════════════════════════
+        function renderIntelligence() {
+            // Update insight values
+            document.getElementById('insightStreak').textContent = appData.stats.streak;
+            
+            // Calculate weekly volume
+            const weekVolume = calculatePeriodVolume('weekly');
+            document.getElementById('insightVolume').textContent = weekVolume.toLocaleString();
+            
+            // Generate dynamic recommendations based on data
+            updateRecommendations();
+        }
+
+        function updateRecommendations() {
+            const recommendations = [];
+            const today = getTodayKey();
+            const todayData = appData.activities[today] || [];
+            
+            // Check protein intake
+            const todayProtein = todayData.filter(a => a.type === 'food').reduce((sum, a) => sum + (a.data?.totals?.protein || 0), 0);
+            if (todayProtein < appData.goals.protein * 0.5) {
+                recommendations.push({
+                    icon: 'protein',
+                    emoji: '🥩',
+                    title: 'Increase Protein Intake',
+                    text: `You're at ${Math.round(todayProtein)}g protein today. Consider adding a protein-rich meal to hit your ${appData.goals.protein}g goal.`
+                });
+            }
+            
+            // Check workout frequency
+            const weekWorkouts = getWeekWorkouts();
+            if (weekWorkouts === 0) {
+                recommendations.push({
+                    icon: 'training',
+                    emoji: '💪',
+                    title: 'Time to Train',
+                    text: 'No workouts logged this week yet. A workout today could boost your streak and weekly points!'
+                });
+            } else if (weekWorkouts >= 5) {
+                recommendations.push({
+                    icon: 'recovery',
+                    emoji: '🧊',
+                    title: 'Recovery Day Suggested',
+                    text: `${weekWorkouts} workouts this week! Consider active recovery to prevent overtraining.`
+                });
+            }
+            
+            // Streak motivation
+            if (appData.stats.streak > 0) {
+                recommendations.push({
+                    icon: 'balance',
+                    emoji: '🔥',
+                    title: `${appData.stats.streak} Day Streak!`,
+                    text: 'Great consistency! Keep logging daily to maintain your streak and unlock better insights.'
+                });
+            }
+            
+            // Default recommendations if no data-driven ones
+            if (recommendations.length < 2) {
+                recommendations.push({
+                    icon: 'sleep',
+                    emoji: '😴',
+                    title: 'Track Your Sleep',
+                    text: 'Daily check-ins help correlate sleep with performance. Coming in future updates!'
+                });
+            }
+            
+            // Render recommendations (max 4)
+            const grid = document.getElementById('recommendationsGrid');
+            if (grid && recommendations.length > 0) {
+                grid.innerHTML = recommendations.slice(0, 4).map(r => `
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon ${r.icon}">${r.emoji}</div>
+                        <div class="recommendation-content">
+                            <h4>${r.title}</h4>
+                            <p>${r.text}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getWeekWorkouts() {
+            let count = 0;
+            for (let i = 0; i < 7; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const acts = appData.activities[key] || [];
+                count += acts.filter(a => a.type === 'workout' || a.type === 'cardio').length;
+            }
+            return count;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // NUTRITION ANALYTICS
+        // ═══════════════════════════════════════════════════════════════
+        let currentNutritionPeriod = 'daily';
+        
+        function setNutritionPeriod(period) {
+            currentNutritionPeriod = period;
+            document.querySelectorAll('#view-nutrition .period-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            renderNutritionAnalytics();
+        }
+
+        function renderNutritionAnalytics() {
+            const periodData = getNutritionPeriodData(currentNutritionPeriod);
+            const goals = appData.goals;
+            
+            // Update title
+            const titles = {
+                daily: "📅 Today's Nutrition",
+                weekly: "📊 This Week's Nutrition",
+                monthly: "📈 This Month's Nutrition",
+                quarterly: "📉 This Quarter's Nutrition",
+                annual: "🗓️ This Year's Nutrition"
+            };
+            document.getElementById('nutritionPeriodTitle').textContent = titles[currentNutritionPeriod];
+            
+            // Calculate averages for non-daily periods
+            const divisor = currentNutritionPeriod === 'daily' ? 1 : Math.max(periodData.daysTracked, 1);
+            const avgCalories = Math.round(periodData.totalCalories / divisor);
+            const avgProtein = Math.round(periodData.totalProtein / divisor);
+            const avgCarbs = Math.round(periodData.totalCarbs / divisor);
+            const avgFat = Math.round(periodData.totalFat / divisor);
+            
+            // Update calorie ring
+            const caloriePercent = Math.min((avgCalories / goals.calories) * 100, 100);
+            const dashOffset = 534 - (534 * caloriePercent / 100);
+            document.getElementById('nutritionCalorieRing').style.strokeDashoffset = dashOffset;
+            document.getElementById('nutritionCalorieCurrent').textContent = avgCalories;
+            document.getElementById('nutritionCalorieGoal').textContent = `of ${goals.calories} cal`;
+            document.getElementById('nutritionCalorieRemaining').textContent = Math.max(goals.calories - avgCalories, 0) + ' remaining';
+            
+            // Update macro bars
+            document.getElementById('nutritionProtein').textContent = avgProtein;
+            document.getElementById('nutritionCarbs').textContent = avgCarbs;
+            document.getElementById('nutritionFat').textContent = avgFat;
+            document.getElementById('nutritionProteinGoal').textContent = goals.protein;
+            document.getElementById('nutritionCarbsGoal').textContent = goals.carbs;
+            document.getElementById('nutritionFatGoal').textContent = goals.fat;
+            document.getElementById('nutritionProteinBar').style.width = Math.min((avgProtein / goals.protein) * 100, 100) + '%';
+            document.getElementById('nutritionCarbsBar').style.width = Math.min((avgCarbs / goals.carbs) * 100, 100) + '%';
+            document.getElementById('nutritionFatBar').style.width = Math.min((avgFat / goals.fat) * 100, 100) + '%';
+            
+            // Update snapshots
+            document.getElementById('snapshotAvgCalories').textContent = avgCalories;
+            document.getElementById('snapshotAvgProtein').textContent = avgProtein + 'g';
+            document.getElementById('snapshotMealsLogged').textContent = periodData.mealsLogged;
+            document.getElementById('snapshotDaysTracked').textContent = periodData.daysTracked;
+            
+            // Render recent meals
+            renderNutritionMeals(periodData.meals.slice(0, 5));
+        }
+
+        function getNutritionPeriodData(period) {
+            const result = { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, mealsLogged: 0, daysTracked: 0, meals: [] };
+            const periodDays = { daily: 1, weekly: 7, monthly: 30, quarterly: 90, annual: 365 };
+            const days = periodDays[period];
+            
+            const datesWithData = new Set();
+            
+            for (let i = 0; i < days; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const dayActivities = appData.activities[key] || [];
+                const foodActivities = dayActivities.filter(a => a.type === 'food');
+                
+                if (foodActivities.length > 0) datesWithData.add(key);
+                
+                foodActivities.forEach(a => {
+                    const totals = a.data?.totals || {};
+                    result.totalCalories += totals.calories || 0;
+                    result.totalProtein += totals.protein || 0;
+                    result.totalCarbs += totals.carbs || 0;
+                    result.totalFat += totals.fat || 0;
+                    result.mealsLogged++;
+                    result.meals.push({ ...a, dateKey: key });
+                });
+            }
+            
+            result.daysTracked = datesWithData.size;
+            result.meals.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            return result;
+        }
+
+        function renderNutritionMeals(meals) {
+            const container = document.getElementById('nutritionMealsList');
+            if (meals.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🥗</div><div class="empty-state-text">No meals logged yet</div><div class="empty-state-subtext">Log food from the Dashboard to see your meal history</div></div>';
+                return;
+            }
+            container.innerHTML = meals.map(m => {
+                const items = m.data?.items || [];
+                const totals = m.data?.totals || {};
+                const title = items.map(i => i.name).join(', ') || 'Meal';
+                return `<div class="timeline-item food"><div class="timeline-time">${m.time}</div><div class="timeline-icon">🥗</div><div class="timeline-content"><div class="timeline-content-title">${title}</div><div class="timeline-content-details">${totals.calories || 0} cal • ${totals.protein || 0}g protein</div></div></div>`;
+            }).join('');
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // FITNESS ANALYTICS
+        // ═══════════════════════════════════════════════════════════════
+        let currentFitnessPeriod = 'daily';
+        
+        function setFitnessPeriod(period) {
+            currentFitnessPeriod = period;
+            document.querySelectorAll('#view-fitness .period-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            renderFitnessAnalytics();
+        }
+
+        function renderFitnessAnalytics() {
+            const periodData = getFitnessPeriodData(currentFitnessPeriod);
+            
+            // Update stats
+            document.getElementById('fitnessTotalVolume').textContent = periodData.totalVolume.toLocaleString();
+            document.getElementById('fitnessWorkoutCount').textContent = periodData.workoutCount;
+            document.getElementById('fitnessExerciseCount').textContent = periodData.exerciseCount;
+            document.getElementById('fitnessPRCount').textContent = periodData.prCount;
+            document.getElementById('fitnessCardioMins').textContent = periodData.cardioMinutes;
+            
+            // Update muscle breakdown
+            const muscleContainer = document.getElementById('muscleBreakdown');
+            const muscles = ['chest', 'back', 'shoulders', 'arms', 'legs', 'core'];
+            muscleContainer.innerHTML = muscles.map(m => {
+                const sets = periodData.muscleGroups[m] || 0;
+                return `<div class="muscle-item"><span class="muscle-name">${m.charAt(0).toUpperCase() + m.slice(1)}</span><span class="muscle-sets">${sets} sets</span></div>`;
+            }).join('');
+            
+            // Render recent workouts
+            renderFitnessWorkouts(periodData.workouts.slice(0, 5));
+        }
+
+        function getFitnessPeriodData(period) {
+            const result = { 
+                totalVolume: 0, workoutCount: 0, exerciseCount: 0, prCount: 0, cardioMinutes: 0,
+                muscleGroups: { chest: 0, back: 0, shoulders: 0, arms: 0, legs: 0, core: 0 },
+                workouts: []
+            };
+            const periodDays = { daily: 1, weekly: 7, monthly: 30, quarterly: 90, annual: 365 };
+            const days = periodDays[period];
+            
+            for (let i = 0; i < days; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const dayActivities = appData.activities[key] || [];
+                
+                dayActivities.forEach(a => {
+                    if (a.type === 'workout') {
+                        result.workoutCount++;
+                        result.workouts.push({ ...a, dateKey: key });
+                        const exercises = a.data?.exercises || [];
+                        exercises.forEach(ex => {
+                            result.exerciseCount++;
+                            const volume = (ex.weight || 0) * (ex.sets || 1) * (ex.reps || 1);
+                            result.totalVolume += volume;
+                            const category = (ex.category || 'other').toLowerCase();
+                            if (result.muscleGroups[category] !== undefined) {
+                                result.muscleGroups[category] += ex.sets || 1;
+                            }
+                        });
+                    } else if (a.type === 'cardio') {
+                        result.cardioMinutes += a.data?.duration || 0;
+                        result.workouts.push({ ...a, dateKey: key });
+                    }
+                });
+            }
+            
+            // Count PRs in period
+            Object.values(appData.prs).forEach(pr => {
+                const prDate = new Date(pr.date);
+                const cutoff = new Date();
+                cutoff.setDate(cutoff.getDate() - days);
+                if (prDate >= cutoff) result.prCount++;
+            });
+            
+            result.workouts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            return result;
+        }
+
+        function renderFitnessWorkouts(workouts) {
+            const container = document.getElementById('fitnessWorkoutsList');
+            if (workouts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💪</div><div class="empty-state-text">No workouts logged yet</div><div class="empty-state-subtext">Log workouts from the Dashboard to track progress</div></div>';
+                return;
+            }
+            container.innerHTML = workouts.map(w => {
+                if (w.type === 'workout') {
+                    const exercises = w.data?.exercises || [];
+                    const title = exercises.map(e => e.name).join(', ') || 'Workout';
+                    const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
+                    return `<div class="timeline-item workout"><div class="timeline-time">${w.time}</div><div class="timeline-icon">💪</div><div class="timeline-content"><div class="timeline-content-title">${title}</div><div class="timeline-content-details">${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs</div></div></div>`;
+                } else {
+                    return `<div class="timeline-item cardio"><div class="timeline-time">${w.time}</div><div class="timeline-icon">🏃</div><div class="timeline-content"><div class="timeline-content-title">${w.data?.activity || 'Cardio'}</div><div class="timeline-content-details">${w.data?.duration || 0} min${w.data?.distance ? ' • ' + w.data.distance + ' miles' : ''}</div></div></div>`;
+                }
+            }).join('');
+        }
+
+        function calculatePeriodVolume(period) {
+            const data = getFitnessPeriodData(period);
+            return data.totalVolume;
+        }
+
+        function copyAthleteCode() { navigator.clipboard.writeText(appData.profile.athleteCode); showToast('✓ Athlete Code copied!'); }
+        function shareAthleteCode() { if (navigator.share) { navigator.share({ title: 'Join me on MACRA!', text: `Add me on MACRA: ${appData.profile.athleteCode}`, url: 'https://macra.umbrassi.com' }); } else copyAthleteCode(); }
+
+        function addFriend() {
+            const input = document.getElementById('friendCodeInput');
+            const code = input.value.trim().toUpperCase();
+            if (!code) { alert('Please enter a friend code'); return; }
+            if (!code.startsWith('MACRA-') || code.length < 10) { alert('Invalid Athlete Code format'); return; }
+            if (code === appData.profile.athleteCode) { alert("That's your own code!"); return; }
+            if (appData.friends.find(f => f.code === code)) { alert('Already added this friend'); return; }
+            appData.friends.push({ code: code, name: 'Friend ' + (appData.friends.length + 1), addedAt: new Date().toISOString(), streak: Math.floor(Math.random() * 30), weeklyPoints: Math.floor(Math.random() * 300) + 50 });
+            saveData(); input.value = ''; renderSocial(); renderLeaderboard(); showToast('✓ Friend added!');
+        }
+
+        function renderSocial() {
+            const friendsContainer = document.getElementById('friendsList');
+            if (appData.friends.length === 0) { friendsContainer.innerHTML = '<div style="color: var(--white-30); font-size: 13px;">No friends yet. Share your Athlete Code!</div>'; }
+            else { friendsContainer.innerHTML = appData.friends.map(f => `<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;"><div class="activity-avatar">${f.name.charAt(0)}</div><div style="flex: 1;"><div style="font-weight: 600;">${f.name}</div><div style="font-size: 11px; color: var(--white-30);">${f.code}</div></div><div style="text-align: right;"><div style="font-size: 12px; color: var(--prism-amber);">🔥 ${f.streak} days</div></div></div>`).join(''); }
+            const feedContainer = document.getElementById('activityFeed');
+            const feedItems = [];
+            const today = getTodayKey();
+            (appData.activities[today] || []).forEach(a => { feedItems.push({ user: appData.profile.name || 'You', avatar: (appData.profile.name || 'Y').charAt(0), isYou: true, time: a.time, type: a.type, activity: a }); });
+            appData.friends.forEach(friend => { if (Math.random() > 0.5) { feedItems.push({ user: friend.name, avatar: friend.name.charAt(0), isYou: false, time: Math.floor(Math.random() * 12) + 1 + ' hours ago', type: Math.random() > 0.5 ? 'workout' : 'food', simulated: true, activity: { data: Math.random() > 0.5 ? { exercises: [{ name: 'Push Day', sets: 4, reps: 10, weight: 135 }] } : { totals: { calories: 450, protein: 35 } } } }); } });
+            if (feedItems.length === 0) { feedContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📰</div><div class="empty-state-text">No activity yet</div></div>'; return; }
+            feedContainer.innerHTML = feedItems.slice(0, 10).map(item => {
+                const badge = item.type === 'workout' ? 'workout' : 'nutrition';
+                let title = item.type === 'food' ? 'Logged meal' : 'Completed workout';
+                let details = item.type === 'food' ? `${item.activity?.data?.totals?.calories || 450} cal` : ((item.activity?.data?.exercises || []).map(e => e.name).join(', ') || 'Strength training');
+                return `<div class="activity-item"><div class="activity-header"><div class="activity-avatar">${item.avatar}</div><div class="activity-meta"><div class="activity-user">${item.user}${item.isYou ? ' (You)' : ''}</div><div class="activity-time">${item.time}</div></div><span class="activity-badge ${badge}">${item.type}</span></div><div class="activity-content"><div class="activity-title">${title}</div><div class="activity-details">${details}</div></div><div class="activity-actions"><button class="activity-btn" onclick="this.classList.toggle('liked')">🔥 Kudos</button><button class="activity-btn">💬 Comment</button></div></div>`;
+            }).join('');
+        }
+
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            const entries = [{ name: appData.profile.name || 'You', avatar: (appData.profile.name || 'Y').charAt(0), streak: appData.stats.streak, points: appData.stats.weeklyPoints, isYou: true }, ...appData.friends.map(f => ({ name: f.name, avatar: f.name.charAt(0), streak: f.streak, points: f.weeklyPoints, isYou: false }))];
+            entries.sort((a, b) => b.points - a.points);
+            container.innerHTML = entries.map((entry, index) => {
+                const rank = index + 1;
+                let rankDisplay = rank, rankClass = '';
+                if (rank === 1) { rankDisplay = '🥇'; rankClass = 'rank-1'; } else if (rank === 2) { rankDisplay = '🥈'; rankClass = 'rank-2'; } else if (rank === 3) { rankDisplay = '🥉'; rankClass = 'rank-3'; }
+                return `<div class="leaderboard-item ${rankClass} ${entry.isYou ? 'you' : ''}"><div class="leaderboard-rank">${rankDisplay}</div><div class="leaderboard-avatar">${entry.avatar}</div><div class="leaderboard-info"><div class="leaderboard-name">${entry.name}${entry.isYou ? ' (You)' : ''}</div><div class="leaderboard-subtitle">${entry.streak} day streak</div></div><div class="leaderboard-score">${entry.points}</div></div>`;
+            }).join('');
+        }
+
+        function calculateStreak() { 
+            let streak = 0; 
+            const today = new Date(); 
+            today.setHours(0, 0, 0, 0); // Normalize to start of day in local timezone
+            
+            for (let i = 0; i < 365; i++) { 
+                const checkDate = new Date(today); 
+                checkDate.setDate(checkDate.getDate() - i); 
+                const year = checkDate.getFullYear();
+                const month = String(checkDate.getMonth() + 1).padStart(2, '0');
+                const day = String(checkDate.getDate()).padStart(2, '0');
+                const key = `${year}-${month}-${day}`;
+                
+                if (appData.activities[key] && appData.activities[key].length > 0) {
+                    streak++; 
+                } else if (i > 0) {
+                    break; // Stop counting if we hit a gap (but allow today to be empty)
+                }
+            } 
+            appData.stats.streak = streak; 
+            saveData(); 
+        }
+
+        function loadSettingsForm() { document.getElementById('settingsName').value = appData.profile.name || ''; document.getElementById('goalCalories').value = appData.goals.calories; document.getElementById('goalProtein').value = appData.goals.protein; document.getElementById('goalCarbs').value = appData.goals.carbs; document.getElementById('goalFat').value = appData.goals.fat; const settings = getAISettings(); if (settings.apiKey) document.getElementById('aiApiKey').value = settings.apiKey; }
+        function saveProfileSettings() { appData.profile.name = document.getElementById('settingsName').value.trim() || 'Athlete'; saveData(); document.getElementById('userName').textContent = appData.profile.name; showToast('✓ Profile saved!'); }
+        function saveGoals() { appData.goals.calories = parseInt(document.getElementById('goalCalories').value) || 2000; appData.goals.protein = parseInt(document.getElementById('goalProtein').value) || 150; appData.goals.carbs = parseInt(document.getElementById('goalCarbs').value) || 200; appData.goals.fat = parseInt(document.getElementById('goalFat').value) || 65; saveData(); renderDashboard(); showToast('✓ Goals saved!'); }
+        function getAISettings() { return JSON.parse(localStorage.getItem(AI_SETTINGS_KEY) || '{}'); }
+        function loadAISettings() { 
+            const settings = getAISettings(); 
+            if (settings.apiKey) { 
+                document.getElementById('aiApiKey').value = settings.apiKey; 
+            }
+            if (settings.usdaApiKey) {
+                document.getElementById('usdaApiKey').value = settings.usdaApiKey;
+            }
+            updateAIStatusDisplay(settings);
+        }
+        
+        function updateAIStatusDisplay(settings) {
+            let statusHtml = '';
+            if (settings.apiKey) {
+                statusHtml += '<span style="color: var(--prism-emerald);">✓ Claude API configured</span>';
+            }
+            if (settings.usdaApiKey) {
+                statusHtml += '<br><span style="color: var(--prism-emerald);">✓ USDA API configured</span>';
+            }
+            if (!settings.apiKey && !settings.usdaApiKey) {
+                statusHtml = '<span style="color: var(--white-30);">No API keys configured</span>';
+            }
+            document.getElementById('aiStatus').innerHTML = statusHtml;
+        }
+        
+        async function saveAISettings() {
+            const apiKey = document.getElementById('aiApiKey').value.trim();
+            const usdaApiKey = document.getElementById('usdaApiKey').value.trim();
+            
+            if (!apiKey) { alert('Please enter a Claude API key'); return; }
+            if (!apiKey.startsWith('sk-ant-')) { alert('Claude API keys start with sk-ant-'); return; }
+            
+            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-amber);">⏳ Testing Claude connection...</span>';
+            
+            try {
+                // Test Claude API
+                const response = await fetch('https://api.anthropic.com/v1/messages', { 
+                    method: 'POST', 
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'x-api-key': apiKey, 
+                        'anthropic-version': '2023-06-01', 
+                        'anthropic-dangerous-direct-browser-access': 'true' 
+                    }, 
+                    body: JSON.stringify({ 
+                        model: 'claude-sonnet-4-20250514', 
+                        max_tokens: 10, 
+                        messages: [{ role: 'user', content: 'Hi' }] 
+                    }) 
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error?.message || 'Invalid Claude API key');
+                }
+                
+                // Save settings
+                const settings = { apiKey };
+                
+                // Test USDA API if provided
+                if (usdaApiKey) {
+                    document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected</span><br><span style="color: var(--prism-amber);">⏳ Testing USDA connection...</span>';
+                    
+                    try {
+                        const usdaResponse = await fetch(`${USDA_API_BASE}/foods/search?api_key=${usdaApiKey}&query=apple&pageSize=1`);
+                        if (usdaResponse.ok) {
+                            settings.usdaApiKey = usdaApiKey;
+                            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected</span><br><span style="color: var(--prism-emerald);">✓ USDA connected - nutrition data enhanced!</span>';
+                        } else {
+                            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected</span><br><span style="color: var(--prism-rose);">✗ USDA key invalid (not saved)</span>';
+                        }
+                    } catch (e) {
+                        document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected</span><br><span style="color: var(--prism-rose);">✗ USDA test failed</span>';
+                    }
+                } else {
+                    document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected!</span>';
+                }
+                
+                localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(settings));
+                showToast('✓ Settings saved!');
+                
+            } catch (error) { 
+                document.getElementById('aiStatus').innerHTML = `<span style="color: var(--prism-rose);">✗ Claude: ${error.message}</span>`; 
+            }
+        }
+
+        function clearAISettings() { 
+            if (confirm('Clear all API keys?')) { 
+                localStorage.removeItem(AI_SETTINGS_KEY); 
+                document.getElementById('aiApiKey').value = ''; 
+                document.getElementById('usdaApiKey').value = '';
+                document.getElementById('aiStatus').innerHTML = '<span style="color: var(--white-30);">No API keys configured</span>'; 
+                showToast('API keys cleared'); 
+            } 
+        }
+
+        async function callClaudeAPI(prompt) {
+            const settings = getAISettings(); if (!settings.apiKey) return null;
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': settings.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1024, messages: [{ role: 'user', content: prompt }] }) });
+                if (!response.ok) throw new Error('API request failed');
+                const data = await response.json();
+                return data.content[0].text;
+            } catch (error) { console.error('AI API Error:', error); return null; }
+        }
+
+        function exportAllData() { const data = { exported: new Date().toISOString(), version: '1.2', ...appData }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `macra-backup-${getTodayKey()}.json`; a.click(); showToast('✓ Data exported!'); }
+        function clearAllData() { if (confirm('Delete ALL data?')) { if (confirm('Are you sure?')) { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(AI_SETTINGS_KEY); location.reload(); } } }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--carbon); border: 1px solid var(--prism-cyan); color: var(--white); padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 9999; animation: fadeInUp 0.3s ease;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
