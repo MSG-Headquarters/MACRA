@@ -1,5 +1,5 @@
-// MACRA Service Worker v1.3
-const CACHE_NAME = 'macra-v1.3-cache';
+// MACRA Service Worker v1.4
+const CACHE_NAME = 'macra-v1.4-cache';
 const OFFLINE_URL = '/';
 
 const ASSETS_TO_CACHE = [
