@@ -305,6 +305,7 @@
         .timeline-content-details { font-size: 12px; color: var(--white-50); }
         .timeline-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
         .timeline-badge.food { background: rgba(16, 185, 129, 0.2); color: var(--prism-emerald); }
+        .timeline-badge.weight { background: rgba(6, 182, 212, 0.2); color: var(--prism-cyan); }
         .timeline-badge.workout { background: rgba(139, 92, 246, 0.2); color: var(--prism-violet); }
         .timeline-delete { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: transparent; border: none; color: var(--white-20); cursor: pointer; border-radius: 4px; opacity: 0; transition: all 0.2s ease; }
         .timeline-item:hover .timeline-delete { opacity: 1; }
@@ -1296,11 +1297,25 @@
             
             appData.activities[today].push(activity);
             
+            // Store weight history separately for easy tracking
+            if (result.type === 'weight' && result.data.weight) {
+                if (!appData.weightHistory) appData.weightHistory = [];
+                appData.weightHistory.push({
+                    date: today,
+                    timestamp: now.toISOString(),
+                    weight: result.data.weight,
+                    unit: result.data.unit || 'lbs',
+                    bodyFat: result.data.bodyFat,
+                    measurements: result.data.measurements
+                });
+            }
+            
             // Award points
             let points = 0;
             if (result.type === 'food') points = 10;
             else if (result.type === 'cardio') points = 20;
             else if (result.type === 'workout') points = 25;
+            else if (result.type === 'weight') points = 5;
             
             appData.stats.points += points;
             appData.stats.weeklyPoints += points;
@@ -1317,8 +1332,9 @@
             renderHistory();
             renderSocial();
             
-            const icon = result.type === 'food' ? '🥗' : result.type === 'workout' ? '💪' : '🏃';
-            showToast(`${icon} +${points} points`);
+            const icons = { food: '🥗', workout: '💪', cardio: '🏃', weight: '⚖️' };
+            const icon = icons[result.type] || '✓';
+            showToast(`${icon} ${result.type === 'weight' ? 'Weight logged!' : `+${points} points`}`);
         }
 
         function openPhotoScanner() { const settings = getAISettings(); if (!settings.apiKey) { alert('Please configure your Claude API key in Settings'); switchView('settings'); return; } document.getElementById('photoInput').click(); }
@@ -1440,7 +1456,7 @@
             const today = getTodayKey();
             const activities = appData.activities[today] || [];
             const container = document.getElementById('todayTimeline');
-            if (activities.length === 0) { container.innerHTML = '<div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food or workouts</div></div>'; return; }
+            if (activities.length === 0) { container.innerHTML = '<div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food, workouts, or weight</div></div>'; return; }
             const sorted = [...activities].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             container.innerHTML = '<div class="timeline-list">' + sorted.map(activity => {
                 let icon, title, details, badgeClass, usdaBadge = '';
@@ -1456,6 +1472,7 @@
                 }
                 else if (activity.type === 'workout') { icon = '💪'; badgeClass = 'workout'; const exercises = activity.data.exercises || []; title = exercises.map(e => e.name).join(', ') || 'Workout'; const totalVolume = exercises.reduce((sum, e) => sum + (e.weight * e.sets * e.reps), 0); details = `${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs volume`; }
                 else if (activity.type === 'cardio') { icon = '🏃'; badgeClass = 'workout'; title = activity.data.activity || 'Cardio'; details = `${activity.data.duration || 0} min`; if (activity.data.distance) details += ` • ${activity.data.distance} miles`; }
+                else if (activity.type === 'weight') { icon = '⚖️'; badgeClass = 'weight'; title = `${activity.data.weight} ${activity.data.unit || 'lbs'}`; details = activity.data.bodyFat ? `Body fat: ${activity.data.bodyFat}%` : (activity.data.note || 'Weigh-in'); }
                 return `<div class="timeline-item ${activity.type}"><div class="timeline-time">${activity.time}</div><div class="timeline-icon">${icon}</div><div class="timeline-content"><div class="timeline-content-title">${title}${usdaBadge}</div><div class="timeline-content-details">${details}</div></div><span class="timeline-badge ${badgeClass}">${activity.type}</span><button class="timeline-delete" onclick="deleteActivity('${today}', ${activity.id})">×</button></div>`;
             }).join('') + '</div>';
         }
@@ -1482,6 +1499,7 @@
                     if (activity.type === 'food') { title = '🥗 ' + ((activity.data.items || []).map(i => i.name).join(', ') || 'Food'); const totals = activity.data.totals || {}; stats.push({ label: 'Calories', value: totals.calories || 0 }); stats.push({ label: 'Protein', value: (totals.protein || 0) + 'g' }); }
                     else if (activity.type === 'workout') { title = '💪 ' + ((activity.data.exercises || []).map(e => e.name).join(', ') || 'Workout'); const exercises = activity.data.exercises || []; const totalVolume = exercises.reduce((sum, e) => sum + (e.weight * e.sets * e.reps), 0); stats.push({ label: 'Exercises', value: exercises.length }); stats.push({ label: 'Volume', value: totalVolume.toLocaleString() + ' lbs' }); }
                     else if (activity.type === 'cardio') { title = '🏃 ' + (activity.data.activity || 'Cardio'); stats.push({ label: 'Duration', value: (activity.data.duration || 0) + ' min' }); if (activity.data.distance) stats.push({ label: 'Distance', value: activity.data.distance + ' mi' }); }
+                    else if (activity.type === 'weight') { title = '⚖️ ' + activity.data.weight + ' ' + (activity.data.unit || 'lbs'); if (activity.data.bodyFat) stats.push({ label: 'Body Fat', value: activity.data.bodyFat + '%' }); stats.push({ label: 'Note', value: activity.data.note || 'Weigh-in' }); }
                     html += `<div class="history-item"><div class="history-item-header"><div><div class="history-item-title">${title}</div><div class="history-item-date">${isToday ? 'Today' : dateStr} at ${activity.time}</div></div></div><div class="history-item-stats">${stats.map(s => `<div class="history-stat"><span class="history-stat-label">${s.label}:</span> <span class="history-stat-value">${s.value}</span></div>`).join('')}</div></div>`;
                 });
             });
