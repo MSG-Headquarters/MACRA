@@ -78,6 +78,10 @@
             border-radius: 3px; animation: loading 1.5s ease-out forwards;
         }
         @keyframes loading { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         .splash-version { position: absolute; bottom: 32px; font-size: 10px; color: var(--white-20); letter-spacing: 2px; }
         .prismatic-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
         .aurora {
@@ -550,8 +554,9 @@
     <input type="file" accept="image/*" capture="environment" class="photo-input" id="photoInput" onchange="handlePhotoCapture(event)">
     <div class="app-container">
         <nav class="sidebar" id="sidebar">
-            <div class="logo"><div class="logo-icon">M</div><div class="logo-text">MACRA</div><div class="logo-version">v1.4</div></div>
+            <div class="logo"><div class="logo-icon">M</div><div class="logo-text">MACRA</div><div class="logo-version">v1.7</div></div>
             <ul class="sidebar-nav">
+                <li><a href="#" data-view="feed"><span class="icon">🏠</span><span class="nav-text">Home</span></a></li>
                 <li><a href="#" data-view="dashboard" class="active"><span class="icon">📊</span><span class="nav-text">Dashboard</span></a></li>
                 <li><a href="#" data-view="intelligence"><span class="icon">🧠</span><span class="nav-text">Intelligence</span></a></li>
             </ul>
@@ -572,12 +577,14 @@
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Community</div>
                 <ul class="sidebar-nav">
+                    <li><a href="#" data-view="clubs"><span class="icon">🌐</span><span class="nav-text">Groups</span></a></li>
                     <li><a href="#" data-view="social"><span class="icon">👥</span><span class="nav-text">Activity</span></a></li>
                     <li><a href="#" data-view="leaderboard"><span class="icon">🥇</span><span class="nav-text">Leaderboard</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
                 <ul class="sidebar-nav">
+                    <li><a href="#" data-view="profile"><span class="icon">👤</span><span class="nav-text">Profile</span></a></li>
                     <li><a href="#" data-view="settings"><span class="icon">⚙️</span><span class="nav-text">Settings</span></a></li>
                 </ul>
             </div>
@@ -980,17 +987,37 @@
                     </div>
                 </header>
                 
+                <!-- Quick Actions -->
+                <div style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px;">
+                    <button class="btn btn-primary btn-sm" onclick="openQuickLog()" style="white-space: nowrap;">➕ Log Activity</button>
+                    <button class="btn btn-ghost btn-sm" onclick="quickLogWeight()" style="white-space: nowrap;">⚖️ Weigh In</button>
+                    <button class="btn btn-ghost btn-sm" onclick="switchView('nutrition')" style="white-space: nowrap;">🥗 Nutrition</button>
+                    <button class="btn btn-ghost btn-sm" onclick="switchView('intelligence')" style="white-space: nowrap;">🧠 Insights</button>
+                </div>
+                
+                <!-- Streak Reminder Banner (shown if no activity today) -->
+                <div id="streakReminder" style="display: none; background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(245, 158, 11, 0.1)); border: 1px solid var(--prism-orange); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="font-size: 32px;">🔥</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--prism-orange);">Keep your streak alive!</div>
+                            <div style="font-size: 12px; color: var(--white-50);">Log any activity today to maintain your <span id="streakDays">0</span>-day streak</div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="openQuickLog()">Log Now</button>
+                    </div>
+                </div>
+                
                 <!-- Quick Stats Banner -->
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
-                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-cyan);">
+                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-cyan); cursor: pointer;" onclick="showStreakDetails()">
                         <div style="font-size: 24px; font-family: var(--font-display); color: var(--prism-cyan);" id="feedStreak">0</div>
                         <div style="font-size: 11px; color: var(--white-50);">Day Streak</div>
                     </div>
-                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-emerald);">
+                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-emerald); cursor: pointer;" onclick="switchView('nutrition')">
                         <div style="font-size: 24px; font-family: var(--font-display); color: var(--prism-emerald);" id="feedCalories">0</div>
                         <div style="font-size: 11px; color: var(--white-50);">Cal Today</div>
                     </div>
-                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-violet);">
+                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-violet); cursor: pointer;" onclick="switchView('fitness')">
                         <div style="font-size: 24px; font-family: var(--font-display); color: var(--prism-violet);" id="feedWorkouts">0</div>
                         <div style="font-size: 11px; color: var(--white-50);">This Week</div>
                     </div>
@@ -1006,7 +1033,7 @@
                         <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">🔥 Popular with athletes like you</div>
                         <div style="font-weight: 600; margin-bottom: 4px;">30-Day Consistency Challenge</div>
                         <div style="font-size: 12px; color: var(--white-50); margin-bottom: 12px;">Log activity 30 days in a row</div>
-                        <button class="btn btn-primary btn-sm" onclick="joinChallenge('consistency')">Join Challenge</button>
+                        <button class="btn btn-primary btn-sm" onclick="joinChallenge('consistency-30')">Join Challenge</button>
                     </div>
                 </div>
                 
@@ -1188,20 +1215,26 @@
                 
                 <!-- Profile Header -->
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 24px; font-weight: 700;" id="profileAvatar">A</div>
-                    <div style="flex: 1;">
-                        <div style="font-size: 18px; font-weight: 600;" id="profileName">Athlete</div>
-                        <div style="font-size: 12px; color: var(--white-50);" id="profileCode">MACRA-XXXX</div>
+                    <div style="position: relative;">
+                        <div style="width: 72px; height: 72px; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 28px; font-weight: 700; overflow: hidden; cursor: pointer;" id="profileAvatar" onclick="openAvatarUpload()">A</div>
+                        <div style="position: absolute; bottom: 0; right: 0; width: 24px; height: 24px; background: var(--prism-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid var(--carbon); cursor: pointer;" onclick="openAvatarUpload()">📷</div>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)">
                     </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 20px; font-weight: 600;" id="profileName">Athlete</div>
+                        <div style="font-size: 12px; color: var(--white-50);" id="profileCode">MACRA-XXXX</div>
+                        <div style="font-size: 11px; color: var(--prism-cyan); margin-top: 4px;">🔥 <span id="profileStreak">0</span> day streak</div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="shareProfile()">📤</button>
                 </div>
                 
                 <!-- Stats Row -->
                 <div style="display: flex; justify-content: space-around; padding: 16px; background: var(--onyx); border-radius: 12px; margin-bottom: 20px;">
-                    <div style="text-align: center;">
+                    <div style="text-align: center; cursor: pointer;" onclick="showFollowingList()">
                         <div style="font-size: 20px; font-family: var(--font-display); color: var(--white);" id="profileFollowing">0</div>
                         <div style="font-size: 11px; color: var(--white-50);">Following</div>
                     </div>
-                    <div style="text-align: center;">
+                    <div style="text-align: center; cursor: pointer;" onclick="showFollowersList()">
                         <div style="font-size: 20px; font-family: var(--font-display); color: var(--white);" id="profileFollowers">0</div>
                         <div style="font-size: 11px; color: var(--white-50);">Followers</div>
                     </div>
@@ -1223,6 +1256,15 @@
                 
                 <!-- Progress Content -->
                 <div id="profileProgressContent">
+                    <!-- Badges Section -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">🎖️ Badges</div>
+                            <button class="btn btn-ghost btn-sm" onclick="showAllBadges()">See All</button>
+                        </div>
+                        <div id="profileBadges" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                    </div>
+                    
                     <!-- Best Efforts / PRs -->
                     <div class="card">
                         <div class="card-header">
@@ -1625,7 +1667,8 @@
         // ═══════════════════════════════════════════════════════════════
         function renderFeedView() {
             // Update quick stats
-            document.getElementById('feedStreak').textContent = appData.stats.streak || 0;
+            const streak = appData.stats.streak || 0;
+            document.getElementById('feedStreak').textContent = streak;
             
             const today = getTodayKey();
             const todayActivities = appData.activities[today] || [];
@@ -1634,11 +1677,76 @@
             document.getElementById('feedCalories').textContent = totalCal;
             document.getElementById('feedWorkouts').textContent = getWeekWorkouts();
             
+            // Show streak reminder if no activity today and has streak
+            const streakReminder = document.getElementById('streakReminder');
+            if (todayActivities.length === 0 && streak > 0) {
+                streakReminder.style.display = 'block';
+                document.getElementById('streakDays').textContent = streak;
+            } else {
+                streakReminder.style.display = 'none';
+            }
+            
             // Render activity feed
             renderFeedActivityList();
             
             // Render suggested follows
             renderSuggestedFollows();
+        }
+        
+        function quickLogWeight() {
+            const weight = prompt('Enter your weight (lbs):');
+            if (weight && !isNaN(weight)) {
+                const today = getTodayKey();
+                if (!appData.activities[today]) appData.activities[today] = [];
+                appData.activities[today].push({
+                    type: 'weight',
+                    data: { weight: parseFloat(weight), unit: 'lbs' },
+                    time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+                    timestamp: new Date().toISOString()
+                });
+                saveData();
+                showToast(`⚖️ Logged ${weight} lbs`);
+                calculateStreak();
+                renderFeedView();
+            }
+        }
+        
+        function showStreakDetails() {
+            const streak = appData.stats.streak || 0;
+            const modal = document.createElement('div');
+            modal.id = 'streakModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:16px;';
+            modal.innerHTML = `
+                <div style="background:var(--carbon);border-radius:20px;padding:32px;text-align:center;max-width:320px;">
+                    <div style="font-size:64px;margin-bottom:16px;">🔥</div>
+                    <div style="font-family:var(--font-display);font-size:48px;color:var(--prism-orange);margin-bottom:8px;">${streak}</div>
+                    <div style="font-size:16px;color:var(--white-70);margin-bottom:24px;">Day Streak</div>
+                    
+                    <div style="background:var(--onyx);border-radius:12px;padding:16px;margin-bottom:20px;text-align:left;">
+                        <div style="font-size:12px;color:var(--white-30);margin-bottom:8px;">STREAK MILESTONES</div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-05);">
+                            <span>7 days</span>
+                            <span>${streak >= 7 ? '✅' : '🔒'}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-05);">
+                            <span>30 days</span>
+                            <span>${streak >= 30 ? '✅' : '🔒'}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-05);">
+                            <span>60 days</span>
+                            <span>${streak >= 60 ? '✅' : '🔒'}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+                            <span>100 days</span>
+                            <span>${streak >= 100 ? '✅' : '🔒'}</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-ghost" onclick="this.closest('#streakModal').remove()">Close</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
         
         function renderFeedActivityList() {
@@ -1798,6 +1906,7 @@
         // CHALLENGES SYSTEM
         // ═══════════════════════════════════════════════════════════════
         let joinedChallenges = [];
+        let earnedBadges = [];
         
         const challengeDefinitions = {
             'feb-fitness': {
@@ -1807,7 +1916,9 @@
                 goal: 20,
                 type: 'workouts',
                 endDate: '2026-02-28',
-                reward: '🏅 February Fitness Badge'
+                reward: '🏅 February Fitness Badge',
+                badgeIcon: '🏅',
+                badgeColor: 'var(--prism-amber)'
             },
             'protein-goal': {
                 id: 'protein-goal',
@@ -1816,7 +1927,9 @@
                 goal: 25,
                 type: 'protein-days',
                 endDate: '2026-02-28',
-                reward: '💪 Protein Champion Badge'
+                reward: '💪 Protein Champion Badge',
+                badgeIcon: '💪',
+                badgeColor: 'var(--prism-rose)'
             },
             'consistency-30': {
                 id: 'consistency-30',
@@ -1825,9 +1938,122 @@
                 goal: 30,
                 type: 'streak',
                 endDate: null,
-                reward: '🔥 Consistency King Badge'
+                reward: '🔥 Consistency King Badge',
+                badgeIcon: '🔥',
+                badgeColor: 'var(--prism-orange)'
             }
         };
+        
+        // Badge definitions for non-challenge achievements
+        const badgeDefinitions = {
+            'first-workout': { id: 'first-workout', name: 'First Steps', description: 'Log your first workout', icon: '👟', color: 'var(--prism-cyan)' },
+            'first-pr': { id: 'first-pr', name: 'PR Crusher', description: 'Set your first PR', icon: '🏆', color: 'var(--prism-amber)' },
+            'week-streak': { id: 'week-streak', name: 'Week Warrior', description: 'Maintain a 7-day streak', icon: '⚡', color: 'var(--prism-violet)' },
+            'month-streak': { id: 'month-streak', name: 'Monthly Master', description: 'Maintain a 30-day streak', icon: '🌟', color: 'var(--prism-emerald)' },
+            'protein-master': { id: 'protein-master', name: 'Protein Master', description: 'Hit protein goal 7 days in a row', icon: '🥩', color: 'var(--prism-rose)' },
+            'early-bird': { id: 'early-bird', name: 'Early Bird', description: 'Log activity before 7am', icon: '🌅', color: 'var(--prism-amber)' },
+            'night-owl': { id: 'night-owl', name: 'Night Owl', description: 'Log activity after 10pm', icon: '🦉', color: 'var(--prism-indigo)' },
+            'social-butterfly': { id: 'social-butterfly', name: 'Social Butterfly', description: 'Follow 5 athletes', icon: '🦋', color: 'var(--prism-pink)' },
+            'club-member': { id: 'club-member', name: 'Club Member', description: 'Join your first club', icon: '🏠', color: 'var(--prism-teal)' }
+        };
+        
+        function loadBadges() {
+            const stored = localStorage.getItem('macra_badges');
+            if (stored) earnedBadges = JSON.parse(stored);
+        }
+        
+        function saveBadges() {
+            localStorage.setItem('macra_badges', JSON.stringify(earnedBadges));
+        }
+        
+        function awardBadge(badgeId, source = 'achievement') {
+            loadBadges();
+            if (earnedBadges.some(b => b.id === badgeId)) return; // Already earned
+            
+            const badge = badgeDefinitions[badgeId] || challengeDefinitions[badgeId];
+            if (!badge) return;
+            
+            earnedBadges.push({
+                id: badgeId,
+                name: badge.name || badge.reward,
+                icon: badge.icon || badge.badgeIcon,
+                color: badge.color || badge.badgeColor,
+                earned_at: new Date().toISOString(),
+                source: source
+            });
+            
+            saveBadges();
+            showBadgeEarnedModal(badge);
+        }
+        
+        function showBadgeEarnedModal(badge) {
+            const modal = document.createElement('div');
+            modal.id = 'badgeModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn 0.3s ease;';
+            modal.innerHTML = `
+                <div style="background:var(--carbon);border-radius:20px;padding:32px;text-align:center;max-width:320px;animation:scaleIn 0.4s ease;">
+                    <div style="font-size:64px;margin-bottom:16px;animation:bounce 0.6s ease;">${badge.icon || badge.badgeIcon || '🏆'}</div>
+                    <div style="font-family:var(--font-display);font-size:14px;color:var(--prism-amber);letter-spacing:2px;margin-bottom:8px;">BADGE EARNED!</div>
+                    <div style="font-size:20px;font-weight:600;margin-bottom:8px;">${badge.name || badge.reward}</div>
+                    <div style="font-size:13px;color:var(--white-50);margin-bottom:24px;">${badge.description || ''}</div>
+                    <button class="btn btn-primary" onclick="closeBadgeModal()">Awesome! 🎉</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Auto close after 5 seconds
+            setTimeout(() => closeBadgeModal(), 5000);
+        }
+        
+        function closeBadgeModal() {
+            const modal = document.getElementById('badgeModal');
+            if (modal) modal.remove();
+        }
+        
+        function checkForBadges() {
+            loadBadges();
+            
+            // First workout badge
+            const totalWorkouts = Object.values(appData.activities).flat().filter(a => a.type === 'workout' || a.type === 'cardio').length;
+            if (totalWorkouts >= 1) awardBadge('first-workout');
+            
+            // First PR badge
+            if (Object.keys(appData.prs).length >= 1) awardBadge('first-pr');
+            
+            // Streak badges
+            if (appData.stats.streak >= 7) awardBadge('week-streak');
+            if (appData.stats.streak >= 30) awardBadge('month-streak');
+            
+            // Social badge
+            if (appData.friends.length >= 5) awardBadge('social-butterfly');
+            
+            // Club member badge
+            loadJoinedClubs();
+            if (joinedClubs.length >= 1) awardBadge('club-member');
+            
+            // Time-based badges (check last activity)
+            const today = getTodayKey();
+            const todayActivities = appData.activities[today] || [];
+            todayActivities.forEach(a => {
+                const hour = new Date(a.timestamp).getHours();
+                if (hour < 7) awardBadge('early-bird');
+                if (hour >= 22) awardBadge('night-owl');
+            });
+        }
+        
+        function checkChallengeCompletion() {
+            loadChallenges();
+            
+            joinedChallenges.forEach(challenge => {
+                const progress = calculateChallengeProgress(challenge);
+                if (progress >= challenge.goal && !challenge.completed) {
+                    challenge.completed = true;
+                    challenge.completed_at = new Date().toISOString();
+                    saveChallenges();
+                    awardBadge(challenge.id, 'challenge');
+                }
+            });
+        }
         
         function loadChallenges() {
             const stored = localStorage.getItem('macra_challenges');
@@ -2232,10 +2458,75 @@
         }
         
         function viewClub(placeId) {
-            const club = joinedClubs.find(c => c.place_id === placeId);
-            if (club) {
-                showToast(`📍 ${club.name} - Club details coming soon!`);
-            }
+            const club = joinedClubs.find(c => c.place_id === placeId) || nearbyGyms.find(g => g.place_id === placeId);
+            if (!club) return;
+            
+            const isJoined = joinedClubs.some(c => c.place_id === placeId);
+            
+            // Show club details modal
+            const modal = document.createElement('div');
+            modal.id = 'clubDetailModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;';
+            modal.innerHTML = `
+                <div style="background:var(--carbon);border-radius:16px;max-width:400px;width:100%;max-height:80vh;overflow-y:auto;">
+                    <div style="padding:24px;">
+                        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px;">
+                            <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--prism-cyan),var(--prism-violet));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;">💪</div>
+                            <button onclick="closeClubModal()" style="background:none;border:none;color:var(--white-50);font-size:24px;cursor:pointer;">×</button>
+                        </div>
+                        <h2 style="font-size:20px;margin-bottom:4px;">${club.name}</h2>
+                        <p style="color:var(--white-50);font-size:13px;margin-bottom:16px;">${club.vicinity || ''}</p>
+                        
+                        ${club.rating ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+                            <span style="color:var(--prism-amber);">⭐ ${club.rating}</span>
+                            <span style="color:var(--white-30);font-size:12px;">(${club.user_ratings_total || 0} reviews)</span>
+                        </div>` : ''}
+                        
+                        ${club.distance ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;color:var(--white-70);">
+                            <span>📍</span>
+                            <span>${club.distance} miles away</span>
+                        </div>` : ''}
+                        
+                        <div style="background:var(--onyx);border-radius:8px;padding:16px;margin-bottom:20px;">
+                            <div style="font-size:12px;color:var(--white-30);text-transform:uppercase;margin-bottom:8px;">Club Stats</div>
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;">
+                                <div>
+                                    <div style="font-family:var(--font-display);font-size:18px;color:var(--prism-cyan);">${Math.floor(Math.random() * 50) + 10}</div>
+                                    <div style="font-size:10px;color:var(--white-50);">Members</div>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-display);font-size:18px;color:var(--prism-emerald);">${Math.floor(Math.random() * 200) + 50}</div>
+                                    <div style="font-size:10px;color:var(--white-50);">Workouts/wk</div>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-display);font-size:18px;color:var(--prism-violet);">🔥</div>
+                                    <div style="font-size:10px;color:var(--white-50);">Active</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display:flex;gap:12px;">
+                            ${isJoined 
+                                ? `<button class="btn btn-ghost" style="flex:1;" onclick="leaveClub('${placeId}');closeClubModal();">Leave Club</button>`
+                                : `<button class="btn btn-primary" style="flex:1;" onclick="joinClub('${placeId}');closeClubModal();">Join Club</button>`
+                            }
+                            <button class="btn btn-ghost" onclick="openInMaps('${club.name}','${club.vicinity}')">📍 Directions</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) closeClubModal(); };
+        }
+        
+        function closeClubModal() {
+            const modal = document.getElementById('clubDetailModal');
+            if (modal) modal.remove();
+        }
+        
+        function openInMaps(name, address) {
+            const query = encodeURIComponent(`${name} ${address}`);
+            window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
         }
         
         function refreshNearbyGyms() {
@@ -2253,12 +2544,22 @@
         
         function renderProfileView() {
             const userName = appData.profile.name || (authState.user?.name) || 'Athlete';
-            document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
+            const avatarEl = document.getElementById('profileAvatar');
+            
+            // Check for saved avatar image
+            const savedAvatar = localStorage.getItem('macra_avatar');
+            if (savedAvatar) {
+                avatarEl.innerHTML = `<img src="${savedAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+                avatarEl.textContent = userName.charAt(0).toUpperCase();
+            }
+            
             document.getElementById('profileName').textContent = userName;
             document.getElementById('profileCode').textContent = appData.profile.athleteCode || 'MACRA-XXXX';
+            document.getElementById('profileStreak').textContent = appData.stats.streak || 0;
             
             document.getElementById('profileFollowing').textContent = appData.friends.length;
-            document.getElementById('profileFollowers').textContent = Math.floor(Math.random() * 5); // Simulated
+            document.getElementById('profileFollowers').textContent = Math.floor(Math.random() * 5) + appData.friends.length; // Simulated
             
             // Count total activities
             let totalActivities = 0;
@@ -2266,6 +2567,88 @@
             document.getElementById('profileActivities').textContent = totalActivities;
             
             setProfileTab(currentProfileTab);
+        }
+        
+        function openAvatarUpload() {
+            document.getElementById('avatarInput').click();
+        }
+        
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image must be under 5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                localStorage.setItem('macra_avatar', dataUrl);
+                
+                const avatarEl = document.getElementById('profileAvatar');
+                avatarEl.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                
+                showToast('✅ Profile photo updated!');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function shareProfile() {
+            const userName = appData.profile.name || 'Athlete';
+            const code = appData.profile.athleteCode || 'MACRA-XXXX';
+            const streak = appData.stats.streak || 0;
+            
+            const shareText = `💪 ${userName} on MACRA\n🔥 ${streak} day streak\n👤 Add me: ${code}\n\nTrack your fitness at macra.umbrassi.com`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'My MACRA Profile', text: shareText });
+            } else {
+                navigator.clipboard.writeText(shareText);
+                showToast('📋 Profile copied to clipboard!');
+            }
+        }
+        
+        function showFollowingList() {
+            loadFollowing();
+            if (appData.friends.length === 0) {
+                showToast('Not following anyone yet');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.id = 'followingModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:16px;';
+            modal.innerHTML = `
+                <div style="background:var(--carbon);border-radius:16px;padding:24px;max-width:350px;width:100%;max-height:70vh;overflow-y:auto;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                        <div style="font-size:16px;font-weight:600;">Following (${appData.friends.length})</div>
+                        <button onclick="this.closest('#followingModal').remove()" style="background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">×</button>
+                    </div>
+                    ${appData.friends.map(friend => `
+                        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--onyx);border-radius:8px;margin-bottom:8px;">
+                            <div class="activity-avatar">${(friend.name || 'A').charAt(0)}</div>
+                            <div style="flex:1;">
+                                <div style="font-weight:500;">${friend.name}</div>
+                                <div style="font-size:11px;color:var(--white-30);">${friend.athleteCode || ''}</div>
+                            </div>
+                            <button class="btn btn-ghost btn-sm" onclick="unfollowUser('${friend.id}');this.closest('#followingModal').remove();">Unfollow</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        }
+        
+        function showFollowersList() {
+            showToast('👥 Followers list coming soon!');
         }
         
         function setProfileTab(tab) {
@@ -2281,6 +2664,9 @@
         }
         
         function renderProfileProgress() {
+            // Render badges
+            renderProfileBadges();
+            
             // Render PRs preview
             const prsContainer = document.getElementById('profilePRsList');
             const prs = Object.entries(appData.prs).slice(0, 3);
@@ -2313,6 +2699,87 @@
                     💡 Your protein intake has been ${Math.random() > 0.5 ? 'above' : 'below'} target this week.
                 </div>
             `;
+            
+            // Check for new badges
+            checkForBadges();
+            checkChallengeCompletion();
+        }
+        
+        function renderProfileBadges() {
+            loadBadges();
+            const container = document.getElementById('profileBadges');
+            
+            if (earnedBadges.length === 0) {
+                container.innerHTML = '<div style="font-size: 13px; color: var(--white-50); padding: 8px;">Complete activities to earn badges!</div>';
+                return;
+            }
+            
+            container.innerHTML = earnedBadges.slice(0, 6).map(badge => `
+                <div style="width: 48px; height: 48px; background: ${badge.color || 'var(--prism-cyan)'}20; border: 2px solid ${badge.color || 'var(--prism-cyan)'}; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer;" onclick="showBadgeDetails('${badge.id}')" title="${badge.name}">
+                    ${badge.icon}
+                </div>
+            `).join('');
+        }
+        
+        function showBadgeDetails(badgeId) {
+            const badge = earnedBadges.find(b => b.id === badgeId);
+            if (!badge) return;
+            
+            const modal = document.createElement('div');
+            modal.id = 'badgeDetailModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:16px;';
+            modal.innerHTML = `
+                <div style="background:var(--carbon);border-radius:16px;padding:24px;text-align:center;max-width:300px;">
+                    <div style="font-size:48px;margin-bottom:12px;">${badge.icon}</div>
+                    <div style="font-size:18px;font-weight:600;margin-bottom:4px;">${badge.name}</div>
+                    <div style="font-size:12px;color:var(--white-50);margin-bottom:16px;">Earned ${new Date(badge.earned_at).toLocaleDateString()}</div>
+                    <button class="btn btn-ghost" onclick="this.closest('#badgeDetailModal').remove()">Close</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        }
+        
+        function showAllBadges() {
+            loadBadges();
+            
+            const allBadges = { ...badgeDefinitions };
+            
+            const modal = document.createElement('div');
+            modal.id = 'allBadgesModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto;';
+            modal.innerHTML = `
+                <div style="background:var(--carbon);border-radius:16px;padding:24px;max-width:400px;width:100%;max-height:80vh;overflow-y:auto;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <div style="font-size:18px;font-weight:600;">🎖️ All Badges</div>
+                        <button onclick="this.closest('#allBadgesModal').remove()" style="background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">×</button>
+                    </div>
+                    
+                    <div style="margin-bottom:16px;">
+                        <div style="font-size:12px;color:var(--white-30);text-transform:uppercase;margin-bottom:8px;">Earned (${earnedBadges.length})</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                            ${earnedBadges.length > 0 ? earnedBadges.map(badge => `
+                                <div style="width:56px;height:56px;background:${badge.color || 'var(--prism-cyan)'}30;border:2px solid ${badge.color || 'var(--prism-cyan)'};border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;" title="${badge.name}">
+                                    ${badge.icon}
+                                </div>
+                            `).join('') : '<div style="font-size:13px;color:var(--white-50);">None yet - keep going!</div>'}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size:12px;color:var(--white-30);text-transform:uppercase;margin-bottom:8px;">Locked (${Object.keys(allBadges).length - earnedBadges.filter(b => allBadges[b.id]).length})</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                            ${Object.values(allBadges).filter(b => !earnedBadges.some(eb => eb.id === b.id)).map(badge => `
+                                <div style="width:56px;height:56px;background:var(--onyx);border:2px solid var(--white-10);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;opacity:0.4;filter:grayscale(1);" title="${badge.name}: ${badge.description}">
+                                    ${badge.icon}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
         
         function renderProfileTrainingLog() {
