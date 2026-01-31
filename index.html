@@ -1354,16 +1354,47 @@
             user: null,
             isLoggedIn: false
         };
+        
+        // Detect if running as installed PWA
+        const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                      window.navigator.standalone === true ||
+                      document.referrer.includes('android-app://');
+        
+        // PWA storage sync helper - ensures data syncs between browser and PWA
+        function syncStorageFromServer() {
+            if (authState.isLoggedIn && authState.user?.id) {
+                // Pull latest data from cloud on PWA launch
+                console.log('PWA detected, syncing from cloud...');
+                loadFromCloud().then(() => {
+                    renderDashboard();
+                    renderTimeline();
+                }).catch(e => console.error('Cloud sync failed:', e));
+            }
+        }
 
         function loadAuth() {
-            const saved = localStorage.getItem(AUTH_KEY);
-            if (saved) {
-                authState = JSON.parse(saved);
-                authState.isLoggedIn = !!authState.token;
+            try {
+                const saved = localStorage.getItem(AUTH_KEY);
+                console.log('Loading auth, found:', !!saved, 'PWA:', isPWA);
+                if (saved) {
+                    authState = JSON.parse(saved);
+                    authState.isLoggedIn = !!authState.token;
+                    console.log('Auth loaded, user:', authState.user?.email);
+                }
+            } catch (e) {
+                console.error('Error loading auth:', e);
+                clearAuth();
             }
         }
         
-        function saveAuth() { localStorage.setItem(AUTH_KEY, JSON.stringify(authState)); }
+        function saveAuth() { 
+            try {
+                localStorage.setItem(AUTH_KEY, JSON.stringify(authState)); 
+                console.log('Auth saved for:', authState.user?.email);
+            } catch (e) {
+                console.error('Error saving auth:', e);
+            }
+        }
         function clearAuth() { authState = { token: null, refreshToken: null, user: null, isLoggedIn: false }; localStorage.removeItem(AUTH_KEY); }
         
         async function apiCall(endpoint, options = {}) {
@@ -1455,10 +1486,25 @@
         }
 
         function init() {
+            console.log('MACRA init starting, PWA mode:', isPWA);
             loadAuth();
             loadData();
-            if (!authState.isLoggedIn) { setTimeout(() => { document.getElementById('splashScreen').classList.add('hidden'); showAuthModal(); }, 1800); return; }
-            if (!appData.profile.athleteCode) { appData.profile.athleteCode = authState.user?.athleteCode || 'MACRA-' + Math.random().toString(36).substring(2, 6).toUpperCase(); saveData(); }
+            
+            if (!authState.isLoggedIn) { 
+                console.log('Not logged in, showing auth modal');
+                setTimeout(() => { 
+                    document.getElementById('splashScreen').classList.add('hidden'); 
+                    showAuthModal(); 
+                }, 1800); 
+                return; 
+            }
+            
+            console.log('Logged in as:', authState.user?.email);
+            
+            if (!appData.profile.athleteCode) { 
+                appData.profile.athleteCode = authState.user?.athleteCode || 'MACRA-' + Math.random().toString(36).substring(2, 6).toUpperCase(); 
+                saveData(); 
+            }
             document.getElementById('userCode').textContent = appData.profile.athleteCode;
             document.getElementById('displayAthleteCode').textContent = appData.profile.athleteCode;
             document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -1477,10 +1523,18 @@
             setupNavigation();
             setTimeout(() => document.getElementById('splashScreen').classList.add('hidden'), 1800);
             initSentinel();
-            // Load data from cloud after initial render
-            setTimeout(() => loadFromCloud().then(() => {
-                renderDashboard(); renderTimeline(); renderHistory();
-            }), 2000);
+            
+            // Load data from cloud - especially important for PWA
+            // PWA may have stale local data, so we prioritize cloud sync
+            setTimeout(() => {
+                console.log('Starting cloud sync...');
+                loadFromCloud().then(() => {
+                    console.log('Cloud sync complete');
+                    renderDashboard(); 
+                    renderTimeline(); 
+                    renderHistory();
+                }).catch(e => console.error('Cloud sync error:', e));
+            }, isPWA ? 500 : 2000); // Faster sync for PWA
             
             // On mobile, start with Feed view
             if (window.innerWidth <= 768) {
@@ -3238,7 +3292,9 @@
             showToast(`🏁 Workout complete! ${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs total`);
         }
 
-        function openPhotoScanner() { const settings = getAISettings(); if (!settings.apiKey) { alert('Please configure your Claude API key in Settings'); switchView('settings'); return; } document.getElementById('photoInput').click(); }
+        function openPhotoScanner() { 
+            document.getElementById('photoInput').click(); 
+        }
         
         async function handlePhotoCapture(event) {
             const file = event.target.files[0]; if (!file) return;
@@ -3249,29 +3305,25 @@
             try {
                 const base64 = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); });
                 const base64Data = base64.split(',')[1];
-                const settings = getAISettings();
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                
+                // Use backend API for photo analysis
+                const response = await apiCall('/api/ai/photo', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'x-api-key': settings.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
                     body: JSON.stringify({ 
-                        model: 'claude-sonnet-4-20250514', 
-                        max_tokens: 1024, 
-                        messages: [{ 
-                            role: 'user', 
-                            content: [
-                                { type: 'image', source: { type: 'base64', media_type: file.type, data: base64Data } }, 
-                                { type: 'text', text: 'Analyze this food image and estimate nutritional information. Respond with ONLY valid JSON, no markdown or backticks:\n{"type":"food","confidence":0.9,"data":{"items":[{"name":"food name","calories":0,"protein":0,"carbs":0,"fat":0}],"totals":{"calories":0,"protein":0,"carbs":0,"fat":0},"mealType":"snack"}}\n\nBe accurate with estimates based on typical portion sizes.' }
-                            ] 
-                        }] 
+                        image: base64Data,
+                        mimeType: file.type
                     })
                 });
+                
                 if (response.ok) { 
                     const data = await response.json(); 
-                    const result = extractJSON(data.content[0].text); 
-                    if (!result) throw new Error('Could not parse photo analysis');
-                    processUnifiedResult(result, 'Photo scan'); 
+                    if (data.result) {
+                        processUnifiedResult(data.result, 'Photo scan'); 
+                    } else {
+                        throw new Error(data.error || 'Could not analyze photo');
+                    }
                 }
-                else throw new Error('API request failed');
+                else throw new Error('Photo analysis failed');
             } catch (error) { console.error('Photo scan error:', error); alert('Failed to analyze photo: ' + error.message); }
             btn.querySelector('.btn-text').style.display = 'inline';
             btn.querySelector('.btn-loading').style.display = 'none';
