@@ -867,10 +867,39 @@
             
             <div class="view" id="view-settings">
                 <header class="header"><div class="header-left"><h1>Settings</h1><p>Customize your experience</p></div></header>
+                
+                <div class="card">
+                    <div class="card-title" style="margin-bottom: 20px;">👤 Account</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div>
+                            <div style="font-weight: 600;" id="settingsEmail">user@example.com</div>
+                            <div style="font-size: 12px; color: var(--white-50);">Logged in as</div>
+                        </div>
+                        <button class="btn btn-ghost" onclick="logout()">Logout</button>
+                    </div>
+                    <div style="padding: 16px; background: var(--onyx); border-radius: 8px; border: 1px solid var(--white-10);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 12px; color: var(--white-30); text-transform: uppercase; letter-spacing: 1px;">Current Plan</div>
+                                <div style="font-family: var(--font-display); font-size: 20px; color: var(--prism-cyan);" id="settingsTier">Free</div>
+                            </div>
+                            <button class="btn btn-primary" onclick="openUpgradeModal()">Upgrade</button>
+                        </div>
+                        <div style="margin-top: 12px; font-size: 12px; color: var(--white-50);" id="settingsQuota">5 AI messages/week</div>
+                    </div>
+                </div>
+                
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Profile</div><div class="form-group"><label class="form-label">Display Name</label><input type="text" class="form-input" id="settingsName" placeholder="Your name"></div><button class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button></div>
-                <div class="card"><div class="card-title" style="margin-bottom: 20px;">🤖 AI Features</div><div class="form-group"><label class="form-label">Claude API Key</label><input type="password" class="form-input" id="aiApiKey" placeholder="sk-ant-api03-..."><p style="font-size: 11px; color: var(--white-30); margin-top: 6px;">Required for AI logging and photo scanning. Stored locally only.</p></div><div class="form-group" style="margin-top: 16px;"><label class="form-label">🥗 USDA FoodData Central API Key <span style="color: var(--prism-emerald);">(Recommended)</span></label><input type="text" class="form-input" id="usdaApiKey" placeholder="Your USDA API key"><p style="font-size: 11px; color: var(--white-30); margin-top: 6px;">Enhances nutrition accuracy with official USDA data. <a href="https://fdc.nal.usda.gov/api-key-signup" target="_blank" style="color: var(--prism-cyan);">Get free key →</a></p></div><div style="display: flex; gap: 12px;"><button class="btn btn-primary" onclick="saveAISettings()">Save & Test</button><button class="btn btn-ghost" onclick="clearAISettings()">Clear</button></div><div id="aiStatus" style="margin-top: 12px; font-size: 12px;"></div></div>
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Data</div><div style="display: flex; gap: 12px; flex-wrap: wrap;"><button class="btn btn-ghost" onclick="exportAllData()">📤 Export Data</button><button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">🗑️ Clear All Data</button></div></div>
+                
+                <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1)); border: 1px solid rgba(139, 92, 246, 0.3);">
+                    <div class="card-title" style="margin-bottom: 12px;">💜 Support MACRA</div>
+                    <p style="font-size: 13px; color: var(--white-70); margin-bottom: 16px;">Love using MACRA? Help us keep the servers running!</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="openDonationModal()">☕ Buy Us a Coffee</button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
