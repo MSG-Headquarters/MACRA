@@ -148,13 +148,13 @@
         }
         .sidebar-overlay.visible { display: block; opacity: 1; }
         @media (max-width: 768px) {
-            .sidebar-toggle { display: flex; }
-            .sidebar { width: var(--sidebar-width); min-width: var(--sidebar-width); transform: translateX(-100%); }
+            .sidebar-toggle { display: none !important; } /* Hide hamburger on mobile - use bottom nav instead */
+            .sidebar { width: var(--sidebar-width); min-width: var(--sidebar-width); transform: translateX(-100%); display: none !important; }
             .sidebar.expanded { transform: translateX(0); }
             .sidebar .nav-text, .sidebar .logo-text, .sidebar .logo-version, .sidebar .sidebar-section-title, .sidebar .user-info { opacity: 1; }
             .sidebar .logo-icon { display: none; }
             .sidebar .logo-text { display: block; }
-            .main-content { margin-left: 0; padding: 80px 16px 24px; }
+            .main-content { margin-left: 0; padding: 16px 16px 100px; }
         }
         .logo { display: flex; flex-direction: column; margin-bottom: 32px; padding: 0 8px; align-items: center; }
         .sidebar:hover .logo, .sidebar.expanded .logo { align-items: flex-start; }
@@ -929,7 +929,7 @@
                     <div class="card-title" style="margin-bottom: 20px;">👤 Account</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <div>
-                            <div style="font-weight: 600;" id="settingsEmail">user@example.com</div>
+                            <div style="font-weight: 600;" id="settingsEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="add8dec8dfedc8d5ccc0ddc1c883cec2c0">[email&#160;protected]</a></div>
                             <div style="font-size: 12px; color: var(--white-50);">Logged in as</div>
                         </div>
                         <button class="btn btn-ghost" onclick="logout()">Logout</button>
@@ -958,11 +958,277 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- ═══════════════════════════════════════════════════════════
+                 FEED VIEW (Home - Strava-style)
+            ═══════════════════════════════════════════════════════════ -->
+            <div class="view" id="view-feed">
+                <header class="header" style="padding-bottom: 0;">
+                    <div class="header-left">
+                        <h1 style="font-size: 24px;">Home</h1>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('leaderboard')">🏆</button>
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('settings')">⚙️</button>
+                    </div>
+                </header>
+                
+                <!-- Quick Stats Banner -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-cyan);">
+                        <div style="font-size: 24px; font-family: var(--font-display); color: var(--prism-cyan);" id="feedStreak">0</div>
+                        <div style="font-size: 11px; color: var(--white-50);">Day Streak</div>
+                    </div>
+                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-emerald);">
+                        <div style="font-size: 24px; font-family: var(--font-display); color: var(--prism-emerald);" id="feedCalories">0</div>
+                        <div style="font-size: 11px; color: var(--white-50);">Cal Today</div>
+                    </div>
+                    <div style="background: var(--onyx); border-radius: 12px; padding: 16px; text-align: center; border-left: 3px solid var(--prism-violet);">
+                        <div style="font-size: 24px; font-family: var(--font-display); color: var(--prism-violet);" id="feedWorkouts">0</div>
+                        <div style="font-size: 11px; color: var(--white-50);">This Week</div>
+                    </div>
+                </div>
+                
+                <!-- Suggested Challenges -->
+                <div class="card" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid var(--prism-cyan);">
+                    <div class="card-header">
+                        <div class="card-title">🎯 Suggested Challenges</div>
+                    </div>
+                    <p style="font-size: 13px; color: var(--white-70); margin-bottom: 16px;">Make accountability easier and earn rewards!</p>
+                    <div style="background: var(--carbon); border-radius: 12px; padding: 16px;">
+                        <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">🔥 Popular with athletes like you</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">30-Day Consistency Challenge</div>
+                        <div style="font-size: 12px; color: var(--white-50); margin-bottom: 12px;">Log activity 30 days in a row</div>
+                        <button class="btn btn-primary btn-sm" onclick="joinChallenge('consistency')">Join Challenge</button>
+                    </div>
+                </div>
+                
+                <!-- Activity Feed -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📰 Following</div>
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('social')">See All</button>
+                    </div>
+                    <div id="feedActivityList"></div>
+                </div>
+                
+                <!-- Who to Follow -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">👥 Who to Follow</div>
+                    </div>
+                    <div id="suggestedFollows">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
+                            <div class="activity-avatar">R</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">Rich Caruso</div>
+                                <div style="font-size: 11px; color: var(--white-30);">Health Club @ Southpointe</div>
+                            </div>
+                            <button class="btn btn-ghost btn-sm">Follow</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ═══════════════════════════════════════════════════════════
+                 CLUBS VIEW (Groups - Strava-style)
+            ═══════════════════════════════════════════════════════════ -->
+            <div class="view" id="view-clubs">
+                <header class="header" style="padding-bottom: 0;">
+                    <div class="header-left">
+                        <h1 style="font-size: 24px;">Groups</h1>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="searchClubs()">🔍</button>
+                </header>
+                
+                <!-- Sub-tabs -->
+                <div style="display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--white-10);">
+                    <button class="club-tab active" onclick="setClubTab('active')" data-tab="active" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Active</button>
+                    <button class="club-tab" onclick="setClubTab('challenges')" data-tab="challenges" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Challenges</button>
+                    <button class="club-tab" onclick="setClubTab('clubs')" data-tab="clubs" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Clubs</button>
+                </div>
+                
+                <style>
+                    .club-tab.active { color: var(--prism-cyan) !important; border-bottom-color: var(--prism-cyan) !important; }
+                </style>
+                
+                <!-- Active Groups Content -->
+                <div id="clubsActiveContent">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏋️</div>
+                        <div class="empty-state-text">No active groups yet</div>
+                        <div class="empty-state-subtext">Join a club or challenge to get started!</div>
+                    </div>
+                </div>
+                
+                <!-- Challenges Content -->
+                <div id="clubsChallengesContent" style="display: none;">
+                    <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));">
+                        <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">🔥 107,000+ athletes joined</div>
+                        <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">February Fitness Challenge</div>
+                        <div style="font-size: 12px; color: var(--white-50); margin-bottom: 12px;">Log 20 workouts this month</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-primary btn-sm">Join Challenge</button>
+                            <span style="background: var(--prism-amber); color: black; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;">REWARD</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Clubs Content -->
+                <div id="clubsClubsContent" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">📍 Gyms Near You</div>
+                        </div>
+                        <p style="font-size: 12px; color: var(--white-50); margin-bottom: 16px;">Connect with athletes at your local gym</p>
+                        
+                        <div id="nearbyClubs">
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
+                                <div style="width: 48px; height: 48px; background: var(--prism-violet); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px;">💪</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">Second Chance Gym</div>
+                                    <div style="font-size: 11px; color: var(--white-30);">Brandon, FL • 2.3 mi</div>
+                                </div>
+                                <button class="btn btn-ghost btn-sm">Join</button>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
+                                <div style="width: 48px; height: 48px; background: var(--prism-rose); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🏋️</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">Muscle Asylum</div>
+                                    <div style="font-size: 11px; color: var(--white-30);">Tampa, FL • 8.1 mi</div>
+                                </div>
+                                <button class="btn btn-ghost btn-sm">Join</button>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
+                                <div style="width: 48px; height: 48px; background: var(--prism-emerald); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px;">❤️</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">Rich's Health Club @ Southpointe</div>
+                                    <div style="font-size: 11px; color: var(--white-30);">Brandon, FL • 3.5 mi</div>
+                                </div>
+                                <button class="btn btn-ghost btn-sm">Join</button>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-ghost" style="width: 100%; margin-top: 12px;" onclick="findMoreClubs()">🔍 Find More Clubs</button>
+                    </div>
+                    
+                    <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));">
+                        <div class="card-title" style="margin-bottom: 8px;">🏠 Create Your Own Club</div>
+                        <p style="font-size: 12px; color: var(--white-50); margin-bottom: 12px;">Give your community a home base on MACRA</p>
+                        <button class="btn btn-primary">Get Started</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ═══════════════════════════════════════════════════════════
+                 PROFILE VIEW (You - Strava-style with Progress/Activities)
+            ═══════════════════════════════════════════════════════════ -->
+            <div class="view" id="view-profile">
+                <header class="header" style="padding-bottom: 0;">
+                    <div class="header-left">
+                        <h1 style="font-size: 24px;">You</h1>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('settings')">⚙️</button>
+                    </div>
+                </header>
+                
+                <!-- Profile Header -->
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 24px; font-weight: 700;" id="profileAvatar">A</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 18px; font-weight: 600;" id="profileName">Athlete</div>
+                        <div style="font-size: 12px; color: var(--white-50);" id="profileCode">MACRA-XXXX</div>
+                    </div>
+                </div>
+                
+                <!-- Stats Row -->
+                <div style="display: flex; justify-content: space-around; padding: 16px; background: var(--onyx); border-radius: 12px; margin-bottom: 20px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-family: var(--font-display); color: var(--white);" id="profileFollowing">0</div>
+                        <div style="font-size: 11px; color: var(--white-50);">Following</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-family: var(--font-display); color: var(--white);" id="profileFollowers">0</div>
+                        <div style="font-size: 11px; color: var(--white-50);">Followers</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-family: var(--font-display); color: var(--white);" id="profileActivities">0</div>
+                        <div style="font-size: 11px; color: var(--white-50);">Activities</div>
+                    </div>
+                </div>
+                
+                <!-- Sub-tabs: Progress / Activities -->
+                <div style="display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--white-10);">
+                    <button class="profile-tab active" onclick="setProfileTab('progress')" data-tab="progress" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Progress</button>
+                    <button class="profile-tab" onclick="setProfileTab('activities')" data-tab="activities" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Activities</button>
+                </div>
+                
+                <style>
+                    .profile-tab.active { color: var(--prism-cyan) !important; border-bottom-color: var(--prism-cyan) !important; }
+                </style>
+                
+                <!-- Progress Content -->
+                <div id="profileProgressContent">
+                    <!-- Best Efforts / PRs -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">🏆 Best Efforts</div>
+                            <button class="btn btn-ghost btn-sm" onclick="switchView('prs')">See All</button>
+                        </div>
+                        <div id="profilePRsList"></div>
+                    </div>
+                    
+                    <!-- Goals -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">🎯 Goals</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px;">
+                            <div style="width: 48px; height: 48px; position: relative;">
+                                <svg viewBox="0 0 36 36" style="width: 48px; height: 48px; transform: rotate(-90deg);">
+                                    <circle cx="18" cy="18" r="16" fill="none" stroke="var(--carbon)" stroke-width="3"/>
+                                    <circle cx="18" cy="18" r="16" fill="none" stroke="var(--prism-emerald)" stroke-width="3" stroke-dasharray="100" stroke-dashoffset="75" id="goalProgressRing"/>
+                                </svg>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">Weekly Workout Goal</div>
+                                <div style="font-size: 12px; color: var(--white-50);"><span id="goalWorkoutsProgress">0</span>/4 workouts</div>
+                            </div>
+                            <span style="font-size: 11px; color: var(--white-30);">›</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Intelligence Hub Preview -->
+                    <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <div class="card-header">
+                            <div class="card-title">🧠 Intelligence Hub</div>
+                            <button class="btn btn-ghost btn-sm" onclick="switchView('intelligence')">Open</button>
+                        </div>
+                        <p style="font-size: 12px; color: var(--white-70);">AI-powered insights from your training data</p>
+                        <div id="profileInsightPreview" style="margin-top: 12px;"></div>
+                    </div>
+                    
+                    <!-- Training Log -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">📅 Training Log</div>
+                            <button class="btn btn-ghost btn-sm" onclick="switchView('history')">Full History</button>
+                        </div>
+                        <div id="profileTrainingLog"></div>
+                    </div>
+                </div>
+                
+                <!-- Activities Content -->
+                <div id="profileActivitiesContent" style="display: none;">
+                    <div id="profileActivityList"></div>
+                </div>
+            </div>
         </main>
     </div>
     <div id="prCelebration" style="display: none;"><div class="pr-celebration"><div class="pr-celebration-icon">🏆</div><div class="pr-celebration-title">NEW PR!</div><div class="pr-celebration-detail" id="prCelebrationExercise"></div><div class="pr-celebration-value" id="prCelebrationValue"></div></div></div>
     
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         const STORAGE_KEY = 'macra-v1.4';
         const AUTH_KEY = 'macra_auth';
         const API_BASE = 'https://macra-backend-production.up.railway.app';
@@ -1120,6 +1386,11 @@
             setTimeout(() => loadFromCloud().then(() => {
                 renderDashboard(); renderTimeline(); renderHistory();
             }), 2000);
+            
+            // On mobile, start with Feed view
+            if (window.innerWidth <= 768) {
+                setTimeout(() => switchView('feed'), 100);
+            }
         }
 
         function initSentinel() {
@@ -1278,14 +1549,257 @@
             if (viewId === 'dashboard') { renderDashboard(); renderTimeline(); }
             if (viewId === 'history') renderHistory();
             if (viewId === 'prs') renderPRs();
+            if (viewId === 'feed') renderFeedView();
+            if (viewId === 'clubs') renderClubsView();
+            if (viewId === 'profile') renderProfileView();
         }
         
-        function focusLogInput() {
+        // Open Quick Log modal/panel
+        function openQuickLog() {
             switchView('dashboard');
             setTimeout(() => {
                 const input = document.getElementById('unifiedInput');
                 if (input) { input.focus(); input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
             }, 100);
+        }
+        
+        function focusLogInput() {
+            openQuickLog();
+        }
+        
+        // ═══════════════════════════════════════════════════════════════
+        // FEED VIEW (Home)
+        // ═══════════════════════════════════════════════════════════════
+        function renderFeedView() {
+            // Update quick stats
+            document.getElementById('feedStreak').textContent = appData.stats.streak || 0;
+            
+            const today = getTodayKey();
+            const todayActivities = appData.activities[today] || [];
+            const todayFood = todayActivities.filter(a => a.type === 'food');
+            const totalCal = todayFood.reduce((sum, a) => sum + (a.data?.totals?.calories || 0), 0);
+            document.getElementById('feedCalories').textContent = totalCal;
+            document.getElementById('feedWorkouts').textContent = getWeekWorkouts();
+            
+            // Render activity feed
+            renderFeedActivityList();
+        }
+        
+        function renderFeedActivityList() {
+            const container = document.getElementById('feedActivityList');
+            const feedItems = [];
+            const today = getTodayKey();
+            
+            // Get last 7 days of activities
+            for (let i = 0; i < 7; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const dayActivities = appData.activities[key] || [];
+                dayActivities.forEach(a => {
+                    feedItems.push({ ...a, dateKey: key, isYou: true, user: appData.profile.name || 'You' });
+                });
+            }
+            
+            // Add friend activities (simulated)
+            appData.friends.forEach(friend => {
+                if (Math.random() > 0.6) {
+                    feedItems.push({
+                        user: friend.name,
+                        isYou: false,
+                        time: Math.floor(Math.random() * 12) + 1 + ' hours ago',
+                        type: Math.random() > 0.5 ? 'workout' : 'food',
+                        data: Math.random() > 0.5 ? { exercises: [{ name: 'Strength Training' }] } : { totals: { calories: 450 } }
+                    });
+                }
+            });
+            
+            if (feedItems.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📰</div><div class="empty-state-text">No activity yet</div><div class="empty-state-subtext">Log your first workout or meal to see it here!</div></div>';
+                return;
+            }
+            
+            container.innerHTML = feedItems.slice(0, 10).map(item => {
+                const avatar = (item.user || 'A').charAt(0).toUpperCase();
+                let title = '', details = '', badge = '';
+                if (item.type === 'food') {
+                    badge = 'food';
+                    title = item.isYou ? 'Logged a meal' : 'Ate well';
+                    details = `${item.data?.totals?.calories || 0} cal`;
+                } else if (item.type === 'workout') {
+                    badge = 'workout';
+                    title = item.isYou ? 'Completed workout' : 'Crushed it';
+                    details = item.data?.exercises?.map(e => e.name).join(', ') || 'Strength training';
+                } else if (item.type === 'cardio') {
+                    badge = 'workout';
+                    title = 'Cardio session';
+                    details = `${item.data?.duration || 0} min`;
+                }
+                return `<div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--white-05);">
+                    <div class="activity-avatar">${avatar}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500;">${item.user}${item.isYou ? ' (You)' : ''}</div>
+                        <div style="font-size: 13px; color: var(--white-70);">${title}</div>
+                        <div style="font-size: 12px; color: var(--white-50);">${details}</div>
+                    </div>
+                    <div style="font-size: 11px; color: var(--white-30);">${item.time || 'Today'}</div>
+                </div>`;
+            }).join('');
+        }
+        
+        function joinChallenge(type) {
+            showToast('🎯 Challenge joined! Good luck!');
+        }
+        
+        // ═══════════════════════════════════════════════════════════════
+        // CLUBS VIEW (Groups)
+        // ═══════════════════════════════════════════════════════════════
+        let currentClubTab = 'active';
+        
+        function renderClubsView() {
+            setClubTab(currentClubTab);
+        }
+        
+        function setClubTab(tab) {
+            currentClubTab = tab;
+            document.querySelectorAll('.club-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.club-tab[data-tab="${tab}"]`).classList.add('active');
+            
+            document.getElementById('clubsActiveContent').style.display = tab === 'active' ? 'block' : 'none';
+            document.getElementById('clubsChallengesContent').style.display = tab === 'challenges' ? 'block' : 'none';
+            document.getElementById('clubsClubsContent').style.display = tab === 'clubs' ? 'block' : 'none';
+        }
+        
+        function searchClubs() {
+            showToast('🔍 Club search coming soon!');
+        }
+        
+        function findMoreClubs() {
+            showToast('🗺️ Google Places integration coming soon!');
+        }
+        
+        // ═══════════════════════════════════════════════════════════════
+        // PROFILE VIEW (You)
+        // ═══════════════════════════════════════════════════════════════
+        let currentProfileTab = 'progress';
+        
+        function renderProfileView() {
+            const userName = appData.profile.name || (authState.user?.name) || 'Athlete';
+            document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
+            document.getElementById('profileName').textContent = userName;
+            document.getElementById('profileCode').textContent = appData.profile.athleteCode || 'MACRA-XXXX';
+            
+            document.getElementById('profileFollowing').textContent = appData.friends.length;
+            document.getElementById('profileFollowers').textContent = Math.floor(Math.random() * 5); // Simulated
+            
+            // Count total activities
+            let totalActivities = 0;
+            Object.values(appData.activities).forEach(day => totalActivities += day.length);
+            document.getElementById('profileActivities').textContent = totalActivities;
+            
+            setProfileTab(currentProfileTab);
+        }
+        
+        function setProfileTab(tab) {
+            currentProfileTab = tab;
+            document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.profile-tab[data-tab="${tab}"]`).classList.add('active');
+            
+            document.getElementById('profileProgressContent').style.display = tab === 'progress' ? 'block' : 'none';
+            document.getElementById('profileActivitiesContent').style.display = tab === 'activities' ? 'block' : 'none';
+            
+            if (tab === 'progress') renderProfileProgress();
+            if (tab === 'activities') renderProfileActivities();
+        }
+        
+        function renderProfileProgress() {
+            // Render PRs preview
+            const prsContainer = document.getElementById('profilePRsList');
+            const prs = Object.entries(appData.prs).slice(0, 3);
+            if (prs.length === 0) {
+                prsContainer.innerHTML = '<div style="font-size: 13px; color: var(--white-50);">No PRs recorded yet. Start lifting!</div>';
+            } else {
+                prsContainer.innerHTML = prs.map(([exercise, data]) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
+                        <div>
+                            <div style="font-weight: 500;">${exercise}</div>
+                            <div style="font-size: 11px; color: var(--white-30);">${data.date || 'Recent'}</div>
+                        </div>
+                        <div style="font-family: var(--font-display); color: var(--prism-amber);">${data.weight} lbs</div>
+                    </div>
+                `).join('');
+            }
+            
+            // Update goals progress
+            const weekWorkouts = getWeekWorkouts();
+            document.getElementById('goalWorkoutsProgress').textContent = weekWorkouts;
+            const goalPercent = Math.min((weekWorkouts / 4) * 100, 100);
+            document.getElementById('goalProgressRing').style.strokeDashoffset = 100 - goalPercent;
+            
+            // Render training log preview (last 7 days)
+            renderProfileTrainingLog();
+            
+            // Render insight preview
+            document.getElementById('profileInsightPreview').innerHTML = `
+                <div style="padding: 10px; background: var(--carbon); border-radius: 8px; font-size: 12px; color: var(--white-70);">
+                    💡 Your protein intake has been ${Math.random() > 0.5 ? 'above' : 'below'} target this week.
+                </div>
+            `;
+        }
+        
+        function renderProfileTrainingLog() {
+            const container = document.getElementById('profileTrainingLog');
+            const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            
+            let html = '<div style="display: flex; justify-content: space-between; gap: 4px;">';
+            for (let i = 0; i < 7; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - (6 - i));
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const hasActivity = (appData.activities[key] || []).length > 0;
+                const isToday = key === getTodayKey();
+                html += `<div style="flex: 1; text-align: center;">
+                    <div style="font-size: 10px; color: var(--white-30); margin-bottom: 4px;">${days[i]}</div>
+                    <div style="width: 32px; height: 32px; margin: 0 auto; border-radius: 50%; background: ${hasActivity ? 'var(--prism-emerald)' : 'var(--carbon)'}; display: flex; align-items: center; justify-content: center; font-size: 10px; ${isToday ? 'border: 2px solid var(--prism-cyan);' : ''}">${hasActivity ? '✓' : ''}</div>
+                </div>`;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function renderProfileActivities() {
+            const container = document.getElementById('profileActivityList');
+            const allActivities = [];
+            
+            Object.entries(appData.activities).forEach(([date, activities]) => {
+                activities.forEach(a => allActivities.push({ ...a, dateKey: date }));
+            });
+            
+            allActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            if (allActivities.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No activities yet</div></div>';
+                return;
+            }
+            
+            container.innerHTML = allActivities.slice(0, 20).map(a => {
+                let icon = '📝', title = 'Activity', details = '';
+                if (a.type === 'food') { icon = '🥗'; title = a.data?.items?.map(i => i.name).join(', ') || 'Meal'; details = `${a.data?.totals?.calories || 0} cal`; }
+                else if (a.type === 'workout') { icon = '💪'; title = a.data?.exercises?.map(e => e.name).join(', ') || 'Workout'; details = `${a.data?.exercises?.length || 0} exercises`; }
+                else if (a.type === 'cardio') { icon = '🏃'; title = a.data?.activity || 'Cardio'; details = `${a.data?.duration || 0} min`; }
+                else if (a.type === 'weight') { icon = '⚖️'; title = `${a.data?.weight} ${a.data?.unit || 'lbs'}`; details = 'Weigh-in'; }
+                
+                return `<div style="display: flex; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
+                    <div style="font-size: 24px;">${icon}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500;">${title}</div>
+                        <div style="font-size: 12px; color: var(--white-50);">${details}</div>
+                    </div>
+                    <div style="font-size: 11px; color: var(--white-30);">${a.time || ''}</div>
+                </div>`;
+            }).join('');
         }
 
         function toggleSidebar() {
@@ -2573,26 +3087,30 @@
         document.addEventListener('DOMContentLoaded', init);
     </script>
     
-    <!-- Bottom Navigation (Mobile) -->
-    <nav id="bottomNav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--carbon);border-top:1px solid var(--white-10);padding:8px 0 max(8px, env(safe-area-inset-bottom));z-index:1000;">
-        <div style="display:flex;justify-content:space-around;align-items:center;">
-            <button onclick="switchView('dashboard')" class="bottom-nav-item active" data-view="dashboard" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--white-50);padding:8px 16px;cursor:pointer;">
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-                <span style="font-size:10px;">Home</span>
+    <!-- Bottom Navigation (Mobile) - Strava-style -->
+    <nav id="bottomNav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(180deg, var(--obsidian), var(--void));border-top:1px solid var(--white-10);z-index:1000;">
+        <div style="display:flex;justify-content:space-around;align-items:flex-end;padding:8px 0 max(8px, env(safe-area-inset-bottom));">
+            <button onclick="switchView('feed')" class="bottom-nav-item active" data-view="feed" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--white-50);padding:8px 4px;cursor:pointer;transition:color 0.2s;">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span style="font-size:10px;font-weight:500;">Home</span>
             </button>
-            <button onclick="focusLogInput()" class="bottom-nav-item" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--white-50);padding:8px 16px;cursor:pointer;">
-                <div style="width:48px;height:48px;background:linear-gradient(135deg,var(--prism-cyan),var(--prism-violet));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:-16px 0;">
-                    <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <button onclick="switchView('clubs')" class="bottom-nav-item" data-view="clubs" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--white-50);padding:8px 4px;cursor:pointer;transition:color 0.2s;">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                <span style="font-size:10px;font-weight:500;">Groups</span>
+            </button>
+            <button onclick="openQuickLog()" class="bottom-nav-item" style="flex:1;display:flex;flex-direction:column;align-items:center;background:none;border:none;color:var(--white);padding:4px;cursor:pointer;">
+                <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--prism-cyan),var(--prism-violet));border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(6,182,212,0.4);">
+                    <svg width="22" height="22" fill="white" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </div>
-                <span style="font-size:10px;margin-top:8px;">Log</span>
+                <span style="font-size:10px;font-weight:500;margin-top:2px;">Log</span>
             </button>
-            <button onclick="switchView('social')" class="bottom-nav-item" data-view="social" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--white-50);padding:8px 16px;cursor:pointer;">
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                <span style="font-size:10px;">Social</span>
+            <button onclick="switchView('social')" class="bottom-nav-item" data-view="social" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--white-50);padding:8px 4px;cursor:pointer;transition:color 0.2s;">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span style="font-size:10px;font-weight:500;">Social</span>
             </button>
-            <button onclick="switchView('settings')" class="bottom-nav-item" data-view="settings" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--white-50);padding:8px 16px;cursor:pointer;">
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span style="font-size:10px;">Profile</span>
+            <button onclick="switchView('profile')" class="bottom-nav-item" data-view="profile" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--white-50);padding:8px 4px;cursor:pointer;transition:color 0.2s;">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span style="font-size:10px;font-weight:500;">You</span>
             </button>
         </div>
     </nav>
@@ -2601,8 +3119,9 @@
         @media (max-width: 768px) {
             #bottomNav { display: block !important; }
             .sidebar { display: none !important; }
-            .main-content { margin-left: 0 !important; padding-bottom: 80px !important; }
+            .main-content { margin-left: 0 !important; padding-bottom: 100px !important; }
             .bottom-nav-item.active { color: var(--prism-cyan) !important; }
+            .bottom-nav-item.active svg { filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.5)); }
         }
     </style>
     
