@@ -532,7 +532,7 @@
         <div class="splash-logo">MACRA</div>
         <div class="splash-tagline">Your Fitness. Your Data. Your Way.</div>
         <div class="splash-loader"><div class="splash-loader-bar"></div></div>
-        <div class="splash-version">v1.4 BETA</div>
+        <div class="splash-version">v1.4</div>
     </div>
     <div class="prismatic-bg"><div class="aurora"></div><div class="grid-overlay"></div></div>
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
@@ -540,7 +540,7 @@
     <input type="file" accept="image/*" capture="environment" class="photo-input" id="photoInput" onchange="handlePhotoCapture(event)">
     <div class="app-container">
         <nav class="sidebar" id="sidebar">
-            <div class="logo"><div class="logo-icon">M</div><div class="logo-text">MACRA</div><div class="logo-version">v1.4 BETA</div></div>
+            <div class="logo"><div class="logo-icon">M</div><div class="logo-text">MACRA</div><div class="logo-version">v1.4</div></div>
             <ul class="sidebar-nav">
                 <li><a href="#" data-view="dashboard" class="active"><span class="icon">📊</span><span class="nav-text">Dashboard</span></a></li>
                 <li><a href="#" data-view="intelligence"><span class="icon">🧠</span><span class="nav-text">Intelligence</span></a></li>
@@ -866,135 +866,20 @@
             
             <div class="view" id="view-settings">
                 <header class="header"><div class="header-left"><h1>Settings</h1><p>Customize your experience</p></div></header>
-                
-                <!-- Account & Subscription -->
-                <div class="card">
-                    <div class="card-title" style="margin-bottom: 20px;">👤 Account</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <div>
-                            <div style="font-weight: 600;" id="settingsEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e99c9a8c9ba98c91888499858cc78a8684">[email&#160;protected]</a></div>
-                            <div style="font-size: 12px; color: var(--white-50);">Logged in as</div>
-                        </div>
-                        <button class="btn btn-ghost" onclick="logout()">Logout</button>
-                    </div>
-                    <div style="padding: 16px; background: var(--onyx); border-radius: 8px; border: 1px solid var(--white-10);">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-size: 12px; color: var(--white-30); text-transform: uppercase; letter-spacing: 1px;">Current Plan</div>
-                                <div style="font-family: var(--font-display); font-size: 20px; color: var(--prism-cyan);" id="settingsTier">Free</div>
-                            </div>
-                            <button class="btn btn-primary" onclick="openUpgradeModal()">Upgrade</button>
-                        </div>
-                        <div style="margin-top: 12px; font-size: 12px; color: var(--white-50);" id="settingsQuota">5 AI messages/week</div>
-                    </div>
-                </div>
-                
-                <!-- Profile -->
-                <div class="card">
-                    <div class="card-title" style="margin-bottom: 20px;">Profile</div>
-                    <div class="form-group">
-                        <label class="form-label">Display Name</label>
-                        <input type="text" class="form-input" id="settingsName" placeholder="Your name">
-                    </div>
-                    <button class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button>
-                </div>
-                
-                <!-- Goals -->
-                <div class="card">
-                    <div class="card-title" style="margin-bottom: 20px;">Goals</div>
-                    <div class="form-row">
-                        <div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div>
-                        <div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div>
-                        <div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div>
-                    </div>
-                    <button class="btn btn-primary" onclick="saveGoals()">Save Goals</button>
-                </div>
-                
-                <!-- Data -->
-                <div class="card">
-                    <div class="card-title" style="margin-bottom: 20px;">Data</div>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn btn-ghost" onclick="exportAllData()">📤 Export Data</button>
-                        <button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">🗑️ Clear All Data</button>
-                    </div>
-                </div>
-                
-                <!-- Support -->
-                <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1)); border: 1px solid rgba(139, 92, 246, 0.3);">
-                    <div class="card-title" style="margin-bottom: 12px;">💜 Support MACRA</div>
-                    <p style="font-size: 13px; color: var(--white-70); margin-bottom: 16px;">Love using MACRA? Help us keep the servers running and build new features!</p>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn btn-primary" onclick="openDonationModal()">☕ Buy Us a Coffee</button>
-                        <button class="btn btn-ghost" onclick="openUpgradeModal()">⭐ Upgrade to Pro</button>
-                    </div>
-                </div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Profile</div><div class="form-group"><label class="form-label">Display Name</label><input type="text" class="form-input" id="settingsName" placeholder="Your name"></div><button class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">🤖 AI Features</div><div class="form-group"><label class="form-label">Claude API Key</label><input type="password" class="form-input" id="aiApiKey" placeholder="sk-ant-api03-..."><p style="font-size: 11px; color: var(--white-30); margin-top: 6px;">Required for AI logging and photo scanning. Stored locally only.</p></div><div class="form-group" style="margin-top: 16px;"><label class="form-label">🥗 USDA FoodData Central API Key <span style="color: var(--prism-emerald);">(Recommended)</span></label><input type="text" class="form-input" id="usdaApiKey" placeholder="Your USDA API key"><p style="font-size: 11px; color: var(--white-30); margin-top: 6px;">Enhances nutrition accuracy with official USDA data. <a href="https://fdc.nal.usda.gov/api-key-signup" target="_blank" style="color: var(--prism-cyan);">Get free key →</a></p></div><div style="display: flex; gap: 12px;"><button class="btn btn-primary" onclick="saveAISettings()">Save & Test</button><button class="btn btn-ghost" onclick="clearAISettings()">Clear</button></div><div id="aiStatus" style="margin-top: 12px; font-size: 12px;"></div></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Data</div><div style="display: flex; gap: 12px; flex-wrap: wrap;"><button class="btn btn-ghost" onclick="exportAllData()">📤 Export Data</button><button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">🗑️ Clear All Data</button></div></div>
             </div>
         </main>
     </div>
     <div id="prCelebration" style="display: none;"><div class="pr-celebration"><div class="pr-celebration-icon">🏆</div><div class="pr-celebration-title">NEW PR!</div><div class="pr-celebration-detail" id="prCelebrationExercise"></div><div class="pr-celebration-value" id="prCelebrationValue"></div></div></div>
     
-    <!-- Auth Modal -->
-    <div class="modal-overlay" id="authModal">
-        <div class="modal" style="max-width: 400px;">
-            <div class="modal-header" style="justify-content: center; border-bottom: none;">
-                <div style="text-align: center;">
-                    <div style="font-family: var(--font-display); font-size: 32px; font-weight: 700; letter-spacing: 4px; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MACRA</div>
-                    <div style="font-size: 11px; color: var(--white-30); margin-top: 4px;">Your Fitness. Your Data. Your Way.</div>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- Login Form -->
-                <div id="authLoginForm">
-                    <form onsubmit="handleLogin(event)">
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-input" id="loginEmail" placeholder="you@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Password</label>
-                            <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" required>
-                        </div>
-                        <div id="loginError" style="display: none; color: var(--prism-rose); font-size: 12px; margin-bottom: 12px; padding: 8px; background: rgba(244,63,94,0.1); border-radius: 6px;"></div>
-                        <button type="submit" class="btn btn-primary" id="loginBtn" style="width: 100%; margin-top: 8px;">Login</button>
-                    </form>
-                    <div style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--white-50);">
-                        Don't have an account? <a href="#" onclick="showSignupForm(); return false;" style="color: var(--prism-cyan);">Sign up</a>
-                    </div>
-                </div>
-                
-                <!-- Signup Form -->
-                <div id="authSignupForm" style="display: none;">
-                    <form onsubmit="handleSignup(event)">
-                        <div class="form-group">
-                            <label class="form-label">Name</label>
-                            <input type="text" class="form-input" id="signupName" placeholder="Your name" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-input" id="signupEmail" placeholder="you@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Password</label>
-                            <input type="password" class="form-input" id="signupPassword" placeholder="••••••••" minlength="6" required>
-                        </div>
-                        <div id="signupError" style="display: none; color: var(--prism-rose); font-size: 12px; margin-bottom: 12px; padding: 8px; background: rgba(244,63,94,0.1); border-radius: 6px;"></div>
-                        <button type="submit" class="btn btn-primary" id="signupBtn" style="width: 100%; margin-top: 8px;">Create Account</button>
-                    </form>
-                    <div style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--white-50);">
-                        Already have an account? <a href="#" onclick="showLoginForm(); return false;" style="color: var(--prism-cyan);">Log in</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         const STORAGE_KEY = 'macra-v1.4';
         const AUTH_KEY = 'macra_auth';
         const API_BASE = 'https://macra-backend-production.up.railway.app';
+        const BETA_CODES = ['MACRA-BETA-2026', 'ELITE-TESTER', 'FOUNDER-PASS'];
         
         let appData = {
             profile: { name: 'Athlete', athleteCode: '' },
@@ -1012,9 +897,6 @@
             isLoggedIn: false
         };
 
-        // ═══════════════════════════════════════════════════════════════
-        // AUTH FUNCTIONS
-        // ═══════════════════════════════════════════════════════════════
         function loadAuth() {
             const saved = localStorage.getItem(AUTH_KEY);
             if (saved) {
@@ -1023,118 +905,52 @@
             }
         }
         
-        function saveAuth() {
-            localStorage.setItem(AUTH_KEY, JSON.stringify(authState));
-        }
-        
-        function clearAuth() {
-            authState = { token: null, refreshToken: null, user: null, isLoggedIn: false };
-            localStorage.removeItem(AUTH_KEY);
-        }
+        function saveAuth() { localStorage.setItem(AUTH_KEY, JSON.stringify(authState)); }
+        function clearAuth() { authState = { token: null, refreshToken: null, user: null, isLoggedIn: false }; localStorage.removeItem(AUTH_KEY); }
         
         async function apiCall(endpoint, options = {}) {
             const headers = { 'Content-Type': 'application/json', ...options.headers };
-            if (authState.token) {
-                headers['Authorization'] = `Bearer ${authState.token}`;
-            }
-            
+            if (authState.token) headers['Authorization'] = `Bearer ${authState.token}`;
             const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-            
             if (response.status === 401 && authState.refreshToken) {
-                // Try to refresh token
                 const refreshed = await refreshAuthToken();
-                if (refreshed) {
-                    headers['Authorization'] = `Bearer ${authState.token}`;
-                    return fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-                } else {
-                    clearAuth();
-                    showAuthModal();
-                    throw new Error('Session expired');
-                }
+                if (refreshed) { headers['Authorization'] = `Bearer ${authState.token}`; return fetch(`${API_BASE}${endpoint}`, { ...options, headers }); }
+                else { clearAuth(); showAuthModal(); throw new Error('Session expired'); }
             }
-            
             return response;
         }
         
         async function refreshAuthToken() {
             try {
-                const res = await fetch(`${API_BASE}/api/auth/refresh`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ refreshToken: authState.refreshToken })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    authState.token = data.token;
-                    authState.refreshToken = data.refreshToken;
-                    saveAuth();
-                    return true;
-                }
+                const res = await fetch(`${API_BASE}/api/auth/refresh`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: authState.refreshToken }) });
+                if (res.ok) { const data = await res.json(); authState.token = data.token; authState.refreshToken = data.refreshToken; saveAuth(); return true; }
             } catch (e) {}
             return false;
         }
         
         async function login(email, password) {
-            const res = await fetch(`${API_BASE}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+            const res = await fetch(`${API_BASE}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Login failed');
-            
-            authState.token = data.token;
-            authState.refreshToken = data.refreshToken;
-            authState.user = data.user;
-            authState.isLoggedIn = true;
+            authState.token = data.token; authState.refreshToken = data.refreshToken; authState.user = data.user; authState.isLoggedIn = true;
             saveAuth();
-            
-            // Update app data with user info
-            appData.profile.name = data.user.name;
-            appData.profile.athleteCode = data.user.athleteCode;
-            saveData();
-            
+            appData.profile.name = data.user.name; appData.profile.athleteCode = data.user.athleteCode; saveData();
             return data;
         }
         
         async function signup(email, password, name) {
-            const res = await fetch(`${API_BASE}/api/auth/signup`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, name })
-            });
+            const res = await fetch(`${API_BASE}/api/auth/signup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, name }) });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Signup failed');
             return data;
         }
         
-        async function logout() {
-            try {
-                await apiCall('/api/auth/logout', { method: 'POST' });
-            } catch (e) {}
-            clearAuth();
-            showAuthModal();
-        }
+        async function logout() { try { await apiCall('/api/auth/logout', { method: 'POST' }); } catch (e) {} clearAuth(); showAuthModal(); }
         
-        function showAuthModal() {
-            document.getElementById('authModal').classList.add('visible');
-            document.getElementById('authLoginForm').style.display = 'block';
-            document.getElementById('authSignupForm').style.display = 'none';
-        }
-        
-        function hideAuthModal() {
-            document.getElementById('authModal').classList.remove('visible');
-        }
-        
-        function showSignupForm() {
-            document.getElementById('authLoginForm').style.display = 'none';
-            document.getElementById('authSignupForm').style.display = 'block';
-        }
-        
-        function showLoginForm() {
-            document.getElementById('authLoginForm').style.display = 'block';
-            document.getElementById('authSignupForm').style.display = 'none';
-        }
+        function showAuthModal() { document.getElementById('authModal').style.display = 'flex'; document.getElementById('authLoginForm').style.display = 'block'; document.getElementById('authSignupForm').style.display = 'none'; }
+        function hideAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+        function showSignupForm() { document.getElementById('authLoginForm').style.display = 'none'; document.getElementById('authSignupForm').style.display = 'block'; }
+        function showLoginForm() { document.getElementById('authLoginForm').style.display = 'block'; document.getElementById('authSignupForm').style.display = 'none'; }
         
         async function handleLogin(e) {
             e.preventDefault();
@@ -1142,23 +958,10 @@
             const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginBtn');
             const error = document.getElementById('loginError');
-            
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Logging in...';
-            error.style.display = 'none';
-            
-            try {
-                await login(email, password);
-                hideAuthModal();
-                init();
-                showToast('✓ Welcome back!');
-            } catch (err) {
-                error.textContent = err.message;
-                error.style.display = 'block';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Login';
-            }
+            btn.disabled = true; btn.textContent = 'Logging in...'; error.style.display = 'none';
+            try { await login(email, password); hideAuthModal(); init(); showToast('✓ Welcome back!'); }
+            catch (err) { error.textContent = err.message; error.style.display = 'block'; }
+            finally { btn.disabled = false; btn.textContent = 'Login'; }
         }
         
         async function handleSignup(e) {
@@ -1168,44 +971,20 @@
             const password = document.getElementById('signupPassword').value;
             const btn = document.getElementById('signupBtn');
             const error = document.getElementById('signupError');
-            
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Creating account...';
-            error.style.display = 'none';
-            
-            try {
-                await signup(email, password, name);
-                showToast('✓ Account created! Please log in.');
-                showLoginForm();
-            } catch (err) {
-                error.textContent = err.message;
-                error.style.display = 'block';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Create Account';
-            }
+            btn.disabled = true; btn.textContent = 'Creating account...'; error.style.display = 'none';
+            try { await signup(email, password, name); showToast('✓ Account created! Please log in.'); showLoginForm(); }
+            catch (err) { error.textContent = err.message; error.style.display = 'block'; }
+            finally { btn.disabled = false; btn.textContent = 'Create Account'; }
         }
 
         function init() {
             loadAuth();
             loadData();
-            
-            if (!authState.isLoggedIn) {
-                setTimeout(() => {
-                    document.getElementById('splashScreen').classList.add('hidden');
-                    showAuthModal();
-                }, 1800);
-                return;
-            }
-            
-            if (!appData.profile.athleteCode) {
-                appData.profile.athleteCode = authState.user?.athleteCode || 'MACRA-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-                saveData();
-            }
+            if (!authState.isLoggedIn) { setTimeout(() => { document.getElementById('splashScreen').classList.add('hidden'); showAuthModal(); }, 1800); return; }
+            if (!appData.profile.athleteCode) { appData.profile.athleteCode = authState.user?.athleteCode || 'MACRA-' + Math.random().toString(36).substring(2, 6).toUpperCase(); saveData(); }
             document.getElementById('userCode').textContent = appData.profile.athleteCode;
             document.getElementById('displayAthleteCode').textContent = appData.profile.athleteCode;
             document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-            document.getElementById('userName').textContent = authState.user?.name || appData.profile.name;
             calculateStreak();
             resetWeeklyPointsIfNeeded();
             renderDashboard();
@@ -1227,7 +1006,7 @@
             if (typeof SENTINEL !== 'undefined') {
                 SENTINEL.init({
                     appId: 'macra',
-                    appVersion: '1.4.0-beta',
+                    appVersion: '1.3.0-beta',
                     endpoint: 'https://sentinel-production-ae86.up.railway.app/api/telemetry',
                     enableSelfHealing: true
                 });
@@ -1469,11 +1248,7 @@
             const input = document.getElementById('unifiedInput');
             const text = input.value.trim();
             if (!text) { alert('Please enter something to log'); return; }
-            
-            if (!authState.isLoggedIn) {
-                showAuthModal();
-                return;
-            }
+            if (!authState.isLoggedIn) { showAuthModal(); return; }
 
             const btn = document.getElementById('unifiedLogBtn');
             btn.querySelector('.btn-text').style.display = 'none';
@@ -1481,39 +1256,18 @@
             btn.disabled = true;
 
             try {
-                const response = await apiCall('/api/ai/parse', {
-                    method: 'POST',
-                    body: JSON.stringify({ input: text })
-                });
-
+                const response = await apiCall('/api/ai/parse', { method: 'POST', body: JSON.stringify({ input: text }) });
                 if (!response.ok) {
                     const err = await response.json();
-                    if (response.status === 429) {
-                        throw new Error(`AI limit reached (${err.limit}/week). Upgrade for more!`);
-                    }
+                    if (response.status === 429) throw new Error(`AI limit reached (${err.limit}/week). Upgrade for more!`);
                     throw new Error(err.error || 'API request failed');
                 }
-                
                 const data = await response.json();
                 const result = data.result;
-                
-                if (!result) {
-                    throw new Error('Could not parse AI response');
-                }
-                
-                // Mark as USDA-enhanced if backend used USDA data
-                if (data.usdaEnhanced && result.type === 'food') {
-                    result.data.usdaEnhanced = true;
-                }
-                
+                if (!result) throw new Error('Could not parse AI response');
+                if (data.usdaEnhanced && result.type === 'food') result.data.usdaEnhanced = true;
                 processUnifiedResult(result, text);
                 input.value = '';
-                
-                // Show remaining quota if available
-                if (data.quota) {
-                    console.log(`AI Quota: ${data.quota.used}/${data.quota.limit} used this week`);
-                }
-                
             } catch (error) {
                 console.error('Parsing error:', error);
                 alert('Failed to parse input: ' + error.message);
@@ -2123,176 +1877,7 @@
             saveData(); 
         }
 
-        function loadSettingsForm() { 
-            document.getElementById('settingsName').value = appData.profile.name || ''; 
-            document.getElementById('goalCalories').value = appData.goals.calories; 
-            document.getElementById('goalProtein').value = appData.goals.protein; 
-            document.getElementById('goalCarbs').value = appData.goals.carbs; 
-            document.getElementById('goalFat').value = appData.goals.fat;
-            
-            // Populate account info
-            if (authState.user) {
-                document.getElementById('settingsEmail').textContent = authState.user.email || 'user@example.com';
-                const tier = authState.user.tier || 'free';
-                const tierNames = { free: 'Free', athlete: 'Athlete', pro: 'Pro', elite: 'Elite' };
-                const tierQuotas = { free: '5 AI messages/week', athlete: '50 AI messages/week', pro: '200 AI messages/week', elite: 'Unlimited AI messages' };
-                document.getElementById('settingsTier').textContent = tierNames[tier] || 'Free';
-                document.getElementById('settingsQuota').textContent = tierQuotas[tier] || '5 AI messages/week';
-            }
-        }
-        
-        async function openUpgradeModal() {
-            try {
-                const res = await apiCall('/api/stripe/tiers');
-                const data = await res.json();
-                
-                let html = '<div style="display: grid; gap: 12px;">';
-                data.tiers.filter(t => t.id !== 'free').forEach(tier => {
-                    html += `<div style="padding: 16px; background: var(--onyx); border-radius: 8px; border: 1px solid var(--white-10);">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 600;">${tier.name}</div>
-                                <div style="font-size: 12px; color: var(--white-50);">${tier.aiMessagesPerWeek} AI/week</div>
-                            </div>
-                            <button class="btn btn-primary" onclick="subscribeToPlan('${tier.id}')">$${tier.price}/mo</button>
-                        </div>
-                    </div>`;
-                });
-                html += '</div>';
-                
-                // Add beta code section
-                html += `
-                    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--white-10);">
-                        <div style="font-size: 12px; color: var(--white-50); margin-bottom: 8px;">🧪 Have a Beta Tester code?</div>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" class="form-input" id="betaCodeInput" placeholder="Enter code" style="flex: 1; text-transform: uppercase;">
-                            <button class="btn btn-ghost" onclick="redeemBetaCode()">Redeem</button>
-                        </div>
-                        <div id="betaCodeStatus" style="font-size: 11px; margin-top: 6px;"></div>
-                    </div>
-                    
-                    <div style="margin-top: 20px; text-align: center;">
-                        <button class="btn btn-ghost" onclick="document.getElementById('upgradeModal').remove(); openDonationModal();" style="font-size: 13px;">
-                            💜 Love MACRA? Show your support!
-                        </button>
-                    </div>`;
-                
-                const modal = document.createElement('div');
-                modal.className = 'modal-overlay visible';
-                modal.id = 'upgradeModal';
-                modal.innerHTML = `<div class="modal" style="max-width: 400px;">
-                    <div class="modal-header"><span class="modal-title">Upgrade Plan</span><button class="modal-close" onclick="document.getElementById('upgradeModal').remove()">×</button></div>
-                    <div class="modal-body">${html}</div>
-                </div>`;
-                document.body.appendChild(modal);
-            } catch (e) {
-                alert('Failed to load plans');
-            }
-        }
-        
-        async function subscribeToPlan(tier) {
-            try {
-                const res = await apiCall('/api/stripe/checkout', {
-                    method: 'POST',
-                    body: JSON.stringify({ tier })
-                });
-                const data = await res.json();
-                if (data.checkoutUrl) {
-                    window.location.href = data.checkoutUrl;
-                }
-            } catch (e) {
-                alert('Failed to start checkout');
-            }
-        }
-        
-        // Beta Tester Pass
-        const BETA_CODES = ['MACRA-BETA-2026', 'ELITE-TESTER', 'FOUNDER-PASS'];
-        
-        async function redeemBetaCode() {
-            const code = document.getElementById('betaCodeInput').value.trim().toUpperCase();
-            const status = document.getElementById('betaCodeStatus');
-            
-            if (!code) {
-                status.textContent = 'Please enter a code';
-                status.style.color = 'var(--prism-rose)';
-                return;
-            }
-            
-            if (BETA_CODES.includes(code)) {
-                // Update local state to elite
-                authState.user.tier = 'elite';
-                authState.user.betaTester = true;
-                saveAuth();
-                
-                status.textContent = '✓ Beta Pass activated! You now have Elite access.';
-                status.style.color = 'var(--prism-emerald)';
-                
-                // Update UI
-                document.getElementById('settingsTier').textContent = 'Elite (Beta)';
-                document.getElementById('settingsQuota').textContent = 'Unlimited AI messages';
-                
-                showToast('🎉 Elite Beta Pass Activated!');
-                
-                // Close upgrade modal if open
-                const modal = document.getElementById('upgradeModal');
-                if (modal) modal.remove();
-            } else {
-                status.textContent = 'Invalid code. Please check and try again.';
-                status.style.color = 'var(--prism-rose)';
-            }
-        }
-        
-        function openDonationModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay visible';
-            modal.id = 'donationModal';
-            modal.innerHTML = `<div class="modal" style="max-width: 420px;">
-                <div class="modal-header">
-                    <span class="modal-title">💜 Support MACRA</span>
-                    <button class="modal-close" onclick="document.getElementById('donationModal').remove()">×</button>
-                </div>
-                <div class="modal-body">
-                    <p style="color: var(--white-70); margin-bottom: 20px;">MACRA is built with love by a small team. If you're enjoying the app, consider buying us a protein shake! 💪</p>
-                    
-                    <div style="display: grid; gap: 12px;">
-                        <button class="btn btn-ghost" onclick="donate(5)" style="width: 100%; justify-content: space-between; display: flex;">
-                            <span>☕ Coffee</span><span>$5</span>
-                        </button>
-                        <button class="btn btn-ghost" onclick="donate(10)" style="width: 100%; justify-content: space-between; display: flex;">
-                            <span>🥤 Protein Shake</span><span>$10</span>
-                        </button>
-                        <button class="btn btn-ghost" onclick="donate(25)" style="width: 100%; justify-content: space-between; display: flex;">
-                            <span>🍔 Post-Workout Meal</span><span>$25</span>
-                        </button>
-                        <button class="btn btn-primary" onclick="donate(50)" style="width: 100%; justify-content: space-between; display: flex;">
-                            <span>🏆 Champion Supporter</span><span>$50</span>
-                        </button>
-                    </div>
-                    
-                    <p style="font-size: 11px; color: var(--white-30); margin-top: 16px; text-align: center;">Thank you for supporting independent fitness tech! ❤️</p>
-                </div>
-            </div>`;
-            document.body.appendChild(modal);
-        }
-        
-        async function donate(amount) {
-            try {
-                const res = await apiCall('/api/stripe/donate', {
-                    method: 'POST',
-                    body: JSON.stringify({ amount })
-                });
-                const data = await res.json();
-                if (data.checkoutUrl) {
-                    window.location.href = data.checkoutUrl;
-                } else {
-                    // Fallback to direct Stripe link if endpoint doesn't exist
-                    window.open('https://buy.stripe.com/test_donation_link', '_blank');
-                }
-            } catch (e) {
-                // Fallback - you can replace with your actual Stripe donation link
-                alert('Donation feature coming soon! For now, consider subscribing to support us. 💜');
-            }
-        }
+        function loadSettingsForm() { document.getElementById('settingsName').value = appData.profile.name || ''; document.getElementById('goalCalories').value = appData.goals.calories; document.getElementById('goalProtein').value = appData.goals.protein; document.getElementById('goalCarbs').value = appData.goals.carbs; document.getElementById('goalFat').value = appData.goals.fat; const settings = getAISettings(); if (settings.apiKey) document.getElementById('aiApiKey').value = settings.apiKey; }
         function saveProfileSettings() { appData.profile.name = document.getElementById('settingsName').value.trim() || 'Athlete'; saveData(); document.getElementById('userName').textContent = appData.profile.name; showToast('✓ Profile saved!'); }
         function saveGoals() { appData.goals.calories = parseInt(document.getElementById('goalCalories').value) || 2000; appData.goals.protein = parseInt(document.getElementById('goalProtein').value) || 150; appData.goals.carbs = parseInt(document.getElementById('goalCarbs').value) || 200; appData.goals.fat = parseInt(document.getElementById('goalFat').value) || 65; saveData(); renderDashboard(); showToast('✓ Goals saved!'); }
         function getAISettings() { return JSON.parse(localStorage.getItem(AI_SETTINGS_KEY) || '{}'); }
@@ -2409,4 +1994,147 @@
             const toast = document.createElement('div');
             toast.style.cssText = 'position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--carbon); border: 1px solid var(--prism-cyan); color: var(--white); padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 9999; animation: fadeInUp 0.3s ease;';
             toast.textContent = message;
-            document.body.ap
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+        }
+        
+        function loadSettingsForm() { 
+            document.getElementById('settingsName').value = appData.profile.name || ''; 
+            document.getElementById('goalCalories').value = appData.goals.calories; 
+            document.getElementById('goalProtein').value = appData.goals.protein; 
+            document.getElementById('goalCarbs').value = appData.goals.carbs; 
+            document.getElementById('goalFat').value = appData.goals.fat;
+            if (authState.user) {
+                const el = document.getElementById('settingsEmail');
+                if (el) el.textContent = authState.user.email || '';
+                const tierEl = document.getElementById('settingsTier');
+                if (tierEl) {
+                    const tier = authState.user.tier || 'free';
+                    const tierNames = { free: 'Free', athlete: 'Athlete', pro: 'Pro', elite: 'Elite' };
+                    tierEl.textContent = tierNames[tier] || 'Free';
+                }
+            }
+        }
+        
+        async function openUpgradeModal() {
+            let html = `<div style="padding:20px;"><h3 style="margin-bottom:16px;">Upgrade Your Plan</h3>
+                <div style="display:grid;gap:12px;">
+                    <div style="padding:16px;background:var(--onyx);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                        <div><div style="font-weight:600;">Athlete</div><div style="font-size:12px;color:var(--white-50);">50 AI/week</div></div>
+                        <button class="btn btn-primary" onclick="subscribeToPlan('athlete')">$5/mo</button>
+                    </div>
+                    <div style="padding:16px;background:var(--onyx);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                        <div><div style="font-weight:600;">Pro</div><div style="font-size:12px;color:var(--white-50);">200 AI/week</div></div>
+                        <button class="btn btn-primary" onclick="subscribeToPlan('pro')">$12/mo</button>
+                    </div>
+                    <div style="padding:16px;background:var(--onyx);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                        <div><div style="font-weight:600;">Elite</div><div style="font-size:12px;color:var(--white-50);">Unlimited AI</div></div>
+                        <button class="btn btn-primary" onclick="subscribeToPlan('elite')">$20/mo</button>
+                    </div>
+                </div>
+                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--white-10);">
+                    <div style="font-size:12px;color:var(--white-50);margin-bottom:8px;">🧪 Have a Beta Tester code?</div>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" class="form-input" id="betaCodeInput" placeholder="Enter code" style="flex:1;text-transform:uppercase;">
+                        <button class="btn btn-ghost" onclick="redeemBetaCode()">Redeem</button>
+                    </div>
+                    <div id="betaCodeStatus" style="font-size:11px;margin-top:6px;"></div>
+                </div>
+                <div style="margin-top:16px;text-align:center;">
+                    <button class="btn btn-ghost" onclick="closeModal();openDonationModal();">💜 Love MACRA? Support us!</button>
+                </div>
+            </div>`;
+            showModal(html);
+        }
+        
+        function redeemBetaCode() {
+            const code = document.getElementById('betaCodeInput').value.trim().toUpperCase();
+            const status = document.getElementById('betaCodeStatus');
+            if (!code) { status.textContent = 'Please enter a code'; status.style.color = 'var(--prism-rose)'; return; }
+            if (BETA_CODES.includes(code)) {
+                authState.user.tier = 'elite'; authState.user.betaTester = true; saveAuth();
+                status.textContent = '✓ Beta Pass activated! Elite access unlocked.'; status.style.color = 'var(--prism-emerald)';
+                showToast('🎉 Elite Beta Pass Activated!');
+                setTimeout(closeModal, 1500);
+            } else {
+                status.textContent = 'Invalid code'; status.style.color = 'var(--prism-rose)';
+            }
+        }
+        
+        async function subscribeToPlan(tier) {
+            try {
+                const res = await apiCall('/api/stripe/checkout', { method: 'POST', body: JSON.stringify({ tier }) });
+                const data = await res.json();
+                if (data.checkoutUrl) window.location.href = data.checkoutUrl;
+            } catch (e) { alert('Failed to start checkout'); }
+        }
+        
+        function openDonationModal() {
+            let html = `<div style="padding:20px;"><h3 style="margin-bottom:12px;">💜 Support MACRA</h3>
+                <p style="color:var(--white-70);margin-bottom:20px;">Love the app? Buy us a protein shake!</p>
+                <div style="display:grid;gap:12px;">
+                    <button class="btn btn-ghost" onclick="donate(5)" style="width:100%;display:flex;justify-content:space-between;"><span>☕ Coffee</span><span>$5</span></button>
+                    <button class="btn btn-ghost" onclick="donate(10)" style="width:100%;display:flex;justify-content:space-between;"><span>🥤 Protein Shake</span><span>$10</span></button>
+                    <button class="btn btn-ghost" onclick="donate(25)" style="width:100%;display:flex;justify-content:space-between;"><span>🍔 Post-Workout Meal</span><span>$25</span></button>
+                    <button class="btn btn-primary" onclick="donate(50)" style="width:100%;display:flex;justify-content:space-between;"><span>🏆 Champion</span><span>$50</span></button>
+                </div>
+            </div>`;
+            showModal(html);
+        }
+        
+        async function donate(amount) {
+            try {
+                const res = await apiCall('/api/stripe/donate', { method: 'POST', body: JSON.stringify({ amount }) });
+                const data = await res.json();
+                if (data.checkoutUrl) window.location.href = data.checkoutUrl;
+            } catch (e) { alert('Donation feature coming soon!'); }
+        }
+        
+        function showModal(content) {
+            closeModal();
+            const modal = document.createElement('div');
+            modal.id = 'dynamicModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9999;';
+            modal.innerHTML = `<div style="background:var(--carbon);border-radius:12px;max-width:400px;width:90%;max-height:90vh;overflow:auto;position:relative;">
+                <button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">×</button>
+                ${content}
+            </div>`;
+            modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+            document.body.appendChild(modal);
+        }
+        
+        function closeModal() { const m = document.getElementById('dynamicModal'); if (m) m.remove(); }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    
+    <!-- Auth Modal -->
+    <div id="authModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;align-items:center;justify-content:center;">
+        <div style="background:var(--carbon);border-radius:12px;padding:32px;max-width:400px;width:90%;">
+            <div style="text-align:center;margin-bottom:24px;">
+                <div style="font-family:var(--font-display);font-size:32px;font-weight:700;letter-spacing:4px;background:linear-gradient(135deg,var(--prism-cyan),var(--prism-violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">MACRA</div>
+                <div style="font-size:11px;color:var(--white-30);margin-top:4px;">Your Fitness. Your Data. Your Way.</div>
+            </div>
+            <div id="authLoginForm">
+                <form onsubmit="handleLogin(event)">
+                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Email</label><input type="email" id="loginEmail" class="form-input" placeholder="you@example.com" required></div>
+                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Password</label><input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required></div>
+                    <div id="loginError" style="display:none;color:var(--prism-rose);font-size:12px;margin-bottom:12px;padding:8px;background:rgba(244,63,94,0.1);border-radius:6px;"></div>
+                    <button type="submit" id="loginBtn" class="btn btn-primary" style="width:100%;">Login</button>
+                </form>
+                <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--white-50);">Don't have an account? <a href="#" onclick="showSignupForm();return false;" style="color:var(--prism-cyan);">Sign up</a></div>
+            </div>
+            <div id="authSignupForm" style="display:none;">
+                <form onsubmit="handleSignup(event)">
+                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Name</label><input type="text" id="signupName" class="form-input" placeholder="Your name" required></div>
+                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Email</label><input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" required></div>
+                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Password</label><input type="password" id="signupPassword" class="form-input" placeholder="••••••••" minlength="6" required></div>
+                    <div id="signupError" style="display:none;color:var(--prism-rose);font-size:12px;margin-bottom:12px;padding:8px;background:rgba(244,63,94,0.1);border-radius:6px;"></div>
+                    <button type="submit" id="signupBtn" class="btn btn-primary" style="width:100%;">Create Account</button>
+                </form>
+                <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--white-50);">Already have an account? <a href="#" onclick="showLoginForm();return false;" style="color:var(--prism-cyan);">Log in</a></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
