@@ -334,6 +334,8 @@
         .activity-badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
         .activity-badge.workout { background: rgba(139, 92, 246, 0.15); color: var(--prism-violet); }
         .activity-badge.nutrition { background: rgba(16, 185, 129, 0.15); color: var(--prism-emerald); }
+        .activity-badge.weight { background: rgba(6, 182, 212, 0.15); color: var(--prism-cyan); }
+        .activity-badge.cardio { background: rgba(251, 146, 60, 0.15); color: var(--prism-amber); }
         .activity-content { margin-bottom: 12px; }
         .activity-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
         .activity-details { font-size: 12px; color: var(--white-50); }
@@ -605,6 +607,49 @@
                         <span class="hint-chip" onclick="setHint('chicken salad with ranch')">🥗 Lunch</span>
                         <span class="hint-chip" onclick="setHint('protein shake')">🥤 Shake</span>
                     </div>
+                    
+                    <!-- Smart Workout Panel -->
+                    <div id="smartWorkoutPanel" style="display: none; margin-top: 16px; padding: 16px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1)); border: 1px solid var(--prism-violet); border-radius: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">💪</span>
+                                <div>
+                                    <div style="font-weight: 600; font-size: 14px;">Active Workout</div>
+                                    <div id="sessionExerciseCount" style="font-size: 11px; color: var(--white-50);">0 exercises logged</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-ghost btn-sm" onclick="endWorkoutSession()" style="font-size: 11px;">End Workout</button>
+                        </div>
+                        
+                        <!-- Last Exercise Quick Add -->
+                        <div id="lastExercisePanel" style="display: none; padding: 12px; background: var(--carbon); border-radius: 8px; margin-bottom: 12px;">
+                            <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">Last Exercise: <span id="lastExerciseName" style="color: var(--prism-cyan);"></span></div>
+                            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+                                <div style="flex: 1;">
+                                    <label style="font-size: 10px; color: var(--white-30);">Weight</label>
+                                    <input type="number" id="quickWeight" class="form-input" style="padding: 8px; font-size: 14px;" placeholder="185">
+                                </div>
+                                <div style="width: 60px;">
+                                    <label style="font-size: 10px; color: var(--white-30);">Reps</label>
+                                    <input type="number" id="quickReps" class="form-input" style="padding: 8px; font-size: 14px;" placeholder="8">
+                                </div>
+                                <div style="width: 60px;">
+                                    <label style="font-size: 10px; color: var(--white-30);">Sets</label>
+                                    <input type="number" id="quickSets" class="form-input" style="padding: 8px; font-size: 14px;" value="1">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-primary btn-sm" onclick="quickAddSameSet()" style="flex: 1;">+ Same Again</button>
+                                <button class="btn btn-ghost btn-sm" onclick="quickAddEditedSet()" style="flex: 1;">+ Add Set</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Exercise Suggestions -->
+                        <div id="exerciseSuggestions" style="display: none;">
+                            <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">💡 Based on your patterns:</div>
+                            <div id="suggestionChips" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="macro-summary">
                     <div class="macro-card calories"><div class="macro-card-value" id="macroCalories">0</div><div class="macro-card-label">Calories</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroCaloriesBar" style="width: 0%;"></div></div></div>
@@ -624,6 +669,7 @@
                     <button class="history-filter" onclick="filterHistory('food')">🥗 Food</button>
                     <button class="history-filter" onclick="filterHistory('workout')">💪 Workouts</button>
                     <button class="history-filter" onclick="filterHistory('cardio')">🏃 Cardio</button>
+                    <button class="history-filter" onclick="filterHistory('weight')">⚖️ Weight</button>
                 </div>
                 <div class="card"><div id="historyList"><div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No history yet</div><div class="empty-state-subtext">Start logging to build your history</div></div></div></div>
             </div>
@@ -807,6 +853,17 @@
                     <div class="card-header"><div class="card-title">🍽️ Recent Meals</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
                     <div id="nutritionMealsList"><div class="empty-state"><div class="empty-state-icon">🥗</div><div class="empty-state-text">No meals logged yet</div><div class="empty-state-subtext">Log food from the Dashboard to see your meal history</div></div></div>
                 </div>
+                
+                <!-- Micronutrients Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">💊 Today's Micronutrients</div>
+                        <span style="font-size: 10px; color: var(--white-30);">From supplements & food</span>
+                    </div>
+                    <div id="micronutrientsSummary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+                        <div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">💊</div><div class="empty-state-text">No micronutrients tracked yet</div><div class="empty-state-subtext">Log supplements like Pre-Kaged or Carnivore Protein to track vitamins</div></div>
+                    </div>
+                </div>
             </div>
             
             <!-- ═══════════════════════════════════════════════════════════
@@ -890,7 +947,7 @@
                 </div>
                 
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Profile</div><div class="form-group"><label class="form-label">Display Name</label><input type="text" class="form-input" id="settingsName" placeholder="Your name"></div><button class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button></div>
-                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--white-10);"><div class="form-row"><div class="form-group"><label class="form-label">⚖️ Current Weight (lbs)</label><input type="number" class="form-input" id="goalCurrentWeight" placeholder="185"></div><div class="form-group"><label class="form-label">🎯 Target Weight (lbs)</label><input type="number" class="form-input" id="goalTargetWeight" placeholder="175"></div></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Data</div><div style="display: flex; gap: 12px; flex-wrap: wrap;"><button class="btn btn-ghost" onclick="exportAllData()">📤 Export Data</button><button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">🗑️ Clear All Data</button></div></div>
                 
                 <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1)); border: 1px solid rgba(139, 92, 246, 0.3);">
@@ -917,7 +974,17 @@
             activities: {},
             prs: {},
             friends: [],
-            stats: { streak: 0, points: 0, weeklyPoints: 0 }
+            stats: { streak: 0, points: 0, weeklyPoints: 0 },
+            exerciseMemory: {}, // Stores exercise patterns: { "bench press": { lastWeight: 185, lastReps: 5, lastSets: 3, frequency: 12, usualNextExercise: "incline dumbbell" } }
+            workoutSessions: {} // Track active workout sessions by date
+        };
+        
+        // Current workout session state
+        let currentSession = {
+            active: false,
+            startTime: null,
+            exercises: [],
+            lastExercise: null
         };
         
         let authState = {
@@ -1049,6 +1116,10 @@
             setupNavigation();
             setTimeout(() => document.getElementById('splashScreen').classList.add('hidden'), 1800);
             initSentinel();
+            // Load data from cloud after initial render
+            setTimeout(() => loadFromCloud().then(() => {
+                renderDashboard(); renderTimeline(); renderHistory();
+            }), 2000);
         }
 
         function initSentinel() {
@@ -1083,6 +1154,76 @@
 
         function saveData() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            // Sync to cloud in background (debounced)
+            if (authState.isLoggedIn) {
+                clearTimeout(window.syncTimeout);
+                window.syncTimeout = setTimeout(() => syncToCloud(), 2000);
+            }
+        }
+        
+        async function syncToCloud() {
+            if (!authState.isLoggedIn) return;
+            try {
+                await apiCall('/api/user/sync', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        activities: appData.activities,
+                        goals: appData.goals,
+                        profile: appData.profile,
+                        stats: appData.stats,
+                        prs: appData.prs,
+                        weightHistory: appData.weightHistory
+                    })
+                });
+                console.log('✓ Data synced to cloud');
+            } catch (err) {
+                console.log('Cloud sync skipped:', err.message);
+            }
+        }
+        
+        async function loadFromCloud() {
+            if (!authState.isLoggedIn) return;
+            try {
+                const response = await apiCall('/api/user/data');
+                if (response.ok) {
+                    const cloudData = await response.json();
+                    if (cloudData && cloudData.activities) {
+                        // Merge cloud data with local (cloud wins for conflicts)
+                        mergeCloudData(cloudData);
+                        showToast('☁️ Data synced from cloud');
+                    }
+                }
+            } catch (err) {
+                console.log('Cloud load skipped:', err.message);
+            }
+        }
+        
+        function mergeCloudData(cloudData) {
+            // Merge activities (combine, dedupe by id)
+            if (cloudData.activities) {
+                for (const [date, activities] of Object.entries(cloudData.activities)) {
+                    if (!appData.activities[date]) {
+                        appData.activities[date] = activities;
+                    } else {
+                        const existingIds = new Set(appData.activities[date].map(a => a.id));
+                        activities.forEach(a => {
+                            if (!existingIds.has(a.id)) appData.activities[date].push(a);
+                        });
+                    }
+                }
+            }
+            // Merge other data (cloud wins)
+            if (cloudData.goals) appData.goals = { ...appData.goals, ...cloudData.goals };
+            if (cloudData.profile) appData.profile = { ...appData.profile, ...cloudData.profile };
+            if (cloudData.stats) appData.stats = { ...appData.stats, ...cloudData.stats };
+            if (cloudData.prs) appData.prs = { ...appData.prs, ...cloudData.prs };
+            if (cloudData.weightHistory) {
+                const existingIds = new Set(appData.weightHistory.map(w => w.timestamp));
+                cloudData.weightHistory.forEach(w => {
+                    if (!existingIds.has(w.timestamp)) appData.weightHistory.push(w);
+                });
+            }
+            saveData();
         }
 
         function resetWeeklyPointsIfNeeded() {
@@ -1125,6 +1266,11 @@
             const navLink = document.querySelector(`[data-view="${viewId}"]`);
             if (navLink) navLink.classList.add('active');
             
+            // Update bottom nav active state
+            document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('active'));
+            const bottomNavBtn = document.querySelector(`.bottom-nav-item[data-view="${viewId}"]`);
+            if (bottomNavBtn) bottomNavBtn.classList.add('active');
+            
             // Render view-specific data
             if (viewId === 'intelligence') renderIntelligence();
             if (viewId === 'nutrition') renderNutritionAnalytics();
@@ -1132,6 +1278,14 @@
             if (viewId === 'dashboard') { renderDashboard(); renderTimeline(); }
             if (viewId === 'history') renderHistory();
             if (viewId === 'prs') renderPRs();
+        }
+        
+        function focusLogInput() {
+            switchView('dashboard');
+            setTimeout(() => {
+                const input = document.getElementById('unifiedInput');
+                if (input) { input.focus(); input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            }, 100);
         }
 
         function toggleSidebar() {
@@ -1345,6 +1499,11 @@
             
             appData.activities[today].push(activity);
             
+            // Handle workout session tracking
+            if (result.type === 'workout' && result.data.exercises) {
+                handleWorkoutSession(result.data.exercises);
+            }
+            
             // Store weight history separately for easy tracking
             if (result.type === 'weight' && result.data.weight) {
                 if (!appData.weightHistory) appData.weightHistory = [];
@@ -1358,11 +1517,11 @@
                 });
             }
             
-            // Award points
+            // Award points - reduced for exercises within same session
             let points = 0;
             if (result.type === 'food') points = 10;
             else if (result.type === 'cardio') points = 20;
-            else if (result.type === 'workout') points = 25;
+            else if (result.type === 'workout') points = currentSession.exercises.length === 1 ? 25 : 10; // First exercise gets more
             else if (result.type === 'weight') points = 5;
             
             appData.stats.points += points;
@@ -1379,10 +1538,155 @@
             renderTimeline();
             renderHistory();
             renderSocial();
+            updateSmartWorkoutPanel();
             
             const icons = { food: '🥗', workout: '💪', cardio: '🏃', weight: '⚖️' };
             const icon = icons[result.type] || '✓';
             showToast(`${icon} ${result.type === 'weight' ? 'Weight logged!' : `+${points} points`}`);
+        }
+        
+        // ═══════════════════════════════════════════════════════════════
+        // INTELLIGENT WORKOUT SESSION TRACKING
+        // ═══════════════════════════════════════════════════════════════
+        
+        function handleWorkoutSession(exercises) {
+            const now = new Date();
+            
+            // Start or continue session (sessions expire after 2 hours of inactivity)
+            if (!currentSession.active || (now - new Date(currentSession.startTime)) > 2 * 60 * 60 * 1000) {
+                currentSession = {
+                    active: true,
+                    startTime: now.toISOString(),
+                    exercises: [],
+                    lastExercise: null
+                };
+            }
+            
+            // Add exercises to session and update memory
+            exercises.forEach(ex => {
+                const exKey = normalizeExerciseName(ex.name);
+                
+                // Update exercise memory
+                if (!appData.exerciseMemory) appData.exerciseMemory = {};
+                if (!appData.exerciseMemory[exKey]) {
+                    appData.exerciseMemory[exKey] = { frequency: 0, history: [] };
+                }
+                
+                appData.exerciseMemory[exKey].lastWeight = ex.weight;
+                appData.exerciseMemory[exKey].lastReps = ex.reps;
+                appData.exerciseMemory[exKey].lastSets = ex.sets;
+                appData.exerciseMemory[exKey].frequency++;
+                appData.exerciseMemory[exKey].lastPerformed = getTodayKey();
+                
+                // Track exercise sequence for suggestions
+                if (currentSession.lastExercise) {
+                    const lastKey = normalizeExerciseName(currentSession.lastExercise.name);
+                    if (!appData.exerciseMemory[lastKey].followedBy) {
+                        appData.exerciseMemory[lastKey].followedBy = {};
+                    }
+                    appData.exerciseMemory[lastKey].followedBy[exKey] = 
+                        (appData.exerciseMemory[lastKey].followedBy[exKey] || 0) + 1;
+                }
+                
+                currentSession.exercises.push(ex);
+                currentSession.lastExercise = ex;
+            });
+        }
+        
+        function normalizeExerciseName(name) {
+            return name.toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+        
+        function updateSmartWorkoutPanel() {
+            const panel = document.getElementById('smartWorkoutPanel');
+            const lastPanel = document.getElementById('lastExercisePanel');
+            const suggestionsPanel = document.getElementById('exerciseSuggestions');
+            
+            if (currentSession.active && currentSession.exercises.length > 0) {
+                panel.style.display = 'block';
+                document.getElementById('sessionExerciseCount').textContent = 
+                    `${currentSession.exercises.length} exercise${currentSession.exercises.length > 1 ? 's' : ''} logged`;
+                
+                // Show last exercise quick-add
+                if (currentSession.lastExercise) {
+                    lastPanel.style.display = 'block';
+                    document.getElementById('lastExerciseName').textContent = currentSession.lastExercise.name;
+                    document.getElementById('quickWeight').value = currentSession.lastExercise.weight || '';
+                    document.getElementById('quickReps').value = currentSession.lastExercise.reps || '';
+                    document.getElementById('quickSets').value = 1;
+                }
+                
+                // Show exercise suggestions
+                const suggestions = getExerciseSuggestions();
+                if (suggestions.length > 0) {
+                    suggestionsPanel.style.display = 'block';
+                    document.getElementById('suggestionChips').innerHTML = suggestions.map(s => 
+                        `<span class="hint-chip" onclick="setHint('${s.name} ${s.weight || ''}lbs ${s.sets || 3}x${s.reps || 8}')" style="font-size: 11px;">${s.name}</span>`
+                    ).join('');
+                } else {
+                    suggestionsPanel.style.display = 'none';
+                }
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+        
+        function getExerciseSuggestions() {
+            if (!currentSession.lastExercise || !appData.exerciseMemory) return [];
+            
+            const lastKey = normalizeExerciseName(currentSession.lastExercise.name);
+            const lastMemory = appData.exerciseMemory[lastKey];
+            
+            if (!lastMemory || !lastMemory.followedBy) return [];
+            
+            // Get top 3 exercises that usually follow this one
+            const suggestions = Object.entries(lastMemory.followedBy)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 3)
+                .map(([exKey, count]) => {
+                    const mem = appData.exerciseMemory[exKey];
+                    // Convert key back to readable name
+                    const name = exKey.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                    return {
+                        name,
+                        weight: mem?.lastWeight,
+                        reps: mem?.lastReps,
+                        sets: mem?.lastSets
+                    };
+                });
+            
+            return suggestions;
+        }
+        
+        function quickAddSameSet() {
+            if (!currentSession.lastExercise) return;
+            const ex = currentSession.lastExercise;
+            const input = `${ex.name} ${ex.weight}lbs 1x${ex.reps}`;
+            document.getElementById('unifiedInput').value = input;
+            parseUnifiedInput();
+        }
+        
+        function quickAddEditedSet() {
+            if (!currentSession.lastExercise) return;
+            const weight = document.getElementById('quickWeight').value || currentSession.lastExercise.weight;
+            const reps = document.getElementById('quickReps').value || currentSession.lastExercise.reps;
+            const sets = document.getElementById('quickSets').value || 1;
+            const input = `${currentSession.lastExercise.name} ${weight}lbs ${sets}x${reps}`;
+            document.getElementById('unifiedInput').value = input;
+            parseUnifiedInput();
+        }
+        
+        function endWorkoutSession() {
+            if (!currentSession.active) return;
+            
+            const exerciseCount = currentSession.exercises.length;
+            const totalVolume = currentSession.exercises.reduce((sum, ex) => 
+                sum + (ex.weight || 0) * (ex.sets || 1) * (ex.reps || 1), 0);
+            
+            currentSession = { active: false, startTime: null, exercises: [], lastExercise: null };
+            updateSmartWorkoutPanel();
+            
+            showToast(`🏁 Workout complete! ${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs total`);
         }
 
         function openPhotoScanner() { const settings = getAISettings(); if (!settings.apiKey) { alert('Please configure your Claude API key in Settings'); switchView('settings'); return; } document.getElementById('photoInput').click(); }
@@ -1507,7 +1811,7 @@
             if (activities.length === 0) { container.innerHTML = '<div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food, workouts, or weight</div></div>'; return; }
             const sorted = [...activities].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             container.innerHTML = '<div class="timeline-list">' + sorted.map(activity => {
-                let icon, title, details, badgeClass, usdaBadge = '';
+                let icon, title, details, badgeClass, usdaBadge = '', microBadges = '';
                 if (activity.type === 'food') { 
                     icon = '🥗'; badgeClass = 'food'; 
                     const items = activity.data.items || []; 
@@ -1517,11 +1821,22 @@
                     if (activity.data.usdaEnhanced) {
                         usdaBadge = '<span style="font-size: 9px; background: rgba(16, 185, 129, 0.2); color: var(--prism-emerald); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">USDA ✓</span>';
                     }
+                    // Check for micronutrients
+                    const micro = items[0]?.micronutrients || {};
+                    const microList = [];
+                    if (micro.caffeine) microList.push(`☕ ${micro.caffeine}mg caffeine`);
+                    if (micro.creatine) microList.push(`💪 ${micro.creatine}g creatine`);
+                    if (micro.vitaminB12) microList.push(`💊 B12`);
+                    if (micro.vitaminC) microList.push(`🍊 Vit C`);
+                    if (micro.iron) microList.push(`🔩 Iron`);
+                    if (microList.length > 0) {
+                        microBadges = `<div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">${microList.slice(0, 3).map(m => `<span style="font-size: 9px; background: rgba(139, 92, 246, 0.15); color: var(--prism-violet); padding: 2px 6px; border-radius: 4px;">${m}</span>`).join('')}</div>`;
+                    }
                 }
                 else if (activity.type === 'workout') { icon = '💪'; badgeClass = 'workout'; const exercises = activity.data.exercises || []; title = exercises.map(e => e.name).join(', ') || 'Workout'; const totalVolume = exercises.reduce((sum, e) => sum + (e.weight * e.sets * e.reps), 0); details = `${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs volume`; }
                 else if (activity.type === 'cardio') { icon = '🏃'; badgeClass = 'workout'; title = activity.data.activity || 'Cardio'; details = `${activity.data.duration || 0} min`; if (activity.data.distance) details += ` • ${activity.data.distance} miles`; }
                 else if (activity.type === 'weight') { icon = '⚖️'; badgeClass = 'weight'; title = `${activity.data.weight} ${activity.data.unit || 'lbs'}`; details = activity.data.bodyFat ? `Body fat: ${activity.data.bodyFat}%` : (activity.data.note || 'Weigh-in'); }
-                return `<div class="timeline-item ${activity.type}"><div class="timeline-time">${activity.time}</div><div class="timeline-icon">${icon}</div><div class="timeline-content"><div class="timeline-content-title">${title}${usdaBadge}</div><div class="timeline-content-details">${details}</div></div><span class="timeline-badge ${badgeClass}">${activity.type}</span><button class="timeline-delete" onclick="deleteActivity('${today}', ${activity.id})">×</button></div>`;
+                return `<div class="timeline-item ${activity.type}"><div class="timeline-time">${activity.time}</div><div class="timeline-icon">${icon}</div><div class="timeline-content"><div class="timeline-content-title">${title}${usdaBadge}</div><div class="timeline-content-details">${details}</div>${microBadges}</div><span class="timeline-badge ${badgeClass}">${activity.type}</span><button class="timeline-delete" onclick="deleteActivity('${today}', ${activity.id})">×</button></div>`;
             }).join('') + '</div>';
         }
 
@@ -1723,10 +2038,69 @@
             
             // Render recent meals
             renderNutritionMeals(periodData.meals.slice(0, 5));
+            
+            // Render micronutrients
+            renderMicronutrients(periodData.micronutrients);
+        }
+        
+        function renderMicronutrients(micro) {
+            const container = document.getElementById('micronutrientsSummary');
+            
+            // Define micronutrient display info with recommended daily values
+            const microInfo = {
+                caffeine: { name: 'Caffeine', unit: 'mg', icon: '☕', color: '#F59E0B', rdv: 400 },
+                creatine: { name: 'Creatine', unit: 'g', icon: '💪', color: '#8B5CF6', rdv: 5 },
+                vitaminC: { name: 'Vitamin C', unit: 'mg', icon: '🍊', color: '#F97316', rdv: 90 },
+                vitaminD: { name: 'Vitamin D', unit: 'mcg', icon: '☀️', color: '#FBBF24', rdv: 20 },
+                vitaminB12: { name: 'Vitamin B12', unit: 'mcg', icon: '💊', color: '#EC4899', rdv: 2.4 },
+                calcium: { name: 'Calcium', unit: 'mg', icon: '🦴', color: '#F3F4F6', rdv: 1000 },
+                iron: { name: 'Iron', unit: 'mg', icon: '🔩', color: '#EF4444', rdv: 18 },
+                magnesium: { name: 'Magnesium', unit: 'mg', icon: '⚡', color: '#10B981', rdv: 400 },
+                potassium: { name: 'Potassium', unit: 'mg', icon: '🍌', color: '#F59E0B', rdv: 3500 },
+                sodium: { name: 'Sodium', unit: 'mg', icon: '🧂', color: '#6B7280', rdv: 2300 },
+                zinc: { name: 'Zinc', unit: 'mg', icon: '🛡️', color: '#3B82F6', rdv: 11 }
+            };
+            
+            // Filter to only show nutrients with values
+            const activeMicros = Object.entries(micro).filter(([key, value]) => value > 0);
+            
+            if (activeMicros.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">💊</div><div class="empty-state-text">No micronutrients tracked yet</div><div class="empty-state-subtext">Log supplements like Pre-Kaged or Carnivore Protein to track vitamins</div></div>';
+                return;
+            }
+            
+            container.innerHTML = activeMicros.map(([key, value]) => {
+                const info = microInfo[key] || { name: key, unit: '', icon: '💊', color: '#8B5CF6', rdv: 100 };
+                const percent = Math.min((value / info.rdv) * 100, 100);
+                return `
+                    <div style="background: var(--onyx); border-radius: 8px; padding: 12px; border-left: 3px solid ${info.color};">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <span style="font-size: 16px;">${info.icon}</span>
+                            <span style="font-size: 12px; color: var(--white-70);">${info.name}</span>
+                        </div>
+                        <div style="font-family: var(--font-display); font-size: 18px; color: ${info.color};">
+                            ${value}${info.unit}
+                        </div>
+                        <div style="margin-top: 6px;">
+                            <div style="height: 4px; background: var(--carbon); border-radius: 2px; overflow: hidden;">
+                                <div style="height: 100%; width: ${percent}%; background: ${info.color}; border-radius: 2px;"></div>
+                            </div>
+                            <div style="font-size: 9px; color: var(--white-30); margin-top: 4px;">${Math.round(percent)}% of daily value</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function getNutritionPeriodData(period) {
-            const result = { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, mealsLogged: 0, daysTracked: 0, meals: [] };
+            const result = { 
+                totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, 
+                mealsLogged: 0, daysTracked: 0, meals: [],
+                micronutrients: {
+                    caffeine: 0, creatine: 0, vitaminC: 0, vitaminD: 0, vitaminB12: 0,
+                    calcium: 0, iron: 0, magnesium: 0, potassium: 0, sodium: 0, zinc: 0
+                }
+            };
             const periodDays = { daily: 1, weekly: 7, monthly: 30, quarterly: 90, annual: 365 };
             const days = periodDays[period];
             
@@ -1749,6 +2123,15 @@
                     result.totalFat += totals.fat || 0;
                     result.mealsLogged++;
                     result.meals.push({ ...a, dateKey: key });
+                    
+                    // Collect micronutrients from each food item
+                    const items = a.data?.items || [];
+                    items.forEach(item => {
+                        const micro = item.micronutrients || {};
+                        Object.keys(result.micronutrients).forEach(key => {
+                            result.micronutrients[key] += micro[key] || 0;
+                        });
+                    });
                 });
             }
             
@@ -1897,20 +2280,35 @@
             const feedContainer = document.getElementById('activityFeed');
             const feedItems = [];
             const today = getTodayKey();
-            (appData.activities[today] || []).forEach(a => { feedItems.push({ user: appData.profile.name || 'You', avatar: (appData.profile.name || 'Y').charAt(0), isYou: true, time: a.time, type: a.type, activity: a }); });
+            const userName = appData.profile.name || (authState.user?.name) || 'Athlete';
+            const userAvatar = userName.charAt(0).toUpperCase();
+            (appData.activities[today] || []).forEach(a => { feedItems.push({ user: userName, avatar: userAvatar, isYou: true, time: a.time, type: a.type, activity: a }); });
             appData.friends.forEach(friend => { if (Math.random() > 0.5) { feedItems.push({ user: friend.name, avatar: friend.name.charAt(0), isYou: false, time: Math.floor(Math.random() * 12) + 1 + ' hours ago', type: Math.random() > 0.5 ? 'workout' : 'food', simulated: true, activity: { data: Math.random() > 0.5 ? { exercises: [{ name: 'Push Day', sets: 4, reps: 10, weight: 135 }] } : { totals: { calories: 450, protein: 35 } } } }); } });
             if (feedItems.length === 0) { feedContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📰</div><div class="empty-state-text">No activity yet</div></div>'; return; }
             feedContainer.innerHTML = feedItems.slice(0, 10).map(item => {
-                const badge = item.type === 'workout' ? 'workout' : 'nutrition';
-                let title = item.type === 'food' ? 'Logged meal' : 'Completed workout';
-                let details = item.type === 'food' ? `${item.activity?.data?.totals?.calories || 450} cal` : ((item.activity?.data?.exercises || []).map(e => e.name).join(', ') || 'Strength training');
-                return `<div class="activity-item"><div class="activity-header"><div class="activity-avatar">${item.avatar}</div><div class="activity-meta"><div class="activity-user">${item.user}${item.isYou ? ' (You)' : ''}</div><div class="activity-time">${item.time}</div></div><span class="activity-badge ${badge}">${item.type}</span></div><div class="activity-content"><div class="activity-title">${title}</div><div class="activity-details">${details}</div></div><div class="activity-actions"><button class="activity-btn" onclick="this.classList.toggle('liked')">🔥 Kudos</button><button class="activity-btn">💬 Comment</button></div></div>`;
+                let badge, title, details;
+                if (item.type === 'food') {
+                    badge = 'nutrition'; title = 'Logged meal';
+                    details = `${item.activity?.data?.totals?.calories || 450} cal • ${item.activity?.data?.totals?.protein || 0}g protein`;
+                } else if (item.type === 'weight') {
+                    badge = 'weight'; title = 'Weighed in';
+                    details = `${item.activity?.data?.weight || '?'} ${item.activity?.data?.unit || 'lbs'}`;
+                } else if (item.type === 'cardio') {
+                    badge = 'cardio'; title = 'Completed cardio';
+                    details = `${item.activity?.data?.activity || 'Cardio'} • ${item.activity?.data?.duration || '?'} min`;
+                } else {
+                    badge = 'workout'; title = 'Completed workout';
+                    details = (item.activity?.data?.exercises || []).map(e => e.name).join(', ') || 'Strength training';
+                }
+                return `<div class="activity-item"><div class="activity-header"><div class="activity-avatar">${item.avatar}</div><div class="activity-meta"><div class="activity-user">${item.user}${item.isYou ? ' (You)' : ''}</div><div class="activity-time">${item.time}</div></div><span class="activity-badge ${badge}">${item.type.toUpperCase()}</span></div><div class="activity-content"><div class="activity-title">${title}</div><div class="activity-details">${details}</div></div><div class="activity-actions"><button class="activity-btn" onclick="this.classList.toggle('liked')">🔥 Kudos</button><button class="activity-btn">💬 Comment</button></div></div>`;
             }).join('');
         }
 
         function renderLeaderboard() {
             const container = document.getElementById('leaderboardList');
-            const entries = [{ name: appData.profile.name || 'You', avatar: (appData.profile.name || 'Y').charAt(0), streak: appData.stats.streak, points: appData.stats.weeklyPoints, isYou: true }, ...appData.friends.map(f => ({ name: f.name, avatar: f.name.charAt(0), streak: f.streak, points: f.weeklyPoints, isYou: false }))];
+            const userName = appData.profile.name || (authState.user?.name) || 'Athlete';
+            const userAvatar = userName.charAt(0).toUpperCase();
+            const entries = [{ name: userName, avatar: userAvatar, streak: appData.stats.streak, points: appData.stats.weeklyPoints, isYou: true }, ...appData.friends.map(f => ({ name: f.name, avatar: f.name.charAt(0), streak: f.streak, points: f.weeklyPoints, isYou: false }))];
             entries.sort((a, b) => b.points - a.points);
             container.innerHTML = entries.map((entry, index) => {
                 const rank = index + 1;
@@ -1943,10 +2341,9 @@
             saveData(); 
         }
 
-        function loadSettingsForm() { document.getElementById('settingsName').value = appData.profile.name || ''; document.getElementById('goalCalories').value = appData.goals.calories; document.getElementById('goalProtein').value = appData.goals.protein; document.getElementById('goalCarbs').value = appData.goals.carbs; document.getElementById('goalFat').value = appData.goals.fat; const settings = getAISettings(); if (settings.apiKey) document.getElementById('aiApiKey').value = settings.apiKey; }
         function saveProfileSettings() { appData.profile.name = document.getElementById('settingsName').value.trim() || 'Athlete'; saveData(); document.getElementById('userName').textContent = appData.profile.name; showToast('✓ Profile saved!'); }
-        function saveGoals() { appData.goals.calories = parseInt(document.getElementById('goalCalories').value) || 2000; appData.goals.protein = parseInt(document.getElementById('goalProtein').value) || 150; appData.goals.carbs = parseInt(document.getElementById('goalCarbs').value) || 200; appData.goals.fat = parseInt(document.getElementById('goalFat').value) || 65; saveData(); renderDashboard(); showToast('✓ Goals saved!'); }
-        function getAISettings() { return JSON.parse(localStorage.getItem(AI_SETTINGS_KEY) || '{}'); }
+        function saveGoals() { appData.goals.calories = parseInt(document.getElementById('goalCalories').value) || 2000; appData.goals.protein = parseInt(document.getElementById('goalProtein').value) || 150; appData.goals.carbs = parseInt(document.getElementById('goalCarbs').value) || 200; appData.goals.fat = parseInt(document.getElementById('goalFat').value) || 65; appData.goals.currentWeight = parseFloat(document.getElementById('goalCurrentWeight').value) || null; appData.goals.targetWeight = parseFloat(document.getElementById('goalTargetWeight').value) || null; saveData(); renderDashboard(); showToast('✓ Goals saved!'); }
+        function getAISettings() { return JSON.parse(localStorage.getItem('macra_ai_settings') || '{}'); }
         function loadAISettings() { 
             const settings = getAISettings(); 
             if (settings.apiKey) { 
@@ -2070,6 +2467,8 @@
             document.getElementById('goalProtein').value = appData.goals.protein; 
             document.getElementById('goalCarbs').value = appData.goals.carbs; 
             document.getElementById('goalFat').value = appData.goals.fat;
+            if (appData.goals.currentWeight) document.getElementById('goalCurrentWeight').value = appData.goals.currentWeight;
+            if (appData.goals.targetWeight) document.getElementById('goalTargetWeight').value = appData.goals.targetWeight;
             if (authState.user) {
                 const el = document.getElementById('settingsEmail');
                 if (el) el.textContent = authState.user.email || '';
@@ -2173,6 +2572,39 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
+    
+    <!-- Bottom Navigation (Mobile) -->
+    <nav id="bottomNav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--carbon);border-top:1px solid var(--white-10);padding:8px 0 max(8px, env(safe-area-inset-bottom));z-index:1000;">
+        <div style="display:flex;justify-content:space-around;align-items:center;">
+            <button onclick="switchView('dashboard')" class="bottom-nav-item active" data-view="dashboard" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--white-50);padding:8px 16px;cursor:pointer;">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                <span style="font-size:10px;">Home</span>
+            </button>
+            <button onclick="focusLogInput()" class="bottom-nav-item" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--white-50);padding:8px 16px;cursor:pointer;">
+                <div style="width:48px;height:48px;background:linear-gradient(135deg,var(--prism-cyan),var(--prism-violet));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:-16px 0;">
+                    <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </div>
+                <span style="font-size:10px;margin-top:8px;">Log</span>
+            </button>
+            <button onclick="switchView('social')" class="bottom-nav-item" data-view="social" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--white-50);padding:8px 16px;cursor:pointer;">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span style="font-size:10px;">Social</span>
+            </button>
+            <button onclick="switchView('settings')" class="bottom-nav-item" data-view="settings" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--white-50);padding:8px 16px;cursor:pointer;">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span style="font-size:10px;">Profile</span>
+            </button>
+        </div>
+    </nav>
+    
+    <style>
+        @media (max-width: 768px) {
+            #bottomNav { display: block !important; }
+            .sidebar { display: none !important; }
+            .main-content { margin-left: 0 !important; padding-bottom: 80px !important; }
+            .bottom-nav-item.active { color: var(--prism-cyan) !important; }
+        }
+    </style>
     
     <!-- Auth Modal -->
     <div id="authModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;align-items:center;justify-content:center;">
