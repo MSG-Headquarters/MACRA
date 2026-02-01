@@ -688,6 +688,8 @@
                     <div class="macro-card carbs"><div class="macro-card-value" id="macroCarbs">0g</div><div class="macro-card-label">Carbs</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroCarbsBar" style="width: 0%;"></div></div></div>
                     <div class="macro-card fat"><div class="macro-card-value" id="macroFat">0g</div><div class="macro-card-label">Fat</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroFatBar" style="width: 0%;"></div></div></div>
                 </div>
+                <div class="card" id="v2WorkoutPanel"></div>
+                <div class="card" id="v2NutritionPanel"></div>
                 <div class="timeline-card">
                     <div class="timeline-header"><div class="timeline-title">📅 Today's Activity</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
                     <div id="todayTimeline"><div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food or workouts</div></div></div>
@@ -1341,7 +1343,7 @@
     <div id="prCelebration" style="display: none;"><div class="pr-celebration"><div class="pr-celebration-icon">🏆</div><div class="pr-celebration-title">NEW PR!</div><div class="pr-celebration-detail" id="prCelebrationExercise"></div><div class="pr-celebration-value" id="prCelebrationValue"></div></div></div>
     
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-        const STORAGE_KEY = 'macra-v2.0';
+        const STORAGE_KEY = 'macra-v1.4';
         const AUTH_KEY = 'macra_auth';
         const API_BASE = 'https://macra-backend-production.up.railway.app';
         const BETA_CODES = ['MACRA-BETA-2026', 'ELITE-TESTER', 'FOUNDER-PASS'];
