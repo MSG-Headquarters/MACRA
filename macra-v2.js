@@ -963,3 +963,4 @@ if (document.readyState === 'loading') {
 
 console.log('📦 MACRA v2.0 module loaded');
 
+
