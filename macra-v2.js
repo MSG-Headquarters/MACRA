@@ -679,7 +679,13 @@ async function initV2() {
     // Check if logged in
     // Use authState from main app instead of parsing localStorage
     if (typeof authState === 'undefined' || !authState.isLoggedIn) {
-        console.log('Auth not ready, retrying in 1s...'; if (typeof window.v2RetryCount === 'undefined') window.v2RetryCount = 0; window.v2RetryCount++; if (window.v2RetryCount > 10) { console.log('V2 init: giving up after 10 retries'); return; });
+        if (typeof window.v2RetryCount === 'undefined') window.v2RetryCount = 0;
+        window.v2RetryCount++;
+        if (window.v2RetryCount > 10) {
+            console.log('V2 init: giving up after 10 retries');
+            return;
+        }
+        console.log('Auth not ready, retrying in 1s...');
         setTimeout(initV2, 1000);
         return;
     }
@@ -964,6 +970,7 @@ if (document.readyState === 'loading') {
 }
 
 console.log('📦 MACRA v2.0 module loaded');
+
 
 
 
