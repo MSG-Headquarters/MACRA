@@ -19,7 +19,7 @@ let v2State = {
 // ═══════════════════════════════════════════════════════════════
 
 async function v2ApiCall(endpoint, options = {}) {
-    const token = localStorage.getItem('macra_token');
+    const authData = localStorage.getItem('macra_auth'); const auth = authData ? JSON.parse(authData) : null; const token = auth?.token;
     const headers = {
         'Content-Type': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` })
@@ -961,6 +961,7 @@ if (document.readyState === 'loading') {
 }
 
 console.log('📦 MACRA v2.0 module loaded');
+
 
 
 
