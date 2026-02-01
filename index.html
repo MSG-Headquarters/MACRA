@@ -1676,8 +1676,8 @@
             const lastReset = localStorage.getItem('macra_weekly_reset');
             const lastResetDate = lastReset ? new Date(lastReset) : null;
             
-            // Reset on Monday
-            if (!lastResetDate || (now.getDay() === 1 && now.toDateString() !== lastResetDate.toDateString())) {
+            // Reset on Sunday
+            if (!lastResetDate || (now.getDay() === 0 && now.toDateString() !== lastResetDate.toDateString())) {
                 appData.stats.weeklyPoints = 0;
                 appData.friends.forEach(f => f.weeklyPoints = Math.floor(Math.random() * 100));
                 localStorage.setItem('macra_weekly_reset', now.toISOString());
@@ -4625,6 +4625,7 @@
     <script src="macra-v2.js"></script>
 </body>
 </html>
+
 
 
 
