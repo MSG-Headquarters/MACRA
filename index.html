@@ -628,7 +628,7 @@
                         <textarea class="unified-input" id="unifiedInput" placeholder="What did you do? Try: 'protein shake and banana' or 'bench press 185lbs 3x8' or 'morning run 3 miles'" rows="2"></textarea>
                         <div class="unified-input-actions">
                             <button class="photo-btn" onclick="openPhotoScanner()" title="Scan food photo">📸</button>
-                            <button class="unified-btn" id="unifiedLogBtn" onclick="parseUnifiedInput()"><span class="btn-text">✨ Log</span><span class="btn-loading" style="display: none;"><span class="spinner"></span></span></button>
+                            <button class="unified-btn" id="unifiedLogBtn" onclick="parseUnifiedInputV2()"><span class="btn-text">✨ Log</span><span class="btn-loading" style="display: none;"><span class="spinner"></span></span></button>
                         </div>
                     </div>
                     <div class="unified-hints">
@@ -3067,7 +3067,7 @@
 
         // ============ End USDA Integration ============
 
-        async function parseUnifiedInput() {
+        async function parseUnifiedInputV2() {
             const input = document.getElementById('unifiedInput');
             const text = input.value.trim();
             if (!text) { alert('Please enter something to log'); return; }
@@ -3283,7 +3283,7 @@
             const ex = currentSession.lastExercise;
             const input = `${ex.name} ${ex.weight}lbs 1x${ex.reps}`;
             document.getElementById('unifiedInput').value = input;
-            parseUnifiedInput();
+            parseUnifiedInputV2();
         }
         
         function quickAddEditedSet() {
@@ -3293,7 +3293,7 @@
             const sets = document.getElementById('quickSets').value || 1;
             const input = `${currentSession.lastExercise.name} ${weight}lbs ${sets}x${reps}`;
             document.getElementById('unifiedInput').value = input;
-            parseUnifiedInput();
+            parseUnifiedInputV2();
         }
         
         function endWorkoutSession() {
@@ -4614,5 +4614,6 @@
             </div>
         </div>
     </div>
+    <script src="macra-v2.js"></script>
 </body>
 </html>
