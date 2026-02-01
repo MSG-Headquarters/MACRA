@@ -677,8 +677,7 @@ async function initV2() {
     console.log('🚀 Initializing MACRA v2.0...');
     
     // Check if logged in
-    const token = localStorage.getItem('macra_token');
-    if (!token) {
+    const authData = localStorage.getItem('macra_auth'); const auth = authData ? JSON.parse(authData) : null; if (!auth || !auth.token) {
         console.log('No token, skipping v2 init');
         return;
     }
@@ -962,5 +961,6 @@ if (document.readyState === 'loading') {
 }
 
 console.log('📦 MACRA v2.0 module loaded');
+
 
 
