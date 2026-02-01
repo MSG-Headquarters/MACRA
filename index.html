@@ -142,13 +142,8 @@
             display: none; position: fixed; top: 16px; left: 16px; z-index: 200;
             width: 44px; height: 44px; background: var(--onyx);
             border: 1px solid var(--white-20); border-radius: 10px;
-            color: var(--white); font-size: 20px; cursor: pointer;
+            color: var(--white); font-size: 24px; cursor: pointer;
             align-items: center; justify-content: center;
-            font-family: system-ui, -apple-system, sans-serif;
-            line-height: 1;
-        }
-        .sidebar-toggle::before {
-            content: '☰';
         }
         .sidebar-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -157,7 +152,7 @@
         }
         .sidebar-overlay.visible { display: block; opacity: 1; }
         @media (max-width: 768px) {
-            .sidebar-toggle { display: flex !important; } /* Show hamburger for slide-out menu */
+            .sidebar-toggle { display: none !important; } /* Hidden for now - will enable when sidebar content ready */
             .sidebar { 
                 width: var(--sidebar-width); min-width: var(--sidebar-width); 
                 transform: translateX(-100%); 
@@ -326,23 +321,23 @@
         .timeline-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
         .timeline-item:hover .timeline-actions { opacity: 1; }
         @media (max-width: 768px) { .timeline-actions { opacity: 1; } }
-        .timeline-btn { width: 28px; height: 28px; background: var(--carbon); border: 1px solid var(--white-10); border-radius: 6px; color: var(--white-50); cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .timeline-btn:hover { background: var(--prism-cyan); color: white; border-color: var(--prism-cyan); }
-        .timeline-btn.delete:hover { background: var(--prism-rose); border-color: var(--prism-rose); }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s ease; }
-        .modal-content { background: var(--carbon); border-radius: 16px; padding: 24px; width: 100%; animation: slideUp 0.3s ease; }
+        .timeline-btn { width: 28px; height: 28px; background: var(--carbon); border: 1px solid var(--white-10); border-radius: 6px; color: var(--white-50); cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+        .timeline-btn.edit:hover { background: rgba(6, 182, 212, 0.2); color: var(--prism-cyan); border-color: var(--prism-cyan); }
+        .timeline-btn.delete:hover { background: rgba(244, 63, 94, 0.2); color: var(--prism-rose); border-color: var(--prism-rose); }
+        .timeline-micro-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; }
+        .timeline-micro-badge.emerald { background: rgba(16, 185, 129, 0.2); color: var(--prism-emerald); }
+        .timeline-micro-badge.violet { background: rgba(139, 92, 246, 0.15); color: var(--prism-violet); }
+        .timeline-micro-badge.amber { background: rgba(245, 158, 11, 0.2); color: var(--prism-amber); }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .modal-content { background: var(--carbon); border-radius: 16px; padding: 24px; width: 100%; animation: modalIn 0.2s ease; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-header h3 { font-size: 18px; font-weight: 600; margin: 0; }
-        .modal-close { background: none; border: none; color: var(--white-50); font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
-        .modal-close:hover { color: var(--white); }
+        .modal-close { background: none; border: none; color: var(--white-50); font-size: 24px; cursor: pointer; }
         .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 12px; color: var(--white-50); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group label { display: block; font-size: 11px; color: var(--white-50); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         .form-input { width: 100%; padding: 12px; background: var(--onyx); border: 1px solid var(--white-20); border-radius: 8px; color: var(--white); font-size: 14px; }
         .form-input:focus { outline: none; border-color: var(--prism-cyan); }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .timeline-item:hover .timeline-delete { opacity: 1; }
-        .timeline-delete:hover { background: rgba(244, 63, 94, 0.2); color: var(--prism-rose); }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .athlete-code-card {
             background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1));
             border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;
@@ -571,13 +566,7 @@
         <div class="splash-version">v1.4</div>
     </div>
     <div class="prismatic-bg"><div class="aurora"></div><div class="grid-overlay"></div></div>
-    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-    </button>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
     <input type="file" accept="image/*" capture="environment" class="photo-input" id="photoInput" onchange="handlePhotoCapture(event)">
     <div class="app-container">
@@ -1068,21 +1057,10 @@
                 <!-- Activity Feed -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">📰 Your Activity</div>
-                        <button class="btn btn-ghost btn-sm" onclick="switchView('history')">See All</button>
+                        <div class="card-title">📰 Following</div>
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('social')">See All</button>
                     </div>
                     <div id="feedActivityList"></div>
-                </div>
-                
-                <!-- Intelligence Preview -->
-                <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.08)); border: 1px solid rgba(139, 92, 246, 0.2);">
-                    <div class="card-header">
-                        <div class="card-title">🧠 Intelligence</div>
-                        <button class="btn btn-ghost btn-sm" onclick="switchView('intelligence')">View All →</button>
-                    </div>
-                    <div id="feedInsightPreview" style="font-size: 13px; color: var(--white-70);">
-                        Loading insights...
-                    </div>
                 </div>
                 
                 <!-- Who to Follow -->
@@ -1782,58 +1760,8 @@
             // Render activity feed
             renderFeedActivityList();
             
-            // Render Intelligence preview
-            renderFeedInsightPreview();
-            
             // Render suggested follows
             renderSuggestedFollows();
-        }
-        
-        function renderFeedInsightPreview() {
-            const container = document.getElementById('feedInsightPreview');
-            const today = getTodayKey();
-            const todayActivities = appData.activities[today] || [];
-            
-            // Generate quick insights
-            const insights = [];
-            
-            // Protein insight
-            const todayProtein = todayActivities.filter(a => a.type === 'food').reduce((sum, a) => sum + (a.data?.totals?.protein || 0), 0);
-            const proteinGoal = appData.goals?.protein || 150;
-            const proteinPercent = Math.round((todayProtein / proteinGoal) * 100);
-            if (proteinPercent < 50) {
-                insights.push(`💪 You're at ${proteinPercent}% of your protein goal. Try adding some protein to your next meal.`);
-            } else if (proteinPercent >= 100) {
-                insights.push(`🎯 Great job! You've hit your protein goal for today.`);
-            }
-            
-            // Streak insight  
-            const streak = appData.stats.streak || 0;
-            if (streak >= 7) {
-                insights.push(`🔥 Amazing! You're on a ${streak}-day streak. Keep it going!`);
-            } else if (streak > 0 && todayActivities.length === 0) {
-                insights.push(`⚡ Don't break your ${streak}-day streak! Log something today.`);
-            }
-            
-            // Workout insight
-            const weekWorkouts = getWeekWorkouts();
-            if (weekWorkouts >= 4) {
-                insights.push(`💪 Strong week! ${weekWorkouts} workouts logged.`);
-            } else if (weekWorkouts === 0) {
-                insights.push(`🏋️ No workouts this week yet. Ready to get moving?`);
-            }
-            
-            // Default insight
-            if (insights.length === 0) {
-                const totalActivities = Object.values(appData.activities).flat().length;
-                insights.push(`📊 You've logged ${totalActivities} total activities. Keep building your data for better insights!`);
-            }
-            
-            container.innerHTML = `
-                <div style="padding: 12px; background: var(--carbon); border-radius: 8px;">
-                    <div style="font-size: 13px; color: var(--white-70); line-height: 1.5;">${insights[0]}</div>
-                </div>
-            `;
         }
         
         function quickLogWeight() {
@@ -1895,99 +1823,63 @@
         function renderFeedActivityList() {
             const container = document.getElementById('feedActivityList');
             const feedItems = [];
+            const today = getTodayKey();
             
-            // Get last 7 days of activities with consolidation per day
+            // Get last 7 days of activities
             for (let i = 0; i < 7; i++) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
                 const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                 const dayActivities = appData.activities[key] || [];
-                
-                // Consolidate workouts per day
-                const consolidated = consolidateDailyWorkouts(dayActivities);
-                consolidated.forEach(a => {
-                    feedItems.push({ 
-                        ...a, 
-                        dateKey: key, 
-                        user: appData.profile.name || 'You',
-                        displayTime: getRelativeTime(a.timestamp || new Date(key).toISOString())
-                    });
+                dayActivities.forEach(a => {
+                    feedItems.push({ ...a, dateKey: key, isYou: true, user: appData.profile.name || 'You' });
                 });
             }
             
-            // No fake friend activities - only real data
+            // Add friend activities (simulated)
+            appData.friends.forEach(friend => {
+                if (Math.random() > 0.6) {
+                    feedItems.push({
+                        user: friend.name,
+                        isYou: false,
+                        time: Math.floor(Math.random() * 12) + 1 + ' hours ago',
+                        type: Math.random() > 0.5 ? 'workout' : 'food',
+                        data: Math.random() > 0.5 ? { exercises: [{ name: 'Strength Training' }] } : { totals: { calories: 450 } }
+                    });
+                }
+            });
             
             if (feedItems.length === 0) {
                 container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📰</div><div class="empty-state-text">No activity yet</div><div class="empty-state-subtext">Log your first workout or meal to see it here!</div></div>';
                 return;
             }
             
-            // Sort by timestamp (newest first)
-            feedItems.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
             container.innerHTML = feedItems.slice(0, 10).map(item => {
                 const avatar = (item.user || 'A').charAt(0).toUpperCase();
-                let icon = '📝', title = '', details = '';
-                
+                let title = '', details = '', badge = '';
                 if (item.type === 'food') {
-                    icon = '🥗';
-                    const foodNames = item.data?.items?.map(i => i.name).join(', ') || 'Meal';
-                    title = foodNames;
-                    const totals = item.data?.totals || {};
-                    details = `${totals.calories || 0} cal • ${totals.protein || 0}g protein`;
+                    badge = 'food';
+                    title = item.isYou ? 'Logged a meal' : 'Ate well';
+                    details = `${item.data?.totals?.calories || 0} cal`;
                 } else if (item.type === 'workout') {
-                    icon = '💪';
-                    const exercises = item.data?.exercises || [];
-                    if (item.isConsolidated || exercises.length > 1) {
-                        title = `Workout (${exercises.length} exercises)`;
-                        const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
-                        details = `${totalVolume.toLocaleString()} lbs volume`;
-                    } else {
-                        title = exercises[0]?.name || 'Workout';
-                        const ex = exercises[0] || {};
-                        details = `${ex.weight || 0} lbs × ${ex.sets || 1} × ${ex.reps || 1}`;
-                    }
+                    badge = 'workout';
+                    title = item.isYou ? 'Completed workout' : 'Crushed it';
+                    details = item.data?.exercises?.map(e => e.name).join(', ') || 'Strength training';
                 } else if (item.type === 'cardio') {
-                    icon = '🏃';
-                    title = item.data?.activity || 'Cardio';
+                    badge = 'workout';
+                    title = 'Cardio session';
                     details = `${item.data?.duration || 0} min`;
-                    if (item.data?.distance) details += ` • ${item.data.distance} mi`;
-                } else if (item.type === 'weight') {
-                    icon = '⚖️';
-                    title = 'Weigh-in';
-                    details = `${item.data?.weight || 0} ${item.data?.unit || 'lbs'}`;
                 }
-                
                 return `<div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--white-05);">
-                    <div class="activity-avatar" style="background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet));">${avatar}</div>
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-weight: 500;">${item.user}</span>
-                            <span>${icon}</span>
-                        </div>
-                        <div style="font-size: 13px; color: var(--white-90); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</div>
+                    <div class="activity-avatar">${avatar}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500;">${item.user}${item.isYou ? ' (You)' : ''}</div>
+                        <div style="font-size: 13px; color: var(--white-70);">${title}</div>
                         <div style="font-size: 12px; color: var(--white-50);">${details}</div>
                     </div>
-                    <div style="font-size: 11px; color: var(--white-30); white-space: nowrap;">${item.displayTime}</div>
+                    <div style="font-size: 11px; color: var(--white-30);">${item.time || 'Today'}</div>
                 </div>`;
             }).join('');
-        }
-        
-        function getRelativeTime(timestamp) {
-            if (!timestamp) return 'Recently';
-            const now = new Date();
-            const then = new Date(timestamp);
-            const diffMs = now - then;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 1) return 'Just now';
-            if (diffMins < 60) return `${diffMins}m ago`;
-            if (diffHours < 24) return `${diffHours}h ago`;
-            if (diffDays === 1) return 'Yesterday';
-            if (diffDays < 7) return `${diffDays}d ago`;
-            return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
         
         // ═══════════════════════════════════════════════════════════════
@@ -3528,23 +3420,37 @@
             document.getElementById('macroFatBar').style.width = Math.min((fat / goals.fat) * 100, 100) + '%';
         }
 
-        function getWeekWorkouts() { let count = 0; for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() - i); const key = d.toISOString().split('T')[0]; const acts = appData.activities[key] || []; count += acts.filter(a => a.type === 'workout' || a.type === 'cardio').length; } return count; }
+        function getWeekWorkouts() { 
+            // Count DAYS with workout activity, not individual exercises
+            let daysWithWorkouts = 0; 
+            for (let i = 0; i < 7; i++) { 
+                const d = new Date(); 
+                d.setDate(d.getDate() - i); 
+                const key = d.toISOString().split('T')[0]; 
+                const acts = appData.activities[key] || []; 
+                // Check if this day has ANY workout or cardio activity
+                const hasWorkout = acts.some(a => a.type === 'workout' || a.type === 'cardio');
+                if (hasWorkout) daysWithWorkouts++;
+            } 
+            return daysWithWorkouts; 
+        }
 
         function renderTimeline() {
             const today = getTodayKey();
             const activities = appData.activities[today] || [];
             const container = document.getElementById('todayTimeline');
+            
             if (activities.length === 0) { 
                 container.innerHTML = '<div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food, workouts, or weight</div></div>'; 
                 return; 
             }
             
-            // Consolidate workouts into single daily entry
+            // Consolidate all workout exercises into a single "Today's Workout" entry
             const consolidated = consolidateDailyWorkouts(activities);
             const sorted = [...consolidated].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             
             container.innerHTML = '<div class="timeline-list">' + sorted.map(activity => {
-                let icon, title, details, badgeClass, usdaBadge = '', microBadges = '', servingBadge = '';
+                let icon, title, details, badgeClass, badges = '';
                 
                 if (activity.type === 'food') { 
                     icon = '🥗'; badgeClass = 'food'; 
@@ -3553,37 +3459,23 @@
                     const totals = activity.data.totals || {}; 
                     const servings = activity.data.servings || 1;
                     details = `${totals.calories || 0} cal • ${totals.protein || 0}g protein`;
-                    
-                    // Show serving badge if not 1 serving
-                    if (servings !== 1) {
-                        servingBadge = `<span style="font-size: 9px; background: rgba(245, 158, 11, 0.2); color: var(--prism-amber); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">${servings}x serving</span>`;
-                    }
-                    
-                    if (activity.data.usdaEnhanced) {
-                        usdaBadge = '<span style="font-size: 9px; background: rgba(16, 185, 129, 0.2); color: var(--prism-emerald); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">USDA ✓</span>';
-                    }
+                    if (servings !== 1) badges += `<span class="timeline-micro-badge amber">${servings}x</span>`;
+                    if (activity.data.usdaEnhanced) badges += '<span class="timeline-micro-badge emerald">USDA</span>';
                     const micro = items[0]?.micronutrients || {};
-                    const microList = [];
-                    if (micro.caffeine) microList.push(`☕ ${micro.caffeine}mg`);
-                    if (micro.creatine) microList.push(`💪 ${micro.creatine}g`);
-                    if (micro.vitaminB12) microList.push(`💊 B12`);
-                    if (micro.vitaminC) microList.push(`🍊 C`);
-                    if (micro.iron) microList.push(`🔩 Fe`);
-                    if (microList.length > 0) {
-                        microBadges = `<div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">${microList.slice(0, 3).map(m => `<span style="font-size: 9px; background: rgba(139, 92, 246, 0.15); color: var(--prism-violet); padding: 2px 6px; border-radius: 4px;">${m}</span>`).join('')}</div>`;
-                    }
+                    if (micro.caffeine) badges += `<span class="timeline-micro-badge violet">☕${micro.caffeine}mg</span>`;
+                    if (micro.creatine) badges += `<span class="timeline-micro-badge violet">💪${micro.creatine}g</span>`;
                 }
                 else if (activity.type === 'workout') { 
                     icon = '💪'; badgeClass = 'workout'; 
-                    const exercises = activity.data.exercises || []; 
-                    if (activity.isConsolidated) {
+                    const exercises = activity.data.exercises || [];
+                    if (activity._consolidated) {
                         title = `Today's Workout`;
                         const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
                         details = `${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs volume`;
                     } else {
-                        title = exercises.map(e => e.name).join(', ') || 'Workout'; 
+                        title = exercises.map(e => e.name).join(', ') || 'Exercise';
                         const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
-                        details = `${exercises.length} exercise${exercises.length > 1 ? 's' : ''} • ${totalVolume.toLocaleString()} lbs`;
+                        details = `${totalVolume.toLocaleString()} lbs`;
                     }
                 }
                 else if (activity.type === 'cardio') { 
@@ -3598,33 +3490,35 @@
                     details = activity.data.bodyFat ? `Body fat: ${activity.data.bodyFat}%` : (activity.data.note || 'Weigh-in'); 
                 }
                 
-                const activityId = activity.isConsolidated ? 'consolidated' : activity.id;
+                const activityId = activity._consolidated ? 'consolidated' : activity.id;
+                const expandBtn = activity._consolidated ? `<button class="btn btn-ghost btn-sm" style="font-size:11px;margin-top:8px;padding:4px 8px;" onclick="expandDailyWorkout()">View ${activity.data.exercises.length} exercises →</button>` : '';
+                
                 return `<div class="timeline-item ${activity.type}">
                     <div class="timeline-time">${activity.time}</div>
                     <div class="timeline-icon">${icon}</div>
                     <div class="timeline-content">
-                        <div class="timeline-content-title">${title}${servingBadge}${usdaBadge}</div>
+                        <div class="timeline-content-title">${title}</div>
                         <div class="timeline-content-details">${details}</div>
-                        ${microBadges}
-                        ${activity.isConsolidated ? `<button class="btn btn-ghost btn-sm" style="margin-top: 8px; font-size: 11px;" onclick="expandWorkoutDetails()">View exercises →</button>` : ''}
+                        ${badges ? `<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">${badges}</div>` : ''}
+                        ${expandBtn}
                     </div>
-                    <span class="timeline-badge ${badgeClass}">${activity.type}</span>
+                    <span class="timeline-badge ${badgeClass}">${activity._consolidated ? 'workout' : activity.type}</span>
                     <div class="timeline-actions">
-                        <button class="timeline-btn" onclick="editActivity('${today}', '${activityId}')" title="Edit">✏️</button>
+                        <button class="timeline-btn edit" onclick="editActivity('${today}', '${activityId}')" title="Edit">✏️</button>
                         <button class="timeline-btn delete" onclick="deleteActivity('${today}', '${activityId}')" title="Delete">×</button>
                     </div>
                 </div>`;
             }).join('') + '</div>';
         }
         
-        // Consolidate all workout entries for a day into one
+        // Consolidate workout exercises into single daily workout
         function consolidateDailyWorkouts(activities) {
             const workouts = activities.filter(a => a.type === 'workout');
             const others = activities.filter(a => a.type !== 'workout');
             
             if (workouts.length <= 1) return activities;
             
-            // Combine all exercises into one consolidated workout
+            // Merge all exercises into one consolidated workout
             const allExercises = [];
             const originalIds = [];
             let latestTime = workouts[0].time;
@@ -3633,7 +3527,7 @@
             workouts.forEach(w => {
                 if (w.data.exercises) {
                     w.data.exercises.forEach(ex => {
-                        allExercises.push({ ...ex, loggedTime: w.time, originalId: w.id });
+                        allExercises.push({ ...ex, _logTime: w.time, _originalId: w.id });
                     });
                 }
                 originalIds.push(w.id);
@@ -3643,21 +3537,21 @@
                 }
             });
             
-            const consolidatedWorkout = {
+            const consolidated = {
                 id: 'consolidated',
                 time: latestTime,
                 timestamp: latestTimestamp,
                 type: 'workout',
-                isConsolidated: true,
-                originalIds: originalIds,
+                _consolidated: true,
+                _originalIds: originalIds,
                 data: { exercises: allExercises }
             };
             
-            return [...others, consolidatedWorkout];
+            return [...others, consolidated];
         }
         
-        // Expand consolidated workout to show individual exercises
-        function expandWorkoutDetails() {
+        // Expand daily workout to show all exercises
+        function expandDailyWorkout() {
             const today = getTodayKey();
             const activities = appData.activities[today] || [];
             const workouts = activities.filter(a => a.type === 'workout');
@@ -3677,41 +3571,37 @@
             modal.className = 'modal-overlay';
             modal.id = 'workoutExpandModal';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 450px;">
+                <div class="modal-content" style="max-width:420px;">
                     <div class="modal-header">
                         <h3>💪 Today's Workout</h3>
                         <button class="modal-close" onclick="closeModal('workoutExpandModal')">×</button>
                     </div>
-                    <div style="padding: 16px 0; border-bottom: 1px solid var(--white-10); margin-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-around; text-align: center;">
-                            <div>
-                                <div style="font-size: 24px; font-family: var(--font-display); color: var(--prism-violet);">${allExercises.length}</div>
-                                <div style="font-size: 11px; color: var(--white-50);">Exercises</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 24px; font-family: var(--font-display); color: var(--prism-cyan);">${totalVolume.toLocaleString()}</div>
-                                <div style="font-size: 11px; color: var(--white-50);">Total Volume (lbs)</div>
-                            </div>
+                    <div style="display:flex;justify-content:space-around;padding:16px 0;border-bottom:1px solid var(--white-10);margin-bottom:16px;">
+                        <div style="text-align:center;">
+                            <div style="font-size:28px;font-family:var(--font-display);color:var(--prism-violet);">${allExercises.length}</div>
+                            <div style="font-size:11px;color:var(--white-50);">Exercises</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:28px;font-family:var(--font-display);color:var(--prism-cyan);">${totalVolume.toLocaleString()}</div>
+                            <div style="font-size:11px;color:var(--white-50);">Total Volume (lbs)</div>
                         </div>
                     </div>
-                    <div style="max-height: 400px; overflow-y: auto;">
+                    <div style="max-height:350px;overflow-y:auto;">
                         ${allExercises.map((ex, i) => `
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
-                                <div style="width: 28px; height: 28px; background: var(--prism-violet); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">${i + 1}</div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 500;">${ex.name}</div>
-                                    <div style="font-size: 12px; color: var(--white-50);">${ex.weight || 0} lbs × ${ex.sets || 1} sets × ${ex.reps || 1} reps</div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--onyx);border-radius:8px;margin-bottom:8px;">
+                                <div style="width:28px;height:28px;background:var(--prism-violet);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">${i + 1}</div>
+                                <div style="flex:1;">
+                                    <div style="font-weight:500;">${ex.name}</div>
+                                    <div style="font-size:12px;color:var(--white-50);">${ex.weight || 0} lbs × ${ex.sets || 1} sets × ${ex.reps || 1} reps</div>
                                 </div>
-                                <div style="text-align: right;">
-                                    <div style="font-size: 12px; color: var(--prism-cyan);">${((ex.weight || 0) * (ex.sets || 1) * (ex.reps || 1)).toLocaleString()} lbs</div>
-                                    <div style="font-size: 10px; color: var(--white-30);">${ex.time}</div>
+                                <div style="text-align:right;">
+                                    <div style="font-size:12px;color:var(--prism-cyan);">${((ex.weight || 0) * (ex.sets || 1) * (ex.reps || 1)).toLocaleString()} lbs</div>
+                                    <div style="font-size:10px;color:var(--white-30);">${ex.time}</div>
                                 </div>
                             </div>
                         `).join('')}
                     </div>
-                    <div style="margin-top: 16px;">
-                        <button class="btn btn-ghost" style="width: 100%;" onclick="closeModal('workoutExpandModal')">Close</button>
-                    </div>
+                    <button class="btn btn-ghost" style="width:100%;margin-top:16px;" onclick="closeModal('workoutExpandModal')">Close</button>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -3721,7 +3611,7 @@
         // Edit activity modal
         function editActivity(date, activityId) {
             if (activityId === 'consolidated') {
-                expandWorkoutDetails();
+                expandDailyWorkout();
                 return;
             }
             
@@ -3735,95 +3625,48 @@
                 const items = activity.data.items || [];
                 const totals = activity.data.totals || {};
                 const servings = activity.data.servings || 1;
-                const originalTotals = activity.data.originalTotals || totals;
-                
                 editContent = `
-                    <div class="form-group">
-                        <label>Food Item</label>
-                        <input type="text" class="form-input" id="editFoodName" value="${items[0]?.name || ''}">
-                    </div>
+                    <div class="form-group"><label>Food Item</label><input type="text" class="form-input" id="editFoodName" value="${items[0]?.name || ''}"></div>
                     <div class="form-group">
                         <label>Servings</label>
-                        <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="display:flex;align-items:center;gap:8px;">
                             <button class="btn btn-ghost btn-sm" onclick="adjustServings(-0.5)">-½</button>
-                            <input type="number" class="form-input" id="editServings" value="${servings}" step="0.25" min="0.25" max="10" style="width: 80px; text-align: center;"
-                                data-orig-cal="${originalTotals.calories || totals.calories}"
-                                data-orig-protein="${originalTotals.protein || totals.protein}"
-                                data-orig-carbs="${originalTotals.carbs || totals.carbs}"
-                                data-orig-fat="${originalTotals.fat || totals.fat}"
-                                onchange="recalculateMacros()">
+                            <input type="number" class="form-input" id="editServings" value="${servings}" step="0.25" min="0.25" style="width:70px;text-align:center;"
+                                data-orig-cal="${totals.calories || 0}" data-orig-protein="${totals.protein || 0}" 
+                                data-orig-carbs="${totals.carbs || 0}" data-orig-fat="${totals.fat || 0}" 
+                                data-base-servings="${servings}" onchange="recalcMacros()">
                             <button class="btn btn-ghost btn-sm" onclick="adjustServings(0.5)">+½</button>
                         </div>
-                        <div style="font-size: 11px; color: var(--white-30); margin-top: 4px;">Adjust if you ate more or less than 1 serving</div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div class="form-group">
-                            <label>Calories</label>
-                            <input type="number" class="form-input" id="editCalories" value="${totals.calories || 0}">
-                        </div>
-                        <div class="form-group">
-                            <label>Protein (g)</label>
-                            <input type="number" class="form-input" id="editProtein" value="${totals.protein || 0}">
-                        </div>
-                        <div class="form-group">
-                            <label>Carbs (g)</label>
-                            <input type="number" class="form-input" id="editCarbs" value="${totals.carbs || 0}">
-                        </div>
-                        <div class="form-group">
-                            <label>Fat (g)</label>
-                            <input type="number" class="form-input" id="editFat" value="${totals.fat || 0}">
-                        </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div class="form-group"><label>Calories</label><input type="number" class="form-input" id="editCalories" value="${totals.calories || 0}"></div>
+                        <div class="form-group"><label>Protein (g)</label><input type="number" class="form-input" id="editProtein" value="${totals.protein || 0}"></div>
+                        <div class="form-group"><label>Carbs (g)</label><input type="number" class="form-input" id="editCarbs" value="${totals.carbs || 0}"></div>
+                        <div class="form-group"><label>Fat (g)</label><input type="number" class="form-input" id="editFat" value="${totals.fat || 0}"></div>
                     </div>
                 `;
             } else if (activity.type === 'workout') {
                 const ex = activity.data.exercises?.[0] || {};
                 editContent = `
-                    <div class="form-group">
-                        <label>Exercise Name</label>
-                        <input type="text" class="form-input" id="editExName" value="${ex.name || ''}">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-                        <div class="form-group">
-                            <label>Weight (lbs)</label>
-                            <input type="number" class="form-input" id="editWeight" value="${ex.weight || 0}">
-                        </div>
-                        <div class="form-group">
-                            <label>Sets</label>
-                            <input type="number" class="form-input" id="editSets" value="${ex.sets || 1}">
-                        </div>
-                        <div class="form-group">
-                            <label>Reps</label>
-                            <input type="number" class="form-input" id="editReps" value="${ex.reps || 0}">
-                        </div>
+                    <div class="form-group"><label>Exercise</label><input type="text" class="form-input" id="editExName" value="${ex.name || ''}"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                        <div class="form-group"><label>Weight</label><input type="number" class="form-input" id="editWeight" value="${ex.weight || 0}"></div>
+                        <div class="form-group"><label>Sets</label><input type="number" class="form-input" id="editSets" value="${ex.sets || 1}"></div>
+                        <div class="form-group"><label>Reps</label><input type="number" class="form-input" id="editReps" value="${ex.reps || 0}"></div>
                     </div>
                 `;
             } else if (activity.type === 'cardio') {
                 editContent = `
-                    <div class="form-group">
-                        <label>Activity</label>
-                        <input type="text" class="form-input" id="editCardioName" value="${activity.data.activity || ''}">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div class="form-group">
-                            <label>Duration (min)</label>
-                            <input type="number" class="form-input" id="editDuration" value="${activity.data.duration || 0}">
-                        </div>
-                        <div class="form-group">
-                            <label>Distance (mi)</label>
-                            <input type="number" class="form-input" id="editDistance" value="${activity.data.distance || ''}" step="0.1">
-                        </div>
+                    <div class="form-group"><label>Activity</label><input type="text" class="form-input" id="editCardioName" value="${activity.data.activity || ''}"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div class="form-group"><label>Duration (min)</label><input type="number" class="form-input" id="editDuration" value="${activity.data.duration || 0}"></div>
+                        <div class="form-group"><label>Distance (mi)</label><input type="number" class="form-input" id="editDistance" value="${activity.data.distance || ''}" step="0.1"></div>
                     </div>
                 `;
             } else if (activity.type === 'weight') {
                 editContent = `
-                    <div class="form-group">
-                        <label>Weight</label>
-                        <input type="number" class="form-input" id="editWeightVal" value="${activity.data.weight || 0}" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label>Note (optional)</label>
-                        <input type="text" class="form-input" id="editNote" value="${activity.data.note || ''}">
-                    </div>
+                    <div class="form-group"><label>Weight</label><input type="number" class="form-input" id="editWeightVal" value="${activity.data.weight || 0}" step="0.1"></div>
+                    <div class="form-group"><label>Note</label><input type="text" class="form-input" id="editNote" value="${activity.data.note || ''}" placeholder="Optional"></div>
                 `;
             }
             
@@ -3831,15 +3674,15 @@
             modal.className = 'modal-overlay';
             modal.id = 'editActivityModal';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-content" style="max-width:380px;">
                     <div class="modal-header">
                         <h3>Edit ${activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}</h3>
                         <button class="modal-close" onclick="closeModal('editActivityModal')">×</button>
                     </div>
                     ${editContent}
-                    <div style="display: flex; gap: 12px; margin-top: 20px;">
-                        <button class="btn btn-ghost" style="flex: 1;" onclick="closeModal('editActivityModal')">Cancel</button>
-                        <button class="btn btn-primary" style="flex: 1;" onclick="saveActivityEdit('${date}', ${activityId}, '${activity.type}')">Save</button>
+                    <div style="display:flex;gap:12px;margin-top:20px;">
+                        <button class="btn btn-ghost" style="flex:1;" onclick="closeModal('editActivityModal')">Cancel</button>
+                        <button class="btn btn-primary" style="flex:1;" onclick="saveActivityEdit('${date}', ${activityId}, '${activity.type}')">Save</button>
                     </div>
                 </div>
             `;
@@ -3851,23 +3694,20 @@
             const input = document.getElementById('editServings');
             let val = parseFloat(input.value) + delta;
             if (val < 0.25) val = 0.25;
-            if (val > 10) val = 10;
             input.value = val;
-            recalculateMacros();
+            recalcMacros();
         }
         
-        function recalculateMacros() {
+        function recalcMacros() {
             const input = document.getElementById('editServings');
-            const servings = parseFloat(input.value) || 1;
-            const origCal = parseFloat(input.dataset.origCal) || 0;
-            const origProtein = parseFloat(input.dataset.origProtein) || 0;
-            const origCarbs = parseFloat(input.dataset.origCarbs) || 0;
-            const origFat = parseFloat(input.dataset.origFat) || 0;
+            const newServings = parseFloat(input.value) || 1;
+            const baseServings = parseFloat(input.dataset.baseServings) || 1;
+            const ratio = newServings / baseServings;
             
-            document.getElementById('editCalories').value = Math.round(origCal * servings);
-            document.getElementById('editProtein').value = Math.round(origProtein * servings);
-            document.getElementById('editCarbs').value = Math.round(origCarbs * servings);
-            document.getElementById('editFat').value = Math.round(origFat * servings);
+            document.getElementById('editCalories').value = Math.round(parseFloat(input.dataset.origCal) * ratio);
+            document.getElementById('editProtein').value = Math.round(parseFloat(input.dataset.origProtein) * ratio);
+            document.getElementById('editCarbs').value = Math.round(parseFloat(input.dataset.origCarbs) * ratio);
+            document.getElementById('editFat').value = Math.round(parseFloat(input.dataset.origFat) * ratio);
         }
         
         function saveActivityEdit(date, activityId, type) {
@@ -3876,13 +3716,8 @@
             if (!activity) return;
             
             if (type === 'food') {
-                const servings = parseFloat(document.getElementById('editServings').value) || 1;
-                // Store original values for future adjustments
-                if (!activity.data.originalTotals) {
-                    activity.data.originalTotals = { ...activity.data.totals };
-                }
                 activity.data.items = [{ name: document.getElementById('editFoodName').value, ...(activity.data.items?.[0] || {}) }];
-                activity.data.servings = servings;
+                activity.data.servings = parseFloat(document.getElementById('editServings').value) || 1;
                 activity.data.totals = {
                     calories: parseInt(document.getElementById('editCalories').value) || 0,
                     protein: parseInt(document.getElementById('editProtein').value) || 0,
@@ -3913,14 +3748,14 @@
             showToast('✅ Updated!');
         }
         
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
+        function closeModal(id) {
+            const modal = document.getElementById(id);
             if (modal) modal.remove();
         }
 
         function deleteActivity(date, activityId) { 
             if (activityId === 'consolidated') {
-                if (!confirm('Delete ALL workout exercises from today?')) return;
+                if (!confirm('Delete ALL exercises from today\'s workout?')) return;
                 appData.activities[date] = (appData.activities[date] || []).filter(a => a.type !== 'workout');
             } else {
                 if (!confirm('Delete this entry?')) return; 
