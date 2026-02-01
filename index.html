@@ -4478,7 +4478,7 @@
                     <div id="betaCodeStatus" style="font-size:11px;margin-top:6px;"></div>
                 </div>
                 <div style="margin-top:16px;text-align:center;">
-                    <button class="btn btn-ghost" onclick="closeModal();openDonationModal();">💜 Love MACRA? Support us!</button>
+                    <button class="btn btn-ghost" onclick="closeDynamicModal();openDonationModal();">💜 Love MACRA? Support us!</button>
                 </div>
             </div>`;
             showModal(html);
@@ -4492,7 +4492,7 @@
                 authState.user.tier = 'elite'; authState.user.betaTester = true; saveAuth();
                 status.textContent = '✓ Beta Pass activated! Elite access unlocked.'; status.style.color = 'var(--prism-emerald)';
                 showToast('🎉 Elite Beta Pass Activated!');
-                setTimeout(closeModal, 1500);
+                setTimeout(closeDynamicModal, 1500);
             } else {
                 status.textContent = 'Invalid code'; status.style.color = 'var(--prism-rose)';
             }
@@ -4533,14 +4533,14 @@
             modal.id = 'dynamicModal';
             modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9999;';
             modal.innerHTML = `<div style="background:var(--carbon);border-radius:12px;max-width:400px;width:90%;max-height:90vh;overflow:auto;position:relative;">
-                <button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">×</button>
+                <button onclick="closeDynamicModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">×</button>
                 ${content}
             </div>`;
-            modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+            modal.onclick = (e) => { if (e.target === modal) closeDynamicModal(); };
             document.body.appendChild(modal);
         }
         
-        function closeModal() { const m = document.getElementById('dynamicModal'); if (m) m.remove(); }
+        function closeDynamicModal() { const m = document.getElementById('dynamicModal'); if (m) m.remove(); }
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
@@ -4625,4 +4625,9 @@
     <script src="macra-v2.js"></script>
 </body>
 </html>
+
+
+
+
+
 
