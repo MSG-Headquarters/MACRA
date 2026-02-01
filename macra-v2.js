@@ -677,10 +677,13 @@ async function initV2() {
     console.log('🚀 Initializing MACRA v2.0...');
     
     // Check if logged in
-    const authData = localStorage.getItem('macra_auth'); const auth = authData ? JSON.parse(authData) : null; if (!auth || !auth.token) {
-        console.log('No token, skipping v2 init');
+    // Use authState from main app instead of parsing localStorage
+    if (typeof authState === 'undefined' || !authState.isLoggedIn) {
+        console.log('Auth not ready, retrying in 1s...');
+        setTimeout(initV2, 1000);
         return;
     }
+    console.log('? Auth confirmed for:', authState.user?.email);
     
     try {
         // Load active workout
@@ -961,6 +964,7 @@ if (document.readyState === 'loading') {
 }
 
 console.log('📦 MACRA v2.0 module loaded');
+
 
 
 
