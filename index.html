@@ -999,7 +999,7 @@
             </div>
             
             <!-- ═══════════════════════════════════════════════════════════
-                 FEED VIEW (Home - Strava-style)
+                 FEED VIEW (Home - Mobile)
             ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-feed">
                 <header class="header" style="padding-bottom: 0;">
@@ -1084,7 +1084,7 @@
             </div>
             
             <!-- ═══════════════════════════════════════════════════════════
-                 CLUBS VIEW (Groups - Strava-style)
+                 CLUBS VIEW (Groups - Mobile)
             ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-clubs">
                 <header class="header" style="padding-bottom: 0;">
@@ -1226,7 +1226,7 @@
             </div>
             
             <!-- ═══════════════════════════════════════════════════════════
-                 PROFILE VIEW (You - Strava-style with Progress/Activities)
+                 PROFILE VIEW (You - Mobile with Progress/Activities)
             ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-profile">
                 <header class="header" style="padding-bottom: 0;">
@@ -4545,7 +4545,7 @@
         document.addEventListener('DOMContentLoaded', init);
     </script>
     
-    <!-- Bottom Navigation (Mobile) - Strava-style -->
+    <!-- Bottom Navigation (Mobile) - Mobile -->
     <nav id="bottomNav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(180deg, var(--obsidian), var(--void));border-top:1px solid var(--white-10);z-index:1000;">
         <div style="display:flex;justify-content:space-around;align-items:flex-end;padding:8px 0 max(8px, env(safe-area-inset-bottom));">
             <button onclick="switchView('feed')" class="bottom-nav-item active" data-view="feed" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--white-50);padding:8px 4px;cursor:pointer;transition:color 0.2s;">
@@ -4625,6 +4625,7 @@
     <script src="macra-v2.js"></script>
 </body>
 </html>
+
 
 
 
