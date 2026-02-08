@@ -618,6 +618,12 @@
             </div>
         </nav>
         <main class="main-content">
+        <!-- Global Donation Banner -->
+        <div id="globalDonationBanner" onclick="openDonationModal()" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15)); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span style="font-size: 14px;">?? Support MACRA</span>
+            <span style="font-size: 13px; color: var(--white-70);">�</span>
+            <span style="font-size: 13px; color: var(--prism-cyan);">Buy us a coffee ?</span>
+        </div>
             <div class="view active" id="view-dashboard">
                 <header class="header"><div class="header-left"><h1>Command Center</h1><p id="todayDate"></p></div></header>
                 <div class="stats-grid">
@@ -989,13 +995,7 @@
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--white-10);"><div class="form-row"><div class="form-group"><label class="form-label">⚖️ Current Weight (lbs)</label><input type="number" class="form-input" id="goalCurrentWeight" placeholder="185"></div><div class="form-group"><label class="form-label">🎯 Target Weight (lbs)</label><input type="number" class="form-input" id="goalTargetWeight" placeholder="175"></div></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Data</div><div style="display: flex; gap: 12px; flex-wrap: wrap;"><button class="btn btn-ghost" onclick="exportAllData()">📤 Export Data</button><button class="btn btn-ghost" onclick="importDataPrompt()">📥 Import Data</button><button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">🗑️ Clear All Data</button></div><input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImportFile(event)"></div></div>
                 
-                <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1)); border: 1px solid rgba(139, 92, 246, 0.3);">
-                    <div class="card-title" style="margin-bottom: 12px;">💜 Support MACRA</div>
-                    <p style="font-size: 13px; color: var(--white-70); margin-bottom: 16px;">Love using MACRA? Help us keep the servers running!</p>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn btn-primary" onclick="openDonationModal()">☕ Buy Us a Coffee</button>
-                    </div>
-                </div>
+                
             </div>
             
             <!-- ═══════════════════════════════════════════════════════════
@@ -4625,6 +4625,7 @@
     <script src="macra-v2.js"></script>
 </body>
 </html>
+
 
 
 
