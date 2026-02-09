@@ -1708,6 +1708,10 @@
         }
 
         function switchView(viewId) {
+            // ? Circular reveal transition
+            if (typeof MACRA_FX !== 'undefined' && MACRA_FX.viewTransitions) {
+                MACRA_FX.viewTransitions.circularReveal();
+            }
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('[data-view]').forEach(l => l.classList.remove('active'));
             document.getElementById('view-' + viewId).classList.add('active');
@@ -3391,6 +3395,10 @@
         }
 
         function celebratePR(exercise, weight, reps, sets, prType) {
+            // ?? Trigger fireworks celebration!
+            if (typeof MACRA_FX !== 'undefined') {
+                MACRA_FX.celebrate.fireworks();
+            }
             const celebration = document.getElementById('prCelebration');
             document.getElementById('prCelebrationExercise').textContent = exercise;
             const volume = weight * (sets || 1) * (reps || 1);
@@ -3404,6 +3412,12 @@
         }
 
         function renderDashboard() {
+            // ? Animate stats on load
+            setTimeout(() => {
+                if (typeof MACRA_FX !== 'undefined') {
+                    MACRA_FX.numberCounter.animateAllStats();
+                }
+            }, 100);
             const today = getTodayKey();
             const todayActivities = appData.activities[today] || [];
             let calories = 0, protein = 0, carbs = 0, fat = 0, workoutCount = 0;
@@ -4629,6 +4643,9 @@
     <script src="macra-effects.js"></script>
 </body>
 </html>
+
+
+
 
 
 
