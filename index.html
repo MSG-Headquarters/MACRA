@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -440,9 +440,9 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         
-        /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        /* ═══════════════════════════════════════════════════════════════
            INTELLIGENCE HUB STYLES
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+        ═══════════════════════════════════════════════════════════════ */
         .recommendations-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
         @media (max-width: 1000px) { .recommendations-grid { grid-template-columns: 1fr; } }
         .recommendation-card { background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 20px; display: flex; gap: 16px; transition: all 0.3s ease; }
@@ -487,17 +487,17 @@
         .insight-bar-fill.positive { background: var(--prism-emerald); }
         .insight-bar-value { width: 50px; text-align: right; color: var(--white-50); }
         
-        /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        /* ═══════════════════════════════════════════════════════════════
            ANALYTICS TIME PERIOD TABS
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+        ═══════════════════════════════════════════════════════════════ */
         .period-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
         .period-tab { padding: 10px 20px; background: var(--white-05); border: 1px solid var(--white-10); border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--white-50); cursor: pointer; transition: all 0.2s ease; font-family: var(--font-display); letter-spacing: 1px; }
         .period-tab:hover { border-color: var(--white-30); color: var(--white-70); }
         .period-tab.active { background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); border-color: transparent; color: var(--void); }
         
-        /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        /* ═══════════════════════════════════════════════════════════════
            NUTRITION ANALYTICS STYLES
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+        ═══════════════════════════════════════════════════════════════ */
         .nutrition-overview { display: grid; grid-template-columns: 280px 1fr; gap: 24px; margin-bottom: 24px; }
         @media (max-width: 900px) { .nutrition-overview { grid-template-columns: 1fr; } }
         .calorie-ring-container { display: flex; flex-direction: column; align-items: center; }
@@ -534,9 +534,9 @@
         .snapshot-change.down { background: rgba(244, 63, 94, 0.2); color: var(--prism-rose); }
         .snapshot-change.neutral { background: rgba(255, 255, 255, 0.1); color: var(--white-50); }
         
-        /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        /* ═══════════════════════════════════════════════════════════════
            FITNESS ANALYTICS STYLES
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+        ═══════════════════════════════════════════════════════════════ */
         .fitness-stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
         @media (max-width: 1200px) { .fitness-stats-row { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 700px) { .fitness-stats-row { grid-template-columns: repeat(2, 1fr); } }
@@ -575,57 +575,57 @@
         <div class="splash-version">v2.0</div>
     </div>
     <div class="prismatic-bg"><div class="aurora"></div><div class="grid-overlay"></div></div>
-    <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
     <input type="file" accept="image/*" capture="environment" class="photo-input" id="photoInput" onchange="handlePhotoCapture(event)">
     <div class="app-container">
         <nav class="sidebar" id="sidebar">
             <div class="logo"><div class="logo-icon">M</div><div class="logo-text">MACRA</div><div class="logo-version">v2.0</div></div>
             <ul class="sidebar-nav">
-                <li><a href="#" data-view="feed"><span class="icon">ðŸ </span><span class="nav-text">Home</span></a></li>
-                <li><a href="#" data-view="dashboard" class="active"><span class="icon">ðŸ“Š</span><span class="nav-text">Dashboard</span></a></li>
-                <li><a href="#" data-view="intelligence"><span class="icon">ðŸ§ </span><span class="nav-text">Intelligence</span></a></li>
+                <li><a href="#" data-view="feed"><span class="icon">🏠</span><span class="nav-text">Home</span></a></li>
+                <li><a href="#" data-view="dashboard" class="active"><span class="icon">📊</span><span class="nav-text">Dashboard</span></a></li>
+                <li><a href="#" data-view="intelligence"><span class="icon">🧠</span><span class="nav-text">Intelligence</span></a></li>
             </ul>
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Analytics</div>
                 <ul class="sidebar-nav">
-                    <li><a href="#" data-view="nutrition"><span class="icon">ðŸ¥—</span><span class="nav-text">Nutrition</span></a></li>
-                    <li><a href="#" data-view="fitness"><span class="icon">ðŸ’ª</span><span class="nav-text">Fitness</span></a></li>
+                    <li><a href="#" data-view="nutrition"><span class="icon">🥗</span><span class="nav-text">Nutrition</span></a></li>
+                    <li><a href="#" data-view="fitness"><span class="icon">💪</span><span class="nav-text">Fitness</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Tracking</div>
                 <ul class="sidebar-nav">
-                    <li><a href="#" data-view="history"><span class="icon">ðŸ—“ï¸</span><span class="nav-text">History</span></a></li>
-                    <li><a href="#" data-view="prs"><span class="icon">ðŸ†</span><span class="nav-text">PRs</span></a></li>
+                    <li><a href="#" data-view="history"><span class="icon">🗓️</span><span class="nav-text">History</span></a></li>
+                    <li><a href="#" data-view="prs"><span class="icon">🏆</span><span class="nav-text">PRs</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Community</div>
                 <ul class="sidebar-nav">
-                    <li><a href="#" data-view="clubs"><span class="icon">ðŸŒ</span><span class="nav-text">Groups</span></a></li>
-                    <li><a href="#" data-view="social"><span class="icon">ðŸ‘¥</span><span class="nav-text">Activity</span></a></li>
-                    <li><a href="#" data-view="leaderboard"><span class="icon">ðŸ¥‡</span><span class="nav-text">Leaderboard</span></a></li>
+                    <li><a href="#" data-view="clubs"><span class="icon">🌐</span><span class="nav-text">Groups</span></a></li>
+                    <li><a href="#" data-view="social"><span class="icon">👥</span><span class="nav-text">Activity</span></a></li>
+                    <li><a href="#" data-view="leaderboard"><span class="icon">🥇</span><span class="nav-text">Leaderboard</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
                 <ul class="sidebar-nav">
-                    <li><a href="#" data-view="profile"><span class="icon">ðŸ‘¤</span><span class="nav-text">Profile</span></a></li>
-                    <li><a href="#" data-view="settings"><span class="icon">âš™ï¸</span><span class="nav-text">Settings</span></a></li>
+                    <li><a href="#" data-view="profile"><span class="icon">👤</span><span class="nav-text">Profile</span></a></li>
+                    <li><a href="#" data-view="settings"><span class="icon">⚙️</span><span class="nav-text">Settings</span></a></li>
                 </ul>
             </div>
             <div class="user-info">
                 <div class="user-name" id="userName">ATHLETE</div>
                 <div class="user-code" id="userCode">MACRA-XXXX</div>
-                <div class="user-streak">ðŸ”¥ <span id="userStreak">0</span> day streak</div>
+                <div class="user-streak">🔥 <span id="userStreak">0</span> day streak</div>
             </div>
         </nav>
         <main class="main-content">
         <!-- Global Donation Banner -->
         <div id="globalDonationBanner" onclick="openDonationModal()" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15)); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
-            <span style="font-size: 14px;">💜 Support MACRA</span>
-            <span style="font-size: 13px; color: var(--white-70);">—</span>
-            <span style="font-size: 13px; color: var(--prism-cyan);">Buy us a coffee ☕</span>
+            <span style="font-size: 14px;">?? Support MACRA</span>
+            <span style="font-size: 13px; color: var(--white-70);">�</span>
+            <span style="font-size: 13px; color: var(--prism-cyan);">Buy us a coffee ?</span>
         </div>
             <div class="view active" id="view-dashboard">
                 <header class="header"><div class="header-left"><h1>Command Center</h1><p id="todayDate"></p></div></header>
@@ -638,27 +638,27 @@
                     <div class="stat-card orange"><div class="stat-label">Points</div><div class="stat-value" id="statPoints">0</div><div class="stat-change">This week</div></div>
                 </div>
                 <div class="unified-input-card">
-                    <div class="unified-input-header"><span style="font-size: 24px;">âœ¨</span><h3>Log Anything</h3><span>â€” Food, workouts, or activities</span></div>
+                    <div class="unified-input-header"><span style="font-size: 24px;">✨</span><h3>Log Anything</h3><span>— Food, workouts, or activities</span></div>
                     <div class="unified-input-wrapper">
                         <textarea class="unified-input" id="unifiedInput" placeholder="What did you do? Try: 'protein shake and banana' or 'bench press 185lbs 3x8' or 'morning run 3 miles'" rows="2"></textarea>
                         <div class="unified-input-actions">
-                            <button class="photo-btn" onclick="openPhotoScanner()" title="Scan food photo">ðŸ“¸</button>
-                            <button class="unified-btn" id="unifiedLogBtn" onclick="parseUnifiedInputV2()"><span class="btn-text">âœ¨ Log</span><span class="btn-loading" style="display: none;"><span class="spinner"></span></span></button>
+                            <button class="photo-btn" onclick="openPhotoScanner()" title="Scan food photo">📸</button>
+                            <button class="unified-btn" id="unifiedLogBtn" onclick="parseUnifiedInputV2()"><span class="btn-text">✨ Log</span><span class="btn-loading" style="display: none;"><span class="spinner"></span></span></button>
                         </div>
                     </div>
                     <div class="unified-hints">
-                        <span class="hint-chip" onclick="setHint('2 eggs and toast for breakfast')">ðŸ¥š Breakfast</span>
-                        <span class="hint-chip" onclick="setHint('bench press 135lbs 3x10')">ðŸ‹ï¸ Lifting</span>
-                        <span class="hint-chip" onclick="setHint('30 min jog')">ðŸƒ Cardio</span>
-                        <span class="hint-chip" onclick="setHint('chicken salad with ranch')">ðŸ¥— Lunch</span>
-                        <span class="hint-chip" onclick="setHint('protein shake')">ðŸ¥¤ Shake</span>
+                        <span class="hint-chip" onclick="setHint('2 eggs and toast for breakfast')">🥚 Breakfast</span>
+                        <span class="hint-chip" onclick="setHint('bench press 135lbs 3x10')">🏋️ Lifting</span>
+                        <span class="hint-chip" onclick="setHint('30 min jog')">🏃 Cardio</span>
+                        <span class="hint-chip" onclick="setHint('chicken salad with ranch')">🥗 Lunch</span>
+                        <span class="hint-chip" onclick="setHint('protein shake')">🥤 Shake</span>
                     </div>
                     
                     <!-- Smart Workout Panel -->
                     <div id="smartWorkoutPanel" style="display: none; margin-top: 16px; padding: 16px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1)); border: 1px solid var(--prism-violet); border-radius: 12px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 20px;">ðŸ’ª</span>
+                                <span style="font-size: 20px;">💪</span>
                                 <div>
                                     <div style="font-weight: 600; font-size: 14px;">Active Workout</div>
                                     <div id="sessionExerciseCount" style="font-size: 11px; color: var(--white-50);">0 exercises logged</div>
@@ -692,7 +692,7 @@
                         
                         <!-- Exercise Suggestions -->
                         <div id="exerciseSuggestions" style="display: none;">
-                            <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">ðŸ’¡ Based on your patterns:</div>
+                            <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">💡 Based on your patterns:</div>
                             <div id="suggestionChips" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
                         </div>
                     </div>
@@ -706,76 +706,76 @@
                 <div class="card" id="v2WorkoutPanel"></div>
                 <div class="card" id="v2NutritionPanel"></div>
                 <div class="timeline-card">
-                    <div class="timeline-header"><div class="timeline-title">ðŸ“… Today's Activity</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
-                    <div id="todayTimeline"><div class="timeline-empty"><div class="timeline-empty-icon">ðŸŒ…</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food or workouts</div></div></div>
+                    <div class="timeline-header"><div class="timeline-title">📅 Today's Activity</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
+                    <div id="todayTimeline"><div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food or workouts</div></div></div>
                 </div>
             </div>
             <div class="view" id="view-history">
                 <header class="header"><div class="header-left"><h1>History</h1><p>All your logged activities</p></div></header>
                 <div class="history-filters">
                     <button class="history-filter active" onclick="filterHistory('all')">All</button>
-                    <button class="history-filter" onclick="filterHistory('food')">ðŸ¥— Food</button>
-                    <button class="history-filter" onclick="filterHistory('workout')">ðŸ’ª Workouts</button>
-                    <button class="history-filter" onclick="filterHistory('cardio')">ðŸƒ Cardio</button>
-                    <button class="history-filter" onclick="filterHistory('weight')">âš–ï¸ Weight</button>
+                    <button class="history-filter" onclick="filterHistory('food')">🥗 Food</button>
+                    <button class="history-filter" onclick="filterHistory('workout')">💪 Workouts</button>
+                    <button class="history-filter" onclick="filterHistory('cardio')">🏃 Cardio</button>
+                    <button class="history-filter" onclick="filterHistory('weight')">⚖️ Weight</button>
                 </div>
-                <div class="card"><div id="historyList"><div class="empty-state"><div class="empty-state-icon">ðŸ“‹</div><div class="empty-state-text">No history yet</div><div class="empty-state-subtext">Start logging to build your history</div></div></div></div>
+                <div class="card"><div id="historyList"><div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No history yet</div><div class="empty-state-subtext">Start logging to build your history</div></div></div></div>
             </div>
             <div class="view" id="view-prs">
                 <header class="header"><div class="header-left"><h1>Personal Records</h1><p>Your best lifts</p></div></header>
-                <div class="card"><div id="prsList"><div class="empty-state"><div class="empty-state-icon">ðŸ†</div><div class="empty-state-text">No PRs yet</div><div class="empty-state-subtext">Log strength workouts to track your records</div></div></div></div>
+                <div class="card"><div id="prsList"><div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-text">No PRs yet</div><div class="empty-state-subtext">Log strength workouts to track your records</div></div></div></div>
             </div>
             <div class="view" id="view-social">
                 <header class="header"><div class="header-left"><h1>Community</h1><p>Connect with your crew</p></div></header>
                 <div class="athlete-code-card">
                     <div class="athlete-code-label">Your Athlete Code</div>
                     <div class="athlete-code-value" id="displayAthleteCode">MACRA-XXXX</div>
-                    <div class="athlete-code-share"><button class="btn btn-ghost btn-sm" onclick="copyAthleteCode()">ðŸ“‹ Copy</button><button class="btn btn-primary btn-sm" onclick="shareAthleteCode()">ðŸ“¤ Share</button></div>
+                    <div class="athlete-code-share"><button class="btn btn-ghost btn-sm" onclick="copyAthleteCode()">📋 Copy</button><button class="btn btn-primary btn-sm" onclick="shareAthleteCode()">📤 Share</button></div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><div class="card-title">ðŸ‘¥ Add Friend</div></div>
+                    <div class="card-header"><div class="card-title">👥 Add Friend</div></div>
                     <div class="add-friend-form"><input type="text" class="add-friend-input" id="friendCodeInput" placeholder="Enter friend's Athlete Code (MACRA-XXXX)"><button class="btn btn-primary" onclick="addFriend()">Add</button></div>
                     <div id="friendsList" style="margin-top: 16px;"></div>
                 </div>
-                <div class="card"><div class="card-header"><div class="card-title">ðŸ“° Activity Feed</div></div><div class="activity-feed" id="activityFeed"></div></div>
+                <div class="card"><div class="card-header"><div class="card-title">📰 Activity Feed</div></div><div class="activity-feed" id="activityFeed"></div></div>
             </div>
             <div class="view" id="view-leaderboard">
                 <header class="header"><div class="header-left"><h1>Leaderboard</h1><p>Weekly rankings</p></div></header>
-                <div class="card"><div class="card-header"><div class="card-title">ðŸ† Points This Week</div></div><div class="leaderboard-list" id="leaderboardList"></div></div>
+                <div class="card"><div class="card-header"><div class="card-title">🏆 Points This Week</div></div><div class="leaderboard-list" id="leaderboardList"></div></div>
             </div>
             
-            <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            <!-- ═══════════════════════════════════════════════════════════
                  INTELLIGENCE HUB VIEW
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+            ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-intelligence">
                 <header class="header"><div class="header-left"><h1>Intelligence Hub</h1><p>AI-powered insights from your data</p></div></header>
                 
                 <div class="card">
-                    <div class="card-header"><div><div class="card-title">ðŸŽ¯ Personalized Recommendations</div><p style="font-size: 12px; color: var(--white-50); margin-top: 4px;">Based on your recent patterns</p></div></div>
+                    <div class="card-header"><div><div class="card-title">🎯 Personalized Recommendations</div><p style="font-size: 12px; color: var(--white-50); margin-top: 4px;">Based on your recent patterns</p></div></div>
                     <div class="recommendations-grid" id="recommendationsGrid">
                         <div class="recommendation-card">
-                            <div class="recommendation-icon sleep">ðŸ˜´</div>
+                            <div class="recommendation-icon sleep">😴</div>
                             <div class="recommendation-content">
                                 <h4>Track Your Sleep</h4>
                                 <p>Start logging daily check-ins to unlock sleep-performance correlations and personalized recommendations.</p>
                             </div>
                         </div>
                         <div class="recommendation-card">
-                            <div class="recommendation-icon protein">ðŸ¥©</div>
+                            <div class="recommendation-icon protein">🥩</div>
                             <div class="recommendation-content">
                                 <h4>Protein Tracking</h4>
                                 <p>Log more meals to see how your protein intake affects workout recovery and muscle growth.</p>
                             </div>
                         </div>
                         <div class="recommendation-card">
-                            <div class="recommendation-icon training">ðŸ’ª</div>
+                            <div class="recommendation-icon training">💪</div>
                             <div class="recommendation-content">
                                 <h4>Workout Consistency</h4>
                                 <p>Build your workout history to receive personalized training frequency and muscle balance suggestions.</p>
                             </div>
                         </div>
                         <div class="recommendation-card">
-                            <div class="recommendation-icon balance">âš–ï¸</div>
+                            <div class="recommendation-icon balance">⚖️</div>
                             <div class="recommendation-content">
                                 <h4>Macro Balance</h4>
                                 <p>Continue tracking nutrition to optimize your macronutrient ratios for your fitness goals.</p>
@@ -785,11 +785,11 @@
                 </div>
                 
                 <div class="card">
-                    <div class="card-header"><div class="card-title">ðŸ“Š Correlation Insights</div></div>
+                    <div class="card-header"><div class="card-title">📊 Correlation Insights</div></div>
                     <div class="insights-grid" id="insightsGrid">
                         <div class="insight-card neutral">
                             <div class="insight-header">
-                                <div class="insight-title">Protein â†’ Recovery</div>
+                                <div class="insight-title">Protein → Recovery</div>
                                 <span class="insight-badge moderate">Building Data</span>
                             </div>
                             <div class="insight-value" id="insightProtein">--</div>
@@ -820,9 +820,9 @@
                 </div>
             </div>
             
-            <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            <!-- ═══════════════════════════════════════════════════════════
                  NUTRITION ANALYTICS VIEW
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+            ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-nutrition">
                 <header class="header"><div class="header-left"><h1>Nutrition Analytics</h1><p>Track and optimize your intake</p></div></header>
                 
@@ -835,7 +835,7 @@
                 </div>
                 
                 <div class="card">
-                    <div class="card-header"><div class="card-title" id="nutritionPeriodTitle">ðŸ“… Today's Nutrition</div></div>
+                    <div class="card-header"><div class="card-title" id="nutritionPeriodTitle">📅 Today's Nutrition</div></div>
                     <div class="nutrition-overview">
                         <div class="calorie-ring-container">
                             <div class="calorie-ring">
@@ -898,25 +898,25 @@
                 </div>
                 
                 <div class="card">
-                    <div class="card-header"><div class="card-title">ðŸ½ï¸ Recent Meals</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
-                    <div id="nutritionMealsList"><div class="empty-state"><div class="empty-state-icon">ðŸ¥—</div><div class="empty-state-text">No meals logged yet</div><div class="empty-state-subtext">Log food from the Dashboard to see your meal history</div></div></div>
+                    <div class="card-header"><div class="card-title">🍽️ Recent Meals</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
+                    <div id="nutritionMealsList"><div class="empty-state"><div class="empty-state-icon">🥗</div><div class="empty-state-text">No meals logged yet</div><div class="empty-state-subtext">Log food from the Dashboard to see your meal history</div></div></div>
                 </div>
                 
                 <!-- Micronutrients Section -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">ðŸ’Š Today's Micronutrients</div>
+                        <div class="card-title">💊 Today's Micronutrients</div>
                         <span style="font-size: 10px; color: var(--white-30);">From supplements & food</span>
                     </div>
                     <div id="micronutrientsSummary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
-                        <div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">ðŸ’Š</div><div class="empty-state-text">No micronutrients tracked yet</div><div class="empty-state-subtext">Log supplements like Pre-Kaged or Carnivore Protein to track vitamins</div></div>
+                        <div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">💊</div><div class="empty-state-text">No micronutrients tracked yet</div><div class="empty-state-subtext">Log supplements like Pre-Kaged or Carnivore Protein to track vitamins</div></div>
                     </div>
                 </div>
             </div>
             
-            <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            <!-- ═══════════════════════════════════════════════════════════
                  FITNESS ANALYTICS VIEW
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+            ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-fitness">
                 <header class="header"><div class="header-left"><h1>Fitness Analytics</h1><p>Track your training progress</p></div></header>
                 
@@ -953,7 +953,7 @@
                 
                 <div class="content-grid">
                     <div class="card">
-                        <div class="card-header"><div class="card-title">ðŸ’ª Muscle Breakdown</div></div>
+                        <div class="card-header"><div class="card-title">💪 Muscle Breakdown</div></div>
                         <div class="muscle-breakdown" id="muscleBreakdown">
                             <div class="muscle-item"><span class="muscle-name">Chest</span><span class="muscle-sets">0 sets</span></div>
                             <div class="muscle-item"><span class="muscle-name">Back</span><span class="muscle-sets">0 sets</span></div>
@@ -964,8 +964,8 @@
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-header"><div class="card-title">ðŸƒ Recent Workouts</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
-                        <div id="fitnessWorkoutsList"><div class="empty-state"><div class="empty-state-icon">ðŸ’ª</div><div class="empty-state-text">No workouts logged yet</div><div class="empty-state-subtext">Log workouts from the Dashboard to track progress</div></div></div>
+                        <div class="card-header"><div class="card-title">🏃 Recent Workouts</div><button class="btn btn-ghost btn-sm" onclick="switchView('history')">View All</button></div>
+                        <div id="fitnessWorkoutsList"><div class="empty-state"><div class="empty-state-icon">💪</div><div class="empty-state-text">No workouts logged yet</div><div class="empty-state-subtext">Log workouts from the Dashboard to track progress</div></div></div>
                     </div>
                 </div>
             </div>
@@ -974,7 +974,7 @@
                 <header class="header"><div class="header-left"><h1>Settings</h1><p>Customize your experience</p></div></header>
                 
                 <div class="card">
-                    <div class="card-title" style="margin-bottom: 20px;">ðŸ‘¤ Account</div>
+                    <div class="card-title" style="margin-bottom: 20px;">👤 Account</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <div>
                             <div style="font-weight: 600;" id="settingsEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="add8dec8dfedc8d5ccc0ddc1c883cec2c0">[email&#160;protected]</a></div>
@@ -995,38 +995,38 @@
                 </div>
                 
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Profile</div><div class="form-group"><label class="form-label">Display Name</label><input type="text" class="form-input" id="settingsName" placeholder="Your name"></div><button class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button></div>
-                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--white-10);"><div class="form-row"><div class="form-group"><label class="form-label">âš–ï¸ Current Weight (lbs)</label><input type="number" class="form-input" id="goalCurrentWeight" placeholder="185"></div><div class="form-group"><label class="form-label">ðŸŽ¯ Target Weight (lbs)</label><input type="number" class="form-input" id="goalTargetWeight" placeholder="175"></div></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
-                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Data</div><div style="display: flex; gap: 12px; flex-wrap: wrap;"><button class="btn btn-ghost" onclick="exportAllData()">ðŸ“¤ Export Data</button><button class="btn btn-ghost" onclick="importDataPrompt()">ðŸ“¥ Import Data</button><button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">ðŸ—‘ï¸ Clear All Data</button></div><input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImportFile(event)"></div></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--white-10);"><div class="form-row"><div class="form-group"><label class="form-label">⚖️ Current Weight (lbs)</label><input type="number" class="form-input" id="goalCurrentWeight" placeholder="185"></div><div class="form-group"><label class="form-label">🎯 Target Weight (lbs)</label><input type="number" class="form-input" id="goalTargetWeight" placeholder="175"></div></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
+                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Data</div><div style="display: flex; gap: 12px; flex-wrap: wrap;"><button class="btn btn-ghost" onclick="exportAllData()">📤 Export Data</button><button class="btn btn-ghost" onclick="importDataPrompt()">📥 Import Data</button><button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">🗑️ Clear All Data</button></div><input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImportFile(event)"></div></div>
                 
                 
             </div>
             
-            <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            <!-- ═══════════════════════════════════════════════════════════
                  FEED VIEW (Home - Mobile)
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+            ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-feed">
                 <header class="header" style="padding-bottom: 0;">
                     <div class="header-left">
                         <h1 style="font-size: 24px;">Home</h1>
                     </div>
                     <div style="display: flex; gap: 12px;">
-                        <button class="btn btn-ghost btn-sm" onclick="switchView('leaderboard')">ðŸ†</button>
-                        <button class="btn btn-ghost btn-sm" onclick="switchView('settings')">âš™ï¸</button>
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('leaderboard')">🏆</button>
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('settings')">⚙️</button>
                     </div>
                 </header>
                 
                 <!-- Quick Actions -->
                 <div style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px;">
-                    <button class="btn btn-primary btn-sm" onclick="openQuickLog()" style="white-space: nowrap;">âž• Log Activity</button>
-                    <button class="btn btn-ghost btn-sm" onclick="quickLogWeight()" style="white-space: nowrap;">âš–ï¸ Weigh In</button>
-                    <button class="btn btn-ghost btn-sm" onclick="switchView('nutrition')" style="white-space: nowrap;">ðŸ¥— Nutrition</button>
-                    <button class="btn btn-ghost btn-sm" onclick="switchView('intelligence')" style="white-space: nowrap;">ðŸ§  Insights</button>
+                    <button class="btn btn-primary btn-sm" onclick="openQuickLog()" style="white-space: nowrap;">➕ Log Activity</button>
+                    <button class="btn btn-ghost btn-sm" onclick="quickLogWeight()" style="white-space: nowrap;">⚖️ Weigh In</button>
+                    <button class="btn btn-ghost btn-sm" onclick="switchView('nutrition')" style="white-space: nowrap;">🥗 Nutrition</button>
+                    <button class="btn btn-ghost btn-sm" onclick="switchView('intelligence')" style="white-space: nowrap;">🧠 Insights</button>
                 </div>
                 
                 <!-- Streak Reminder Banner (shown if no activity today) -->
                 <div id="streakReminder" style="display: none; background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(245, 158, 11, 0.1)); border: 1px solid var(--prism-orange); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="font-size: 32px;">ðŸ”¥</div>
+                        <div style="font-size: 32px;">🔥</div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600; color: var(--prism-orange);">Keep your streak alive!</div>
                             <div style="font-size: 12px; color: var(--white-50);">Log any activity today to maintain your <span id="streakDays">0</span>-day streak</div>
@@ -1054,11 +1054,11 @@
                 <!-- Suggested Challenges -->
                 <div class="card" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid var(--prism-cyan);">
                     <div class="card-header">
-                        <div class="card-title">ðŸŽ¯ Suggested Challenges</div>
+                        <div class="card-title">🎯 Suggested Challenges</div>
                     </div>
                     <p style="font-size: 13px; color: var(--white-70); margin-bottom: 16px;">Make accountability easier and earn rewards!</p>
                     <div style="background: var(--carbon); border-radius: 12px; padding: 16px;">
-                        <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">ðŸ”¥ Popular with athletes like you</div>
+                        <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">🔥 Popular with athletes like you</div>
                         <div style="font-weight: 600; margin-bottom: 4px;">30-Day Consistency Challenge</div>
                         <div style="font-size: 12px; color: var(--white-50); margin-bottom: 12px;">Log activity 30 days in a row</div>
                         <button class="btn btn-primary btn-sm" onclick="joinChallenge('consistency-30')">Join Challenge</button>
@@ -1068,7 +1068,7 @@
                 <!-- Activity Feed -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">ðŸ“° Following</div>
+                        <div class="card-title">📰 Following</div>
                         <button class="btn btn-ghost btn-sm" onclick="switchView('social')">See All</button>
                     </div>
                     <div id="feedActivityList"></div>
@@ -1077,8 +1077,8 @@
                 <!-- Who to Follow -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">ðŸ‘¥ Who to Follow</div>
-                        <button class="btn btn-ghost btn-sm" onclick="refreshSuggestedFollows()">ðŸ”„</button>
+                        <div class="card-title">👥 Who to Follow</div>
+                        <button class="btn btn-ghost btn-sm" onclick="refreshSuggestedFollows()">🔄</button>
                     </div>
                     <div id="suggestedFollows">
                         <!-- Will be populated dynamically -->
@@ -1086,15 +1086,15 @@
                 </div>
             </div>
             
-            <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            <!-- ═══════════════════════════════════════════════════════════
                  CLUBS VIEW (Groups - Mobile)
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+            ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-clubs">
                 <header class="header" style="padding-bottom: 0;">
                     <div class="header-left">
                         <h1 style="font-size: 24px;">Groups</h1>
                     </div>
-                    <button class="btn btn-ghost btn-sm" onclick="searchClubs()">ðŸ”</button>
+                    <button class="btn btn-ghost btn-sm" onclick="searchClubs()">🔍</button>
                 </header>
                 
                 <!-- Sub-tabs -->
@@ -1111,7 +1111,7 @@
                 <!-- Active Groups Content -->
                 <div id="clubsActiveContent">
                     <div class="empty-state">
-                        <div class="empty-state-icon">ðŸ‹ï¸</div>
+                        <div class="empty-state-icon">🏋️</div>
                         <div class="empty-state-text">No active groups yet</div>
                         <div class="empty-state-subtext">Join a club or challenge to get started!</div>
                     </div>
@@ -1125,14 +1125,14 @@
                     <!-- Available Challenges -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">ðŸŽ¯ Available Challenges</div>
+                            <div class="card-title">🎯 Available Challenges</div>
                         </div>
                         <div id="availableChallenges">
                             <!-- February Fitness Challenge -->
                             <div class="challenge-card" data-challenge="feb-fitness" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.1)); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--prism-emerald);">
                                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                                     <div>
-                                        <div style="font-size: 11px; color: var(--white-50);">ðŸ”¥ 107,000+ athletes joined</div>
+                                        <div style="font-size: 11px; color: var(--white-50);">🔥 107,000+ athletes joined</div>
                                         <div style="font-weight: 600; font-size: 16px; margin-top: 4px;">February Fitness Challenge</div>
                                     </div>
                                     <span style="background: var(--prism-amber); color: black; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;">REWARD</span>
@@ -1148,7 +1148,7 @@
                             <div class="challenge-card" data-challenge="protein-goal" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.1)); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--prism-violet);">
                                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                                     <div>
-                                        <div style="font-size: 11px; color: var(--white-50);">ðŸ’ª 45,000+ athletes joined</div>
+                                        <div style="font-size: 11px; color: var(--white-50);">💪 45,000+ athletes joined</div>
                                         <div style="font-weight: 600; font-size: 16px; margin-top: 4px;">Protein Power Month</div>
                                     </div>
                                     <span style="background: var(--prism-violet); color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;">NEW</span>
@@ -1164,7 +1164,7 @@
                             <div class="challenge-card" data-challenge="consistency-30" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(59, 130, 246, 0.1)); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--prism-cyan);">
                                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                                     <div>
-                                        <div style="font-size: 11px; color: var(--white-50);">ðŸ† 23,000+ athletes joined</div>
+                                        <div style="font-size: 11px; color: var(--white-50);">🏆 23,000+ athletes joined</div>
                                         <div style="font-weight: 600; font-size: 16px; margin-top: 4px;">30-Day Consistency</div>
                                     </div>
                                 </div>
@@ -1182,8 +1182,8 @@
                 <div id="clubsClubsContent" style="display: none;">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">ðŸ“ Gyms Near You</div>
-                            <button class="btn btn-ghost btn-sm" onclick="refreshNearbyGyms()">ðŸ”„</button>
+                            <div class="card-title">📍 Gyms Near You</div>
+                            <button class="btn btn-ghost btn-sm" onclick="refreshNearbyGyms()">🔄</button>
                         </div>
                         <p style="font-size: 12px; color: var(--white-50); margin-bottom: 16px;">Connect with athletes at your local gym</p>
                         
@@ -1193,7 +1193,7 @@
                         </div>
                         
                         <div id="nearbyClubsError" style="display: none; text-align: center; padding: 24px; background: rgba(244, 63, 94, 0.1); border-radius: 8px;">
-                            <div style="font-size: 24px; margin-bottom: 8px;">ðŸ“</div>
+                            <div style="font-size: 24px; margin-bottom: 8px;">📍</div>
                             <div style="font-size: 13px; color: var(--prism-rose); margin-bottom: 8px;">Location access needed</div>
                             <button class="btn btn-primary btn-sm" onclick="requestLocationPermission()">Enable Location</button>
                         </div>
@@ -1205,13 +1205,13 @@
                             </div>
                         </div>
                         
-                        <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" onclick="findNearbyGyms()">ðŸ” Find Gyms Near Me</button>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" onclick="findNearbyGyms()">🔍 Find Gyms Near Me</button>
                     </div>
                     
                     <!-- Your Clubs -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">ðŸ  Your Clubs</div>
+                            <div class="card-title">🏠 Your Clubs</div>
                         </div>
                         <div id="yourClubs">
                             <div class="empty-state" style="padding: 16px;">
@@ -1221,23 +1221,23 @@
                     </div>
                     
                     <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));">
-                        <div class="card-title" style="margin-bottom: 8px;">ðŸ  Create Your Own Club</div>
+                        <div class="card-title" style="margin-bottom: 8px;">🏠 Create Your Own Club</div>
                         <p style="font-size: 12px; color: var(--white-50); margin-bottom: 12px;">Give your community a home base on MACRA</p>
                         <button class="btn btn-primary" onclick="createClub()">Get Started</button>
                     </div>
                 </div>
             </div>
             
-            <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            <!-- ═══════════════════════════════════════════════════════════
                  PROFILE VIEW (You - Mobile with Progress/Activities)
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+            ═══════════════════════════════════════════════════════════ -->
             <div class="view" id="view-profile">
                 <header class="header" style="padding-bottom: 0;">
                     <div class="header-left">
                         <h1 style="font-size: 24px;">You</h1>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-ghost btn-sm" onclick="switchView('settings')">âš™ï¸</button>
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('settings')">⚙️</button>
                     </div>
                 </header>
                 
@@ -1245,15 +1245,15 @@
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
                     <div style="position: relative;">
                         <div style="width: 72px; height: 72px; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 28px; font-weight: 700; overflow: hidden; cursor: pointer;" id="profileAvatar" onclick="openAvatarUpload()">A</div>
-                        <div style="position: absolute; bottom: 0; right: 0; width: 24px; height: 24px; background: var(--prism-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid var(--carbon); cursor: pointer;" onclick="openAvatarUpload()">ðŸ“·</div>
+                        <div style="position: absolute; bottom: 0; right: 0; width: 24px; height: 24px; background: var(--prism-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid var(--carbon); cursor: pointer;" onclick="openAvatarUpload()">📷</div>
                         <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)">
                     </div>
                     <div style="flex: 1;">
                         <div style="font-size: 20px; font-weight: 600;" id="profileName">Athlete</div>
                         <div style="font-size: 12px; color: var(--white-50);" id="profileCode">MACRA-XXXX</div>
-                        <div style="font-size: 11px; color: var(--prism-cyan); margin-top: 4px;">ðŸ”¥ <span id="profileStreak">0</span> day streak</div>
+                        <div style="font-size: 11px; color: var(--prism-cyan); margin-top: 4px;">🔥 <span id="profileStreak">0</span> day streak</div>
                     </div>
-                    <button class="btn btn-ghost btn-sm" onclick="shareProfile()">ðŸ“¤</button>
+                    <button class="btn btn-ghost btn-sm" onclick="shareProfile()">📤</button>
                 </div>
                 
                 <!-- Stats Row -->
@@ -1287,7 +1287,7 @@
                     <!-- Badges Section -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">ðŸŽ–ï¸ Badges</div>
+                            <div class="card-title">🎖️ Badges</div>
                             <button class="btn btn-ghost btn-sm" onclick="showAllBadges()">See All</button>
                         </div>
                         <div id="profileBadges" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
@@ -1296,7 +1296,7 @@
                     <!-- Best Efforts / PRs -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">ðŸ† Best Efforts</div>
+                            <div class="card-title">🏆 Best Efforts</div>
                             <button class="btn btn-ghost btn-sm" onclick="switchView('prs')">See All</button>
                         </div>
                         <div id="profilePRsList"></div>
@@ -1305,7 +1305,7 @@
                     <!-- Goals -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">ðŸŽ¯ Goals</div>
+                            <div class="card-title">🎯 Goals</div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px;">
                             <div style="width: 48px; height: 48px; position: relative;">
@@ -1318,14 +1318,14 @@
                                 <div style="font-weight: 600;">Weekly Workout Goal</div>
                                 <div style="font-size: 12px; color: var(--white-50);"><span id="goalWorkoutsProgress">0</span>/4 workouts</div>
                             </div>
-                            <span style="font-size: 11px; color: var(--white-30);">â€º</span>
+                            <span style="font-size: 11px; color: var(--white-30);">›</span>
                         </div>
                     </div>
                     
                     <!-- Intelligence Hub Preview -->
                     <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(139, 92, 246, 0.3);">
                         <div class="card-header">
-                            <div class="card-title">ðŸ§  Intelligence Hub</div>
+                            <div class="card-title">🧠 Intelligence Hub</div>
                             <button class="btn btn-ghost btn-sm" onclick="switchView('intelligence')">Open</button>
                         </div>
                         <p style="font-size: 12px; color: var(--white-70);">AI-powered insights from your training data</p>
@@ -1335,7 +1335,7 @@
                     <!-- Training Log -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">ðŸ“… Training Log</div>
+                            <div class="card-title">📅 Training Log</div>
                             <button class="btn btn-ghost btn-sm" onclick="switchView('history')">Full History</button>
                         </div>
                         <div id="profileTrainingLog"></div>
@@ -1349,7 +1349,7 @@
             </div>
         </main>
     </div>
-    <div id="prCelebration" style="display: none;"><div class="pr-celebration"><div class="pr-celebration-icon">ðŸ†</div><div class="pr-celebration-title">NEW PR!</div><div class="pr-celebration-detail" id="prCelebrationExercise"></div><div class="pr-celebration-value" id="prCelebrationValue"></div></div></div>
+    <div id="prCelebration" style="display: none;"><div class="pr-celebration"><div class="pr-celebration-icon">🏆</div><div class="pr-celebration-title">NEW PR!</div><div class="pr-celebration-detail" id="prCelebrationExercise"></div><div class="pr-celebration-value" id="prCelebrationValue"></div></div></div>
     
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         const STORAGE_KEY = 'macra-v1.4';
@@ -1480,7 +1480,7 @@
             try {
                 const res = await fetch(`${API_BASE}/api/auth/forgot-password`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
                 const data = await res.json();
-                success.textContent = 'âœ“ Check your email for a reset link!';
+                success.textContent = '✓ Check your email for a reset link!';
                 success.style.display = 'block';
             } catch (err) {
                 error.textContent = 'Failed to send reset email. Try again.';
@@ -1495,7 +1495,7 @@
             const btn = document.getElementById('loginBtn');
             const error = document.getElementById('loginError');
             btn.disabled = true; btn.textContent = 'Logging in...'; error.style.display = 'none';
-            try { await login(email, password); hideAuthModal(); init(); showToast('âœ“ Welcome back!'); }
+            try { await login(email, password); hideAuthModal(); init(); showToast('✓ Welcome back!'); }
             catch (err) { error.textContent = err.message; error.style.display = 'block'; }
             finally { btn.disabled = false; btn.textContent = 'Login'; }
         }
@@ -1508,7 +1508,7 @@
             const btn = document.getElementById('signupBtn');
             const error = document.getElementById('signupError');
             btn.disabled = true; btn.textContent = 'Creating account...'; error.style.display = 'none';
-            try { await signup(email, password, name); showToast('âœ“ Account created! Please log in.'); showLoginForm(); }
+            try { await signup(email, password, name); showToast('✓ Account created! Please log in.'); showLoginForm(); }
             catch (err) { error.textContent = err.message; error.style.display = 'block'; }
             finally { btn.disabled = false; btn.textContent = 'Create Account'; }
         }
@@ -1623,7 +1623,7 @@
                         weightHistory: appData.weightHistory
                     })
                 });
-                console.log('âœ“ Data synced to cloud');
+                console.log('✓ Data synced to cloud');
             } catch (err) {
                 console.log('Cloud sync skipped:', err.message);
             }
@@ -1638,7 +1638,7 @@
                     if (cloudData && cloudData.activities) {
                         // Merge cloud data with local (cloud wins for conflicts)
                         mergeCloudData(cloudData);
-                        showToast('â˜ï¸ Data synced from cloud');
+                        showToast('☁️ Data synced from cloud');
                     }
                 }
             } catch (err) {
@@ -1748,9 +1748,9 @@
             openQuickLog();
         }
         
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // FEED VIEW (Home)
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         function renderFeedView() {
             // Update quick stats
             const streak = appData.stats.streak || 0;
@@ -1791,7 +1791,7 @@
                     timestamp: new Date().toISOString()
                 });
                 saveData();
-                showToast(`âš–ï¸ Logged ${weight} lbs`);
+                showToast(`⚖️ Logged ${weight} lbs`);
                 calculateStreak();
                 renderFeedView();
             }
@@ -1804,7 +1804,7 @@
             modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:16px;';
             modal.innerHTML = `
                 <div style="background:var(--carbon);border-radius:20px;padding:32px;text-align:center;max-width:320px;">
-                    <div style="font-size:64px;margin-bottom:16px;">ðŸ”¥</div>
+                    <div style="font-size:64px;margin-bottom:16px;">🔥</div>
                     <div style="font-family:var(--font-display);font-size:48px;color:var(--prism-orange);margin-bottom:8px;">${streak}</div>
                     <div style="font-size:16px;color:var(--white-70);margin-bottom:24px;">Day Streak</div>
                     
@@ -1812,19 +1812,19 @@
                         <div style="font-size:12px;color:var(--white-30);margin-bottom:8px;">STREAK MILESTONES</div>
                         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-05);">
                             <span>7 days</span>
-                            <span>${streak >= 7 ? 'âœ…' : 'ðŸ”’'}</span>
+                            <span>${streak >= 7 ? '✅' : '🔒'}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-05);">
                             <span>30 days</span>
-                            <span>${streak >= 30 ? 'âœ…' : 'ðŸ”’'}</span>
+                            <span>${streak >= 30 ? '✅' : '🔒'}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--white-05);">
                             <span>60 days</span>
-                            <span>${streak >= 60 ? 'âœ…' : 'ðŸ”’'}</span>
+                            <span>${streak >= 60 ? '✅' : '🔒'}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;padding:8px 0;">
                             <span>100 days</span>
-                            <span>${streak >= 100 ? 'âœ…' : 'ðŸ”’'}</span>
+                            <span>${streak >= 100 ? '✅' : '🔒'}</span>
                         </div>
                     </div>
                     
@@ -1865,7 +1865,7 @@
             });
             
             if (feedItems.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">ðŸ“°</div><div class="empty-state-text">No activity yet</div><div class="empty-state-subtext">Log your first workout or meal to see it here!</div></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📰</div><div class="empty-state-text">No activity yet</div><div class="empty-state-subtext">Log your first workout or meal to see it here!</div></div>';
                 return;
             }
             
@@ -1897,9 +1897,9 @@
             }).join('');
         }
         
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // FOLLOW SYSTEM
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         let suggestedUsers = [
             { id: 'rich-caruso', name: 'Rich Caruso', subtitle: 'Health Club @ Southpointe', avatar: 'R', stats: { workouts: 156, streak: 45 } },
             { id: 'sarah-fit', name: 'Sarah Fitness', subtitle: 'Personal Trainer', avatar: 'S', stats: { workouts: 234, streak: 30 } },
@@ -1926,7 +1926,7 @@
             const suggestions = suggestedUsers.filter(u => !followedIds.includes(u.id));
             
             if (suggestions.length === 0) {
-                container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--white-50); font-size: 13px;">You\'re following everyone! ðŸŽ‰</div>';
+                container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--white-50); font-size: 13px;">You\'re following everyone! 🎉</div>';
                 return;
             }
             
@@ -1936,7 +1936,7 @@
                     <div style="flex: 1;">
                         <div style="font-weight: 600;">${user.name}</div>
                         <div style="font-size: 11px; color: var(--white-30);">${user.subtitle}</div>
-                        <div style="font-size: 10px; color: var(--white-50); margin-top: 2px;">ðŸ”¥ ${user.stats.streak} day streak</div>
+                        <div style="font-size: 10px; color: var(--white-50); margin-top: 2px;">🔥 ${user.stats.streak} day streak</div>
                     </div>
                     <button class="btn btn-primary btn-sm" onclick="followUser('${user.id}')">Follow</button>
                 </div>
@@ -1966,7 +1966,7 @@
             saveData();
             renderSuggestedFollows();
             renderSocial();
-            showToast(`âœ… Now following ${user.name}!`);
+            showToast(`✅ Now following ${user.name}!`);
         }
         
         function unfollowUser(userId) {
@@ -1985,12 +1985,12 @@
             // Shuffle suggestions
             suggestedUsers = suggestedUsers.sort(() => Math.random() - 0.5);
             renderSuggestedFollows();
-            showToast('ðŸ”„ Refreshed suggestions');
+            showToast('🔄 Refreshed suggestions');
         }
         
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // CHALLENGES SYSTEM
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         let joinedChallenges = [];
         let earnedBadges = [];
         
@@ -2002,8 +2002,8 @@
                 goal: 20,
                 type: 'workouts',
                 endDate: '2026-02-28',
-                reward: 'ðŸ… February Fitness Badge',
-                badgeIcon: 'ðŸ…',
+                reward: '🏅 February Fitness Badge',
+                badgeIcon: '🏅',
                 badgeColor: 'var(--prism-amber)'
             },
             'protein-goal': {
@@ -2013,8 +2013,8 @@
                 goal: 25,
                 type: 'protein-days',
                 endDate: '2026-02-28',
-                reward: 'ðŸ’ª Protein Champion Badge',
-                badgeIcon: 'ðŸ’ª',
+                reward: '💪 Protein Champion Badge',
+                badgeIcon: '💪',
                 badgeColor: 'var(--prism-rose)'
             },
             'consistency-30': {
@@ -2024,23 +2024,23 @@
                 goal: 30,
                 type: 'streak',
                 endDate: null,
-                reward: 'ðŸ”¥ Consistency King Badge',
-                badgeIcon: 'ðŸ”¥',
+                reward: '🔥 Consistency King Badge',
+                badgeIcon: '🔥',
                 badgeColor: 'var(--prism-orange)'
             }
         };
         
         // Badge definitions for non-challenge achievements
         const badgeDefinitions = {
-            'first-workout': { id: 'first-workout', name: 'First Steps', description: 'Log your first workout', icon: 'ðŸ‘Ÿ', color: 'var(--prism-cyan)' },
-            'first-pr': { id: 'first-pr', name: 'PR Crusher', description: 'Set your first PR', icon: 'ðŸ†', color: 'var(--prism-amber)' },
-            'week-streak': { id: 'week-streak', name: 'Week Warrior', description: 'Maintain a 7-day streak', icon: 'âš¡', color: 'var(--prism-violet)' },
-            'month-streak': { id: 'month-streak', name: 'Monthly Master', description: 'Maintain a 30-day streak', icon: 'ðŸŒŸ', color: 'var(--prism-emerald)' },
-            'protein-master': { id: 'protein-master', name: 'Protein Master', description: 'Hit protein goal 7 days in a row', icon: 'ðŸ¥©', color: 'var(--prism-rose)' },
-            'early-bird': { id: 'early-bird', name: 'Early Bird', description: 'Log activity before 7am', icon: 'ðŸŒ…', color: 'var(--prism-amber)' },
-            'night-owl': { id: 'night-owl', name: 'Night Owl', description: 'Log activity after 10pm', icon: 'ðŸ¦‰', color: 'var(--prism-indigo)' },
-            'social-butterfly': { id: 'social-butterfly', name: 'Social Butterfly', description: 'Follow 5 athletes', icon: 'ðŸ¦‹', color: 'var(--prism-pink)' },
-            'club-member': { id: 'club-member', name: 'Club Member', description: 'Join your first club', icon: 'ðŸ ', color: 'var(--prism-teal)' }
+            'first-workout': { id: 'first-workout', name: 'First Steps', description: 'Log your first workout', icon: '👟', color: 'var(--prism-cyan)' },
+            'first-pr': { id: 'first-pr', name: 'PR Crusher', description: 'Set your first PR', icon: '🏆', color: 'var(--prism-amber)' },
+            'week-streak': { id: 'week-streak', name: 'Week Warrior', description: 'Maintain a 7-day streak', icon: '⚡', color: 'var(--prism-violet)' },
+            'month-streak': { id: 'month-streak', name: 'Monthly Master', description: 'Maintain a 30-day streak', icon: '🌟', color: 'var(--prism-emerald)' },
+            'protein-master': { id: 'protein-master', name: 'Protein Master', description: 'Hit protein goal 7 days in a row', icon: '🥩', color: 'var(--prism-rose)' },
+            'early-bird': { id: 'early-bird', name: 'Early Bird', description: 'Log activity before 7am', icon: '🌅', color: 'var(--prism-amber)' },
+            'night-owl': { id: 'night-owl', name: 'Night Owl', description: 'Log activity after 10pm', icon: '🦉', color: 'var(--prism-indigo)' },
+            'social-butterfly': { id: 'social-butterfly', name: 'Social Butterfly', description: 'Follow 5 athletes', icon: '🦋', color: 'var(--prism-pink)' },
+            'club-member': { id: 'club-member', name: 'Club Member', description: 'Join your first club', icon: '🏠', color: 'var(--prism-teal)' }
         };
         
         function loadBadges() {
@@ -2078,11 +2078,11 @@
             modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn 0.3s ease;';
             modal.innerHTML = `
                 <div style="background:var(--carbon);border-radius:20px;padding:32px;text-align:center;max-width:320px;animation:scaleIn 0.4s ease;">
-                    <div style="font-size:64px;margin-bottom:16px;animation:bounce 0.6s ease;">${badge.icon || badge.badgeIcon || 'ðŸ†'}</div>
+                    <div style="font-size:64px;margin-bottom:16px;animation:bounce 0.6s ease;">${badge.icon || badge.badgeIcon || '🏆'}</div>
                     <div style="font-family:var(--font-display);font-size:14px;color:var(--prism-amber);letter-spacing:2px;margin-bottom:8px;">BADGE EARNED!</div>
                     <div style="font-size:20px;font-weight:600;margin-bottom:8px;">${badge.name || badge.reward}</div>
                     <div style="font-size:13px;color:var(--white-50);margin-bottom:24px;">${badge.description || ''}</div>
-                    <button class="btn btn-primary" onclick="closeBadgeModal()">Awesome! ðŸŽ‰</button>
+                    <button class="btn btn-primary" onclick="closeBadgeModal()">Awesome! 🎉</button>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -2170,7 +2170,7 @@
             saveChallenges();
             updateChallengeUI(challengeId, true);
             renderActiveChallenges();
-            showToast(`ðŸŽ¯ Joined "${challenge.name}"! Good luck!`);
+            showToast(`🎯 Joined "${challenge.name}"! Good luck!`);
         }
         
         function leaveChallenge(challengeId) {
@@ -2192,7 +2192,7 @@
             if (btn) {
                 if (joined) {
                     btn.className = 'btn btn-ghost btn-sm';
-                    btn.textContent = 'Joined âœ“';
+                    btn.textContent = 'Joined ✓';
                     btn.onclick = () => leaveChallenge(challengeId);
                 } else {
                     btn.className = 'btn btn-primary btn-sm';
@@ -2218,7 +2218,7 @@
             
             container.innerHTML = `
                 <div class="card" style="margin-bottom: 16px;">
-                    <div class="card-header"><div class="card-title">ðŸƒ Your Active Challenges</div></div>
+                    <div class="card-header"><div class="card-title">🏃 Your Active Challenges</div></div>
                     ${joinedChallenges.map(challenge => {
                         const percent = Math.min((challenge.progress / challenge.goal) * 100, 100);
                         const isComplete = percent >= 100;
@@ -2283,9 +2283,9 @@
             }
         }
         
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // CLUBS VIEW (Groups)
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         let currentClubTab = 'active';
         
         function renderClubsView() {
@@ -2322,7 +2322,7 @@
             
             if (!hasClubs && !hasChallenges) {
                 container.innerHTML = `<div class="empty-state">
-                    <div class="empty-state-icon">ðŸ‹ï¸</div>
+                    <div class="empty-state-icon">🏋️</div>
                     <div class="empty-state-text">No active groups yet</div>
                     <div class="empty-state-subtext">Join a club or challenge to get started!</div>
                     <div style="display: flex; gap: 8px; margin-top: 16px;">
@@ -2338,7 +2338,7 @@
             // Show active challenges first
             if (hasChallenges) {
                 html += `<div class="card" style="margin-bottom: 16px;">
-                    <div class="card-header"><div class="card-title">ðŸŽ¯ Active Challenges</div></div>
+                    <div class="card-header"><div class="card-title">🎯 Active Challenges</div></div>
                     ${joinedChallenges.map(challenge => {
                         const progress = calculateChallengeProgress(challenge);
                         const percent = Math.min((progress / challenge.goal) * 100, 100);
@@ -2360,15 +2360,15 @@
             // Show clubs
             if (hasClubs) {
                 html += `<div class="card">
-                    <div class="card-header"><div class="card-title">ðŸ  Your Clubs</div></div>
+                    <div class="card-header"><div class="card-title">🏠 Your Clubs</div></div>
                     ${joinedClubs.map(club => `
                         <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
-                            <div style="width: 40px; height: 40px; background: var(--prism-cyan); border-radius: 8px; display: flex; align-items: center; justify-content: center;">ðŸ’ª</div>
+                            <div style="width: 40px; height: 40px; background: var(--prism-cyan); border-radius: 8px; display: flex; align-items: center; justify-content: center;">💪</div>
                             <div style="flex: 1;">
                                 <div style="font-weight: 600;">${club.name}</div>
                                 <div style="font-size: 11px; color: var(--white-30);">${club.vicinity}</div>
                             </div>
-                            <span style="font-size: 11px; color: var(--white-30);">â€º</span>
+                            <span style="font-size: 11px; color: var(--white-30);">›</span>
                         </div>
                     `).join('')}
                 </div>`;
@@ -2378,12 +2378,12 @@
         }
         
         function searchClubs() {
-            showToast('ðŸ” Club search coming soon!');
+            showToast('🔍 Club search coming soon!');
         }
         
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // GOOGLE PLACES API - NEARBY GYMS
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         let userLocation = null;
         let nearbyGyms = [];
         let joinedClubs = [];
@@ -2450,7 +2450,7 @@
                     // Fallback to mock data for demo
                     nearbyGyms = getMockGyms();
                     renderNearbyGyms();
-                    showToast('ðŸ“ Using demo data - enable location for real results');
+                    showToast('📍 Using demo data - enable location for real results');
                 }
             }
         }
@@ -2475,22 +2475,22 @@
             }
             
             const colors = ['var(--prism-violet)', 'var(--prism-rose)', 'var(--prism-emerald)', 'var(--prism-cyan)', 'var(--prism-amber)', 'var(--prism-blue)'];
-            const icons = ['ðŸ’ª', 'ðŸ‹ï¸', 'â¤ï¸', 'ðŸ”¥', 'âš¡', 'ðŸŒŸ'];
+            const icons = ['💪', '🏋️', '❤️', '🔥', '⚡', '🌟'];
             
             container.innerHTML = nearbyGyms.map((gym, i) => {
                 const isJoined = joinedClubs.some(c => c.place_id === gym.place_id);
                 const distance = gym.distance ? `${gym.distance.toFixed(1)} mi` : '';
-                const rating = gym.rating ? `â­ ${gym.rating}` : '';
+                const rating = gym.rating ? `⭐ ${gym.rating}` : '';
                 const reviews = gym.user_ratings_total ? `(${gym.user_ratings_total})` : '';
                 
                 return `<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px; ${isJoined ? 'border: 1px solid var(--prism-cyan);' : ''}">
                     <div style="width: 48px; height: 48px; background: ${colors[i % colors.length]}; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px;">${icons[i % icons.length]}</div>
                     <div style="flex: 1; min-width: 0;">
                         <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${gym.name}</div>
-                        <div style="font-size: 11px; color: var(--white-30);">${gym.vicinity} ${distance ? 'â€¢ ' + distance : ''}</div>
+                        <div style="font-size: 11px; color: var(--white-30);">${gym.vicinity} ${distance ? '• ' + distance : ''}</div>
                         <div style="font-size: 11px; color: var(--prism-amber);">${rating} ${reviews}</div>
                     </div>
-                    <button class="btn ${isJoined ? 'btn-ghost' : 'btn-primary'} btn-sm" onclick="${isJoined ? `leaveClub('${gym.place_id}')` : `joinClub('${gym.place_id}')`}">${isJoined ? 'Joined âœ“' : 'Join'}</button>
+                    <button class="btn ${isJoined ? 'btn-ghost' : 'btn-primary'} btn-sm" onclick="${isJoined ? `leaveClub('${gym.place_id}')` : `joinClub('${gym.place_id}')`}">${isJoined ? 'Joined ✓' : 'Join'}</button>
                 </div>`;
             }).join('');
         }
@@ -2509,7 +2509,7 @@
                 saveJoinedClubs();
                 renderNearbyGyms();
                 renderYourClubs();
-                showToast(`ðŸŽ‰ Joined ${gym.name}!`);
+                showToast(`🎉 Joined ${gym.name}!`);
             }
         }
         
@@ -2557,19 +2557,19 @@
                 <div style="background:var(--carbon);border-radius:16px;max-width:400px;width:100%;max-height:80vh;overflow-y:auto;">
                     <div style="padding:24px;">
                         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px;">
-                            <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--prism-cyan),var(--prism-violet));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;">ðŸ’ª</div>
-                            <button onclick="closeClubModal()" style="background:none;border:none;color:var(--white-50);font-size:24px;cursor:pointer;">Ã—</button>
+                            <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--prism-cyan),var(--prism-violet));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;">💪</div>
+                            <button onclick="closeClubModal()" style="background:none;border:none;color:var(--white-50);font-size:24px;cursor:pointer;">×</button>
                         </div>
                         <h2 style="font-size:20px;margin-bottom:4px;">${club.name}</h2>
                         <p style="color:var(--white-50);font-size:13px;margin-bottom:16px;">${club.vicinity || ''}</p>
                         
                         ${club.rating ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-                            <span style="color:var(--prism-amber);">â­ ${club.rating}</span>
+                            <span style="color:var(--prism-amber);">⭐ ${club.rating}</span>
                             <span style="color:var(--white-30);font-size:12px;">(${club.user_ratings_total || 0} reviews)</span>
                         </div>` : ''}
                         
                         ${club.distance ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;color:var(--white-70);">
-                            <span>ðŸ“</span>
+                            <span>📍</span>
                             <span>${club.distance} miles away</span>
                         </div>` : ''}
                         
@@ -2585,7 +2585,7 @@
                                     <div style="font-size:10px;color:var(--white-50);">Workouts/wk</div>
                                 </div>
                                 <div>
-                                    <div style="font-family:var(--font-display);font-size:18px;color:var(--prism-violet);">ðŸ”¥</div>
+                                    <div style="font-family:var(--font-display);font-size:18px;color:var(--prism-violet);">🔥</div>
                                     <div style="font-size:10px;color:var(--white-50);">Active</div>
                                 </div>
                             </div>
@@ -2596,7 +2596,7 @@
                                 ? `<button class="btn btn-ghost" style="flex:1;" onclick="leaveClub('${placeId}');closeClubModal();">Leave Club</button>`
                                 : `<button class="btn btn-primary" style="flex:1;" onclick="joinClub('${placeId}');closeClubModal();">Join Club</button>`
                             }
-                            <button class="btn btn-ghost" onclick="openInMaps('${club.name}','${club.vicinity}')">ðŸ“ Directions</button>
+                            <button class="btn btn-ghost" onclick="openInMaps('${club.name}','${club.vicinity}')">📍 Directions</button>
                         </div>
                     </div>
                 </div>
@@ -2620,12 +2620,12 @@
         }
         
         function createClub() {
-            showToast('ðŸ  Club creation coming soon!');
+            showToast('🏠 Club creation coming soon!');
         }
         
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // PROFILE VIEW (You)
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         let currentProfileTab = 'progress';
         
         function renderProfileView() {
@@ -2681,7 +2681,7 @@
                 const avatarEl = document.getElementById('profileAvatar');
                 avatarEl.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
                 
-                showToast('âœ… Profile photo updated!');
+                showToast('✅ Profile photo updated!');
             };
             reader.readAsDataURL(file);
         }
@@ -2691,13 +2691,13 @@
             const code = appData.profile.athleteCode || 'MACRA-XXXX';
             const streak = appData.stats.streak || 0;
             
-            const shareText = `ðŸ’ª ${userName} on MACRA\nðŸ”¥ ${streak} day streak\nðŸ‘¤ Add me: ${code}\n\nTrack your fitness at macra.umbrassi.com`;
+            const shareText = `💪 ${userName} on MACRA\n🔥 ${streak} day streak\n👤 Add me: ${code}\n\nTrack your fitness at macra.umbrassi.com`;
             
             if (navigator.share) {
                 navigator.share({ title: 'My MACRA Profile', text: shareText });
             } else {
                 navigator.clipboard.writeText(shareText);
-                showToast('ðŸ“‹ Profile copied to clipboard!');
+                showToast('📋 Profile copied to clipboard!');
             }
         }
         
@@ -2715,7 +2715,7 @@
                 <div style="background:var(--carbon);border-radius:16px;padding:24px;max-width:350px;width:100%;max-height:70vh;overflow-y:auto;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                         <div style="font-size:16px;font-weight:600;">Following (${appData.friends.length})</div>
-                        <button onclick="this.closest('#followingModal').remove()" style="background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">Ã—</button>
+                        <button onclick="this.closest('#followingModal').remove()" style="background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">×</button>
                     </div>
                     ${appData.friends.map(friend => `
                         <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--onyx);border-radius:8px;margin-bottom:8px;">
@@ -2734,7 +2734,7 @@
         }
         
         function showFollowersList() {
-            showToast('ðŸ‘¥ Followers list coming soon!');
+            showToast('👥 Followers list coming soon!');
         }
         
         function setProfileTab(tab) {
@@ -2782,7 +2782,7 @@
             // Render insight preview
             document.getElementById('profileInsightPreview').innerHTML = `
                 <div style="padding: 10px; background: var(--carbon); border-radius: 8px; font-size: 12px; color: var(--white-70);">
-                    ðŸ’¡ Your protein intake has been ${Math.random() > 0.5 ? 'above' : 'below'} target this week.
+                    💡 Your protein intake has been ${Math.random() > 0.5 ? 'above' : 'below'} target this week.
                 </div>
             `;
             
@@ -2837,8 +2837,8 @@
             modal.innerHTML = `
                 <div style="background:var(--carbon);border-radius:16px;padding:24px;max-width:400px;width:100%;max-height:80vh;overflow-y:auto;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                        <div style="font-size:18px;font-weight:600;">ðŸŽ–ï¸ All Badges</div>
-                        <button onclick="this.closest('#allBadgesModal').remove()" style="background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">Ã—</button>
+                        <div style="font-size:18px;font-weight:600;">🎖️ All Badges</div>
+                        <button onclick="this.closest('#allBadgesModal').remove()" style="background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">×</button>
                     </div>
                     
                     <div style="margin-bottom:16px;">
@@ -2883,7 +2883,7 @@
                 const isToday = key === getTodayKey();
                 html += `<div style="flex: 1; text-align: center;">
                     <div style="font-size: 10px; color: var(--white-30); margin-bottom: 4px;">${days[i]}</div>
-                    <div style="width: 32px; height: 32px; margin: 0 auto; border-radius: 50%; background: ${hasActivity ? 'var(--prism-emerald)' : 'var(--carbon)'}; display: flex; align-items: center; justify-content: center; font-size: 10px; ${isToday ? 'border: 2px solid var(--prism-cyan);' : ''}">${hasActivity ? 'âœ“' : ''}</div>
+                    <div style="width: 32px; height: 32px; margin: 0 auto; border-radius: 50%; background: ${hasActivity ? 'var(--prism-emerald)' : 'var(--carbon)'}; display: flex; align-items: center; justify-content: center; font-size: 10px; ${isToday ? 'border: 2px solid var(--prism-cyan);' : ''}">${hasActivity ? '✓' : ''}</div>
                 </div>`;
             }
             html += '</div>';
@@ -2901,16 +2901,16 @@
             allActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             
             if (allActivities.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">ðŸ“‹</div><div class="empty-state-text">No activities yet</div></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No activities yet</div></div>';
                 return;
             }
             
             container.innerHTML = allActivities.slice(0, 20).map(a => {
-                let icon = 'ðŸ“', title = 'Activity', details = '';
-                if (a.type === 'food') { icon = 'ðŸ¥—'; title = a.data?.items?.map(i => i.name).join(', ') || 'Meal'; details = `${a.data?.totals?.calories || 0} cal`; }
-                else if (a.type === 'workout') { icon = 'ðŸ’ª'; title = a.data?.exercises?.map(e => e.name).join(', ') || 'Workout'; details = `${a.data?.exercises?.length || 0} exercises`; }
-                else if (a.type === 'cardio') { icon = 'ðŸƒ'; title = a.data?.activity || 'Cardio'; details = `${a.data?.duration || 0} min`; }
-                else if (a.type === 'weight') { icon = 'âš–ï¸'; title = `${a.data?.weight} ${a.data?.unit || 'lbs'}`; details = 'Weigh-in'; }
+                let icon = '📝', title = 'Activity', details = '';
+                if (a.type === 'food') { icon = '🥗'; title = a.data?.items?.map(i => i.name).join(', ') || 'Meal'; details = `${a.data?.totals?.calories || 0} cal`; }
+                else if (a.type === 'workout') { icon = '💪'; title = a.data?.exercises?.map(e => e.name).join(', ') || 'Workout'; details = `${a.data?.exercises?.length || 0} exercises`; }
+                else if (a.type === 'cardio') { icon = '🏃'; title = a.data?.activity || 'Cardio'; details = `${a.data?.duration || 0} min`; }
+                else if (a.type === 'weight') { icon = '⚖️'; title = `${a.data?.weight} ${a.data?.unit || 'lbs'}`; details = 'Weigh-in'; }
                 
                 return `<div style="display: flex; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
                     <div style="font-size: 24px;">${icon}</div>
@@ -3175,14 +3175,14 @@
             renderSocial();
             updateSmartWorkoutPanel();
             
-            const icons = { food: 'ðŸ¥—', workout: 'ðŸ’ª', cardio: 'ðŸƒ', weight: 'âš–ï¸' };
-            const icon = icons[result.type] || 'âœ“';
+            const icons = { food: '🥗', workout: '💪', cardio: '🏃', weight: '⚖️' };
+            const icon = icons[result.type] || '✓';
             showToast(`${icon} ${result.type === 'weight' ? 'Weight logged!' : `+${points} points`}`);
         }
         
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // INTELLIGENT WORKOUT SESSION TRACKING
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         
         function handleWorkoutSession(exercises) {
             const now = new Date();
@@ -3321,7 +3321,7 @@
             currentSession = { active: false, startTime: null, exercises: [], lastExercise: null };
             updateSmartWorkoutPanel();
             
-            showToast(`ðŸ Workout complete! ${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs total`);
+            showToast(`🏁 Workout complete! ${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs total`);
         }
 
         function openPhotoScanner() { 
@@ -3403,9 +3403,9 @@
             document.getElementById('prCelebrationExercise').textContent = exercise;
             const volume = weight * (sets || 1) * (reps || 1);
             if (prType === 'volume') {
-                document.getElementById('prCelebrationValue').innerHTML = `${weight} lbs Ã— ${sets || 1}Ã—${reps}<br><span style="font-size: 18px; opacity: 0.8;">Volume: ${volume.toLocaleString()} lbs</span>`;
+                document.getElementById('prCelebrationValue').innerHTML = `${weight} lbs × ${sets || 1}×${reps}<br><span style="font-size: 18px; opacity: 0.8;">Volume: ${volume.toLocaleString()} lbs</span>`;
             } else {
-                document.getElementById('prCelebrationValue').textContent = `${weight} lbs Ã— ${reps}`;
+                document.getElementById('prCelebrationValue').textContent = `${weight} lbs × ${reps}`;
             }
             celebration.style.display = 'block';
             setTimeout(() => celebration.style.display = 'none', 3500);
@@ -3466,7 +3466,7 @@
             const container = document.getElementById('todayTimeline');
             
             if (activities.length === 0) { 
-                container.innerHTML = '<div class="timeline-empty"><div class="timeline-empty-icon">ðŸŒ…</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food, workouts, or weight</div></div>'; 
+                container.innerHTML = '<div class="timeline-empty"><div class="timeline-empty-icon">🌅</div><div>Nothing logged yet today</div><div style="font-size: 12px; margin-top: 8px; color: var(--white-20);">Use the AI input above to log food, workouts, or weight</div></div>'; 
                 return; 
             }
             
@@ -3478,25 +3478,25 @@
                 let icon, title, details, badgeClass, badges = '';
                 
                 if (activity.type === 'food') { 
-                    icon = 'ðŸ¥—'; badgeClass = 'food'; 
+                    icon = '🥗'; badgeClass = 'food'; 
                     const items = activity.data.items || []; 
                     title = items.map(i => i.name).join(', ') || 'Food'; 
                     const totals = activity.data.totals || {}; 
                     const servings = activity.data.servings || 1;
-                    details = `${totals.calories || 0} cal â€¢ ${totals.protein || 0}g protein`;
+                    details = `${totals.calories || 0} cal • ${totals.protein || 0}g protein`;
                     if (servings !== 1) badges += `<span class="timeline-micro-badge amber">${servings}x</span>`;
                     if (activity.data.usdaEnhanced) badges += '<span class="timeline-micro-badge emerald">USDA</span>';
                     const micro = items[0]?.micronutrients || {};
-                    if (micro.caffeine) badges += `<span class="timeline-micro-badge violet">â˜•${micro.caffeine}mg</span>`;
-                    if (micro.creatine) badges += `<span class="timeline-micro-badge violet">ðŸ’ª${micro.creatine}g</span>`;
+                    if (micro.caffeine) badges += `<span class="timeline-micro-badge violet">☕${micro.caffeine}mg</span>`;
+                    if (micro.creatine) badges += `<span class="timeline-micro-badge violet">💪${micro.creatine}g</span>`;
                 }
                 else if (activity.type === 'workout') { 
-                    icon = 'ðŸ’ª'; badgeClass = 'workout'; 
+                    icon = '💪'; badgeClass = 'workout'; 
                     const exercises = activity.data.exercises || [];
                     if (activity._consolidated) {
                         title = `Today's Workout`;
                         const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
-                        details = `${exercises.length} exercises â€¢ ${totalVolume.toLocaleString()} lbs volume`;
+                        details = `${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs volume`;
                     } else {
                         title = exercises.map(e => e.name).join(', ') || 'Exercise';
                         const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
@@ -3504,19 +3504,19 @@
                     }
                 }
                 else if (activity.type === 'cardio') { 
-                    icon = 'ðŸƒ'; badgeClass = 'workout'; 
+                    icon = '🏃'; badgeClass = 'workout'; 
                     title = activity.data.activity || 'Cardio'; 
                     details = `${activity.data.duration || 0} min`; 
-                    if (activity.data.distance) details += ` â€¢ ${activity.data.distance} mi`; 
+                    if (activity.data.distance) details += ` • ${activity.data.distance} mi`; 
                 }
                 else if (activity.type === 'weight') { 
-                    icon = 'âš–ï¸'; badgeClass = 'weight'; 
+                    icon = '⚖️'; badgeClass = 'weight'; 
                     title = `${activity.data.weight} ${activity.data.unit || 'lbs'}`; 
                     details = activity.data.bodyFat ? `Body fat: ${activity.data.bodyFat}%` : (activity.data.note || 'Weigh-in'); 
                 }
                 
                 const activityId = activity._consolidated ? 'consolidated' : activity.id;
-                const expandBtn = activity._consolidated ? `<button class="btn btn-ghost btn-sm" style="font-size:11px;margin-top:8px;padding:4px 8px;" onclick="expandDailyWorkout()">View ${activity.data.exercises.length} exercises â†’</button>` : '';
+                const expandBtn = activity._consolidated ? `<button class="btn btn-ghost btn-sm" style="font-size:11px;margin-top:8px;padding:4px 8px;" onclick="expandDailyWorkout()">View ${activity.data.exercises.length} exercises →</button>` : '';
                 
                 return `<div class="timeline-item ${activity.type}">
                     <div class="timeline-time">${activity.time}</div>
@@ -3529,8 +3529,8 @@
                     </div>
                     <span class="timeline-badge ${badgeClass}">${activity._consolidated ? 'workout' : activity.type}</span>
                     <div class="timeline-actions">
-                        <button class="timeline-btn edit" onclick="editActivity('${today}', '${activityId}')" title="Edit">âœï¸</button>
-                        <button class="timeline-btn delete" onclick="deleteActivity('${today}', '${activityId}')" title="Delete">Ã—</button>
+                        <button class="timeline-btn edit" onclick="editActivity('${today}', '${activityId}')" title="Edit">✏️</button>
+                        <button class="timeline-btn delete" onclick="deleteActivity('${today}', '${activityId}')" title="Delete">×</button>
                     </div>
                 </div>`;
             }).join('') + '</div>';
@@ -3598,8 +3598,8 @@
             modal.innerHTML = `
                 <div class="modal-content" style="max-width:420px;">
                     <div class="modal-header">
-                        <h3>ðŸ’ª Today's Workout</h3>
-                        <button class="modal-close" onclick="closeModal('workoutExpandModal')">Ã—</button>
+                        <h3>💪 Today's Workout</h3>
+                        <button class="modal-close" onclick="closeModal('workoutExpandModal')">×</button>
                     </div>
                     <div style="display:flex;justify-content:space-around;padding:16px 0;border-bottom:1px solid var(--white-10);margin-bottom:16px;">
                         <div style="text-align:center;">
@@ -3617,7 +3617,7 @@
                                 <div style="width:28px;height:28px;background:var(--prism-violet);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">${i + 1}</div>
                                 <div style="flex:1;">
                                     <div style="font-weight:500;">${ex.name}</div>
-                                    <div style="font-size:12px;color:var(--white-50);">${ex.weight || 0} lbs Ã— ${ex.sets || 1} sets Ã— ${ex.reps || 1} reps</div>
+                                    <div style="font-size:12px;color:var(--white-50);">${ex.weight || 0} lbs × ${ex.sets || 1} sets × ${ex.reps || 1} reps</div>
                                 </div>
                                 <div style="text-align:right;">
                                     <div style="font-size:12px;color:var(--prism-cyan);">${((ex.weight || 0) * (ex.sets || 1) * (ex.reps || 1)).toLocaleString()} lbs</div>
@@ -3655,12 +3655,12 @@
                     <div class="form-group">
                         <label>Servings</label>
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <button class="btn btn-ghost btn-sm" onclick="adjustServings(-0.5)">-Â½</button>
+                            <button class="btn btn-ghost btn-sm" onclick="adjustServings(-0.5)">-½</button>
                             <input type="number" class="form-input" id="editServings" value="${servings}" step="0.25" min="0.25" style="width:70px;text-align:center;"
                                 data-orig-cal="${totals.calories || 0}" data-orig-protein="${totals.protein || 0}" 
                                 data-orig-carbs="${totals.carbs || 0}" data-orig-fat="${totals.fat || 0}" 
                                 data-base-servings="${servings}" onchange="recalcMacros()">
-                            <button class="btn btn-ghost btn-sm" onclick="adjustServings(0.5)">+Â½</button>
+                            <button class="btn btn-ghost btn-sm" onclick="adjustServings(0.5)">+½</button>
                         </div>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
@@ -3702,7 +3702,7 @@
                 <div class="modal-content" style="max-width:380px;">
                     <div class="modal-header">
                         <h3>Edit ${activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}</h3>
-                        <button class="modal-close" onclick="closeModal('editActivityModal')">Ã—</button>
+                        <button class="modal-close" onclick="closeModal('editActivityModal')">×</button>
                     </div>
                     ${editContent}
                     <div style="display:flex;gap:12px;margin-top:20px;">
@@ -3770,7 +3770,7 @@
             renderTimeline();
             renderHistory();
             closeModal('editActivityModal');
-            showToast('âœ… Updated!');
+            showToast('✅ Updated!');
         }
         
         function closeModal(id) {
@@ -3798,7 +3798,7 @@
         function renderHistory() {
             const container = document.getElementById('historyList');
             const dates = Object.keys(appData.activities).sort((a, b) => new Date(b) - new Date(a));
-            if (dates.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">ðŸ“‹</div><div class="empty-state-text">No history yet</div><div class="empty-state-subtext">Start logging to build your history</div></div>'; return; }
+            if (dates.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No history yet</div><div class="empty-state-subtext">Start logging to build your history</div></div>'; return; }
             let html = '<div class="history-list">';
             dates.forEach(date => {
                 let activities = appData.activities[date] || [];
@@ -3809,10 +3809,10 @@
                 const isToday = date === getTodayKey();
                 activities.forEach(activity => {
                     let title, stats = [];
-                    if (activity.type === 'food') { title = 'ðŸ¥— ' + ((activity.data.items || []).map(i => i.name).join(', ') || 'Food'); const totals = activity.data.totals || {}; stats.push({ label: 'Calories', value: totals.calories || 0 }); stats.push({ label: 'Protein', value: (totals.protein || 0) + 'g' }); }
-                    else if (activity.type === 'workout') { title = 'ðŸ’ª ' + ((activity.data.exercises || []).map(e => e.name).join(', ') || 'Workout'); const exercises = activity.data.exercises || []; const totalVolume = exercises.reduce((sum, e) => sum + (e.weight * e.sets * e.reps), 0); stats.push({ label: 'Exercises', value: exercises.length }); stats.push({ label: 'Volume', value: totalVolume.toLocaleString() + ' lbs' }); }
-                    else if (activity.type === 'cardio') { title = 'ðŸƒ ' + (activity.data.activity || 'Cardio'); stats.push({ label: 'Duration', value: (activity.data.duration || 0) + ' min' }); if (activity.data.distance) stats.push({ label: 'Distance', value: activity.data.distance + ' mi' }); }
-                    else if (activity.type === 'weight') { title = 'âš–ï¸ ' + activity.data.weight + ' ' + (activity.data.unit || 'lbs'); if (activity.data.bodyFat) stats.push({ label: 'Body Fat', value: activity.data.bodyFat + '%' }); stats.push({ label: 'Note', value: activity.data.note || 'Weigh-in' }); }
+                    if (activity.type === 'food') { title = '🥗 ' + ((activity.data.items || []).map(i => i.name).join(', ') || 'Food'); const totals = activity.data.totals || {}; stats.push({ label: 'Calories', value: totals.calories || 0 }); stats.push({ label: 'Protein', value: (totals.protein || 0) + 'g' }); }
+                    else if (activity.type === 'workout') { title = '💪 ' + ((activity.data.exercises || []).map(e => e.name).join(', ') || 'Workout'); const exercises = activity.data.exercises || []; const totalVolume = exercises.reduce((sum, e) => sum + (e.weight * e.sets * e.reps), 0); stats.push({ label: 'Exercises', value: exercises.length }); stats.push({ label: 'Volume', value: totalVolume.toLocaleString() + ' lbs' }); }
+                    else if (activity.type === 'cardio') { title = '🏃 ' + (activity.data.activity || 'Cardio'); stats.push({ label: 'Duration', value: (activity.data.duration || 0) + ' min' }); if (activity.data.distance) stats.push({ label: 'Distance', value: activity.data.distance + ' mi' }); }
+                    else if (activity.type === 'weight') { title = '⚖️ ' + activity.data.weight + ' ' + (activity.data.unit || 'lbs'); if (activity.data.bodyFat) stats.push({ label: 'Body Fat', value: activity.data.bodyFat + '%' }); stats.push({ label: 'Note', value: activity.data.note || 'Weigh-in' }); }
                     html += `<div class="history-item"><div class="history-item-header"><div><div class="history-item-title">${title}</div><div class="history-item-date">${isToday ? 'Today' : dateStr} at ${activity.time}</div></div></div><div class="history-item-stats">${stats.map(s => `<div class="history-stat"><span class="history-stat-label">${s.label}:</span> <span class="history-stat-value">${s.value}</span></div>`).join('')}</div></div>`;
                 });
             });
@@ -3823,18 +3823,18 @@
         function renderPRs() {
             const container = document.getElementById('prsList');
             const prs = Object.entries(appData.prs);
-            if (prs.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">ðŸ†</div><div class="empty-state-text">No PRs yet</div><div class="empty-state-subtext">Log strength workouts to track your records</div></div>'; return; }
+            if (prs.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-text">No PRs yet</div><div class="empty-state-subtext">Log strength workouts to track your records</div></div>'; return; }
             prs.sort((a, b) => b[1].weight - a[1].weight);
             container.innerHTML = '<div class="pr-list">' + prs.map(([key, pr]) => {
                 const dateStr = new Date(pr.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 const volume = pr.weight * (pr.sets || 1) * (pr.reps || 1);
-                return `<div class="pr-item"><div class="pr-icon">ðŸ†</div><div class="pr-info"><div class="pr-exercise">${pr.displayName}</div><div class="pr-date">${dateStr}</div><div style="font-size: 10px; color: var(--white-30); margin-top: 2px;">Vol: ${volume.toLocaleString()} lbs</div></div><div class="pr-value">${pr.weight} Ã— ${pr.sets || 1}Ã—${pr.reps}</div></div>`;
+                return `<div class="pr-item"><div class="pr-icon">🏆</div><div class="pr-info"><div class="pr-exercise">${pr.displayName}</div><div class="pr-date">${dateStr}</div><div style="font-size: 10px; color: var(--white-30); margin-top: 2px;">Vol: ${volume.toLocaleString()} lbs</div></div><div class="pr-value">${pr.weight} × ${pr.sets || 1}×${pr.reps}</div></div>`;
             }).join('') + '</div>';
         }
 
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // INTELLIGENCE HUB
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         function renderIntelligence() {
             // Update insight values
             document.getElementById('insightStreak').textContent = appData.stats.streak;
@@ -3857,7 +3857,7 @@
             if (todayProtein < appData.goals.protein * 0.5) {
                 recommendations.push({
                     icon: 'protein',
-                    emoji: 'ðŸ¥©',
+                    emoji: '🥩',
                     title: 'Increase Protein Intake',
                     text: `You're at ${Math.round(todayProtein)}g protein today. Consider adding a protein-rich meal to hit your ${appData.goals.protein}g goal.`
                 });
@@ -3868,14 +3868,14 @@
             if (weekWorkouts === 0) {
                 recommendations.push({
                     icon: 'training',
-                    emoji: 'ðŸ’ª',
+                    emoji: '💪',
                     title: 'Time to Train',
                     text: 'No workouts logged this week yet. A workout today could boost your streak and weekly points!'
                 });
             } else if (weekWorkouts >= 5) {
                 recommendations.push({
                     icon: 'recovery',
-                    emoji: 'ðŸ§Š',
+                    emoji: '🧊',
                     title: 'Recovery Day Suggested',
                     text: `${weekWorkouts} workouts this week! Consider active recovery to prevent overtraining.`
                 });
@@ -3885,7 +3885,7 @@
             if (appData.stats.streak > 0) {
                 recommendations.push({
                     icon: 'balance',
-                    emoji: 'ðŸ”¥',
+                    emoji: '🔥',
                     title: `${appData.stats.streak} Day Streak!`,
                     text: 'Great consistency! Keep logging daily to maintain your streak and unlock better insights.'
                 });
@@ -3895,7 +3895,7 @@
             if (recommendations.length < 2) {
                 recommendations.push({
                     icon: 'sleep',
-                    emoji: 'ðŸ˜´',
+                    emoji: '😴',
                     title: 'Track Your Sleep',
                     text: 'Daily check-ins help correlate sleep with performance. Coming in future updates!'
                 });
@@ -3916,9 +3916,9 @@
             }
         }
 
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // NUTRITION ANALYTICS
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         let currentNutritionPeriod = 'daily';
         
         function setNutritionPeriod(period) {
@@ -3934,11 +3934,11 @@
             
             // Update title
             const titles = {
-                daily: "ðŸ“… Today's Nutrition",
-                weekly: "ðŸ“Š This Week's Nutrition",
-                monthly: "ðŸ“ˆ This Month's Nutrition",
-                quarterly: "ðŸ“‰ This Quarter's Nutrition",
-                annual: "ðŸ—“ï¸ This Year's Nutrition"
+                daily: "📅 Today's Nutrition",
+                weekly: "📊 This Week's Nutrition",
+                monthly: "📈 This Month's Nutrition",
+                quarterly: "📉 This Quarter's Nutrition",
+                annual: "🗓️ This Year's Nutrition"
             };
             document.getElementById('nutritionPeriodTitle').textContent = titles[currentNutritionPeriod];
             
@@ -3986,29 +3986,29 @@
             
             // Define micronutrient display info with recommended daily values
             const microInfo = {
-                caffeine: { name: 'Caffeine', unit: 'mg', icon: 'â˜•', color: '#F59E0B', rdv: 400 },
-                creatine: { name: 'Creatine', unit: 'g', icon: 'ðŸ’ª', color: '#8B5CF6', rdv: 5 },
-                vitaminC: { name: 'Vitamin C', unit: 'mg', icon: 'ðŸŠ', color: '#F97316', rdv: 90 },
-                vitaminD: { name: 'Vitamin D', unit: 'mcg', icon: 'â˜€ï¸', color: '#FBBF24', rdv: 20 },
-                vitaminB12: { name: 'Vitamin B12', unit: 'mcg', icon: 'ðŸ’Š', color: '#EC4899', rdv: 2.4 },
-                calcium: { name: 'Calcium', unit: 'mg', icon: 'ðŸ¦´', color: '#F3F4F6', rdv: 1000 },
-                iron: { name: 'Iron', unit: 'mg', icon: 'ðŸ”©', color: '#EF4444', rdv: 18 },
-                magnesium: { name: 'Magnesium', unit: 'mg', icon: 'âš¡', color: '#10B981', rdv: 400 },
-                potassium: { name: 'Potassium', unit: 'mg', icon: 'ðŸŒ', color: '#F59E0B', rdv: 3500 },
-                sodium: { name: 'Sodium', unit: 'mg', icon: 'ðŸ§‚', color: '#6B7280', rdv: 2300 },
-                zinc: { name: 'Zinc', unit: 'mg', icon: 'ðŸ›¡ï¸', color: '#3B82F6', rdv: 11 }
+                caffeine: { name: 'Caffeine', unit: 'mg', icon: '☕', color: '#F59E0B', rdv: 400 },
+                creatine: { name: 'Creatine', unit: 'g', icon: '💪', color: '#8B5CF6', rdv: 5 },
+                vitaminC: { name: 'Vitamin C', unit: 'mg', icon: '🍊', color: '#F97316', rdv: 90 },
+                vitaminD: { name: 'Vitamin D', unit: 'mcg', icon: '☀️', color: '#FBBF24', rdv: 20 },
+                vitaminB12: { name: 'Vitamin B12', unit: 'mcg', icon: '💊', color: '#EC4899', rdv: 2.4 },
+                calcium: { name: 'Calcium', unit: 'mg', icon: '🦴', color: '#F3F4F6', rdv: 1000 },
+                iron: { name: 'Iron', unit: 'mg', icon: '🔩', color: '#EF4444', rdv: 18 },
+                magnesium: { name: 'Magnesium', unit: 'mg', icon: '⚡', color: '#10B981', rdv: 400 },
+                potassium: { name: 'Potassium', unit: 'mg', icon: '🍌', color: '#F59E0B', rdv: 3500 },
+                sodium: { name: 'Sodium', unit: 'mg', icon: '🧂', color: '#6B7280', rdv: 2300 },
+                zinc: { name: 'Zinc', unit: 'mg', icon: '🛡️', color: '#3B82F6', rdv: 11 }
             };
             
             // Filter to only show nutrients with values
             const activeMicros = Object.entries(micro).filter(([key, value]) => value > 0);
             
             if (activeMicros.length === 0) {
-                container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">ðŸ’Š</div><div class="empty-state-text">No micronutrients tracked yet</div><div class="empty-state-subtext">Log supplements like Pre-Kaged or Carnivore Protein to track vitamins</div></div>';
+                container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">💊</div><div class="empty-state-text">No micronutrients tracked yet</div><div class="empty-state-subtext">Log supplements like Pre-Kaged or Carnivore Protein to track vitamins</div></div>';
                 return;
             }
             
             container.innerHTML = activeMicros.map(([key, value]) => {
-                const info = microInfo[key] || { name: key, unit: '', icon: 'ðŸ’Š', color: '#8B5CF6', rdv: 100 };
+                const info = microInfo[key] || { name: key, unit: '', icon: '💊', color: '#8B5CF6', rdv: 100 };
                 const percent = Math.min((value / info.rdv) * 100, 100);
                 return `
                     <div style="background: var(--onyx); border-radius: 8px; padding: 12px; border-left: 3px solid ${info.color};">
@@ -4081,20 +4081,20 @@
         function renderNutritionMeals(meals) {
             const container = document.getElementById('nutritionMealsList');
             if (meals.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">ðŸ¥—</div><div class="empty-state-text">No meals logged yet</div><div class="empty-state-subtext">Log food from the Dashboard to see your meal history</div></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🥗</div><div class="empty-state-text">No meals logged yet</div><div class="empty-state-subtext">Log food from the Dashboard to see your meal history</div></div>';
                 return;
             }
             container.innerHTML = meals.map(m => {
                 const items = m.data?.items || [];
                 const totals = m.data?.totals || {};
                 const title = items.map(i => i.name).join(', ') || 'Meal';
-                return `<div class="timeline-item food"><div class="timeline-time">${m.time}</div><div class="timeline-icon">ðŸ¥—</div><div class="timeline-content"><div class="timeline-content-title">${title}</div><div class="timeline-content-details">${totals.calories || 0} cal â€¢ ${totals.protein || 0}g protein</div></div></div>`;
+                return `<div class="timeline-item food"><div class="timeline-time">${m.time}</div><div class="timeline-icon">🥗</div><div class="timeline-content"><div class="timeline-content-title">${title}</div><div class="timeline-content-details">${totals.calories || 0} cal • ${totals.protein || 0}g protein</div></div></div>`;
             }).join('');
         }
 
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         // FITNESS ANALYTICS
-        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ═══════════════════════════════════════════════════════════════
         let currentFitnessPeriod = 'daily';
         
         function setFitnessPeriod(period) {
@@ -4177,7 +4177,7 @@
         function renderFitnessWorkouts(workouts) {
             const container = document.getElementById('fitnessWorkoutsList');
             if (workouts.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">ðŸ’ª</div><div class="empty-state-text">No workouts logged yet</div><div class="empty-state-subtext">Log workouts from the Dashboard to track progress</div></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💪</div><div class="empty-state-text">No workouts logged yet</div><div class="empty-state-subtext">Log workouts from the Dashboard to track progress</div></div>';
                 return;
             }
             container.innerHTML = workouts.map(w => {
@@ -4185,9 +4185,9 @@
                     const exercises = w.data?.exercises || [];
                     const title = exercises.map(e => e.name).join(', ') || 'Workout';
                     const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
-                    return `<div class="timeline-item workout"><div class="timeline-time">${w.time}</div><div class="timeline-icon">ðŸ’ª</div><div class="timeline-content"><div class="timeline-content-title">${title}</div><div class="timeline-content-details">${exercises.length} exercises â€¢ ${totalVolume.toLocaleString()} lbs</div></div></div>`;
+                    return `<div class="timeline-item workout"><div class="timeline-time">${w.time}</div><div class="timeline-icon">💪</div><div class="timeline-content"><div class="timeline-content-title">${title}</div><div class="timeline-content-details">${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs</div></div></div>`;
                 } else {
-                    return `<div class="timeline-item cardio"><div class="timeline-time">${w.time}</div><div class="timeline-icon">ðŸƒ</div><div class="timeline-content"><div class="timeline-content-title">${w.data?.activity || 'Cardio'}</div><div class="timeline-content-details">${w.data?.duration || 0} min${w.data?.distance ? ' â€¢ ' + w.data.distance + ' miles' : ''}</div></div></div>`;
+                    return `<div class="timeline-item cardio"><div class="timeline-time">${w.time}</div><div class="timeline-icon">🏃</div><div class="timeline-content"><div class="timeline-content-title">${w.data?.activity || 'Cardio'}</div><div class="timeline-content-details">${w.data?.duration || 0} min${w.data?.distance ? ' • ' + w.data.distance + ' miles' : ''}</div></div></div>`;
                 }
             }).join('');
         }
@@ -4197,7 +4197,7 @@
             return data.totalVolume;
         }
 
-        function copyAthleteCode() { navigator.clipboard.writeText(appData.profile.athleteCode); showToast('âœ“ Athlete Code copied!'); }
+        function copyAthleteCode() { navigator.clipboard.writeText(appData.profile.athleteCode); showToast('✓ Athlete Code copied!'); }
         function shareAthleteCode() { if (navigator.share) { navigator.share({ title: 'Join me on MACRA!', text: `Add me on MACRA: ${appData.profile.athleteCode}`, url: 'https://macra.umbrassi.com' }); } else copyAthleteCode(); }
 
         function addFriend() {
@@ -4208,13 +4208,13 @@
             if (code === appData.profile.athleteCode) { alert("That's your own code!"); return; }
             if (appData.friends.find(f => f.code === code)) { alert('Already added this friend'); return; }
             appData.friends.push({ code: code, name: 'Friend ' + (appData.friends.length + 1), addedAt: new Date().toISOString(), streak: Math.floor(Math.random() * 30), weeklyPoints: Math.floor(Math.random() * 300) + 50 });
-            saveData(); input.value = ''; renderSocial(); renderLeaderboard(); showToast('âœ“ Friend added!');
+            saveData(); input.value = ''; renderSocial(); renderLeaderboard(); showToast('✓ Friend added!');
         }
 
         function renderSocial() {
             const friendsContainer = document.getElementById('friendsList');
             if (appData.friends.length === 0) { friendsContainer.innerHTML = '<div style="color: var(--white-30); font-size: 13px;">No friends yet. Share your Athlete Code!</div>'; }
-            else { friendsContainer.innerHTML = appData.friends.map(f => `<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;"><div class="activity-avatar">${f.name.charAt(0)}</div><div style="flex: 1;"><div style="font-weight: 600;">${f.name}</div><div style="font-size: 11px; color: var(--white-30);">${f.code}</div></div><div style="text-align: right;"><div style="font-size: 12px; color: var(--prism-amber);">ðŸ”¥ ${f.streak} days</div></div></div>`).join(''); }
+            else { friendsContainer.innerHTML = appData.friends.map(f => `<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;"><div class="activity-avatar">${f.name.charAt(0)}</div><div style="flex: 1;"><div style="font-weight: 600;">${f.name}</div><div style="font-size: 11px; color: var(--white-30);">${f.code}</div></div><div style="text-align: right;"><div style="font-size: 12px; color: var(--prism-amber);">🔥 ${f.streak} days</div></div></div>`).join(''); }
             const feedContainer = document.getElementById('activityFeed');
             const feedItems = [];
             const today = getTodayKey();
@@ -4222,23 +4222,23 @@
             const userAvatar = userName.charAt(0).toUpperCase();
             (appData.activities[today] || []).forEach(a => { feedItems.push({ user: userName, avatar: userAvatar, isYou: true, time: a.time, type: a.type, activity: a }); });
             appData.friends.forEach(friend => { if (Math.random() > 0.5) { feedItems.push({ user: friend.name, avatar: friend.name.charAt(0), isYou: false, time: Math.floor(Math.random() * 12) + 1 + ' hours ago', type: Math.random() > 0.5 ? 'workout' : 'food', simulated: true, activity: { data: Math.random() > 0.5 ? { exercises: [{ name: 'Push Day', sets: 4, reps: 10, weight: 135 }] } : { totals: { calories: 450, protein: 35 } } } }); } });
-            if (feedItems.length === 0) { feedContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">ðŸ“°</div><div class="empty-state-text">No activity yet</div></div>'; return; }
+            if (feedItems.length === 0) { feedContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📰</div><div class="empty-state-text">No activity yet</div></div>'; return; }
             feedContainer.innerHTML = feedItems.slice(0, 10).map(item => {
                 let badge, title, details;
                 if (item.type === 'food') {
                     badge = 'nutrition'; title = 'Logged meal';
-                    details = `${item.activity?.data?.totals?.calories || 450} cal â€¢ ${item.activity?.data?.totals?.protein || 0}g protein`;
+                    details = `${item.activity?.data?.totals?.calories || 450} cal • ${item.activity?.data?.totals?.protein || 0}g protein`;
                 } else if (item.type === 'weight') {
                     badge = 'weight'; title = 'Weighed in';
                     details = `${item.activity?.data?.weight || '?'} ${item.activity?.data?.unit || 'lbs'}`;
                 } else if (item.type === 'cardio') {
                     badge = 'cardio'; title = 'Completed cardio';
-                    details = `${item.activity?.data?.activity || 'Cardio'} â€¢ ${item.activity?.data?.duration || '?'} min`;
+                    details = `${item.activity?.data?.activity || 'Cardio'} • ${item.activity?.data?.duration || '?'} min`;
                 } else {
                     badge = 'workout'; title = 'Completed workout';
                     details = (item.activity?.data?.exercises || []).map(e => e.name).join(', ') || 'Strength training';
                 }
-                return `<div class="activity-item"><div class="activity-header"><div class="activity-avatar">${item.avatar}</div><div class="activity-meta"><div class="activity-user">${item.user}${item.isYou ? ' (You)' : ''}</div><div class="activity-time">${item.time}</div></div><span class="activity-badge ${badge}">${item.type.toUpperCase()}</span></div><div class="activity-content"><div class="activity-title">${title}</div><div class="activity-details">${details}</div></div><div class="activity-actions"><button class="activity-btn" onclick="this.classList.toggle('liked')">ðŸ”¥ Kudos</button><button class="activity-btn">ðŸ’¬ Comment</button></div></div>`;
+                return `<div class="activity-item"><div class="activity-header"><div class="activity-avatar">${item.avatar}</div><div class="activity-meta"><div class="activity-user">${item.user}${item.isYou ? ' (You)' : ''}</div><div class="activity-time">${item.time}</div></div><span class="activity-badge ${badge}">${item.type.toUpperCase()}</span></div><div class="activity-content"><div class="activity-title">${title}</div><div class="activity-details">${details}</div></div><div class="activity-actions"><button class="activity-btn" onclick="this.classList.toggle('liked')">🔥 Kudos</button><button class="activity-btn">💬 Comment</button></div></div>`;
             }).join('');
         }
 
@@ -4251,7 +4251,7 @@
             container.innerHTML = entries.map((entry, index) => {
                 const rank = index + 1;
                 let rankDisplay = rank, rankClass = '';
-                if (rank === 1) { rankDisplay = 'ðŸ¥‡'; rankClass = 'rank-1'; } else if (rank === 2) { rankDisplay = 'ðŸ¥ˆ'; rankClass = 'rank-2'; } else if (rank === 3) { rankDisplay = 'ðŸ¥‰'; rankClass = 'rank-3'; }
+                if (rank === 1) { rankDisplay = '🥇'; rankClass = 'rank-1'; } else if (rank === 2) { rankDisplay = '🥈'; rankClass = 'rank-2'; } else if (rank === 3) { rankDisplay = '🥉'; rankClass = 'rank-3'; }
                 return `<div class="leaderboard-item ${rankClass} ${entry.isYou ? 'you' : ''}"><div class="leaderboard-rank">${rankDisplay}</div><div class="leaderboard-avatar">${entry.avatar}</div><div class="leaderboard-info"><div class="leaderboard-name">${entry.name}${entry.isYou ? ' (You)' : ''}</div><div class="leaderboard-subtitle">${entry.streak} day streak</div></div><div class="leaderboard-score">${entry.points}</div></div>`;
             }).join('');
         }
@@ -4279,8 +4279,8 @@
             saveData(); 
         }
 
-        function saveProfileSettings() { appData.profile.name = document.getElementById('settingsName').value.trim() || 'Athlete'; saveData(); document.getElementById('userName').textContent = appData.profile.name; showToast('âœ“ Profile saved!'); }
-        function saveGoals() { appData.goals.calories = parseInt(document.getElementById('goalCalories').value) || 2000; appData.goals.protein = parseInt(document.getElementById('goalProtein').value) || 150; appData.goals.carbs = parseInt(document.getElementById('goalCarbs').value) || 200; appData.goals.fat = parseInt(document.getElementById('goalFat').value) || 65; appData.goals.currentWeight = parseFloat(document.getElementById('goalCurrentWeight').value) || null; appData.goals.targetWeight = parseFloat(document.getElementById('goalTargetWeight').value) || null; saveData(); renderDashboard(); showToast('âœ“ Goals saved!'); }
+        function saveProfileSettings() { appData.profile.name = document.getElementById('settingsName').value.trim() || 'Athlete'; saveData(); document.getElementById('userName').textContent = appData.profile.name; showToast('✓ Profile saved!'); }
+        function saveGoals() { appData.goals.calories = parseInt(document.getElementById('goalCalories').value) || 2000; appData.goals.protein = parseInt(document.getElementById('goalProtein').value) || 150; appData.goals.carbs = parseInt(document.getElementById('goalCarbs').value) || 200; appData.goals.fat = parseInt(document.getElementById('goalFat').value) || 65; appData.goals.currentWeight = parseFloat(document.getElementById('goalCurrentWeight').value) || null; appData.goals.targetWeight = parseFloat(document.getElementById('goalTargetWeight').value) || null; saveData(); renderDashboard(); showToast('✓ Goals saved!'); }
         function getAISettings() { return JSON.parse(localStorage.getItem('macra_ai_settings') || '{}'); }
         function loadAISettings() { 
             const settings = getAISettings(); 
@@ -4296,10 +4296,10 @@
         function updateAIStatusDisplay(settings) {
             let statusHtml = '';
             if (settings.apiKey) {
-                statusHtml += '<span style="color: var(--prism-emerald);">âœ“ Claude API configured</span>';
+                statusHtml += '<span style="color: var(--prism-emerald);">✓ Claude API configured</span>';
             }
             if (settings.usdaApiKey) {
-                statusHtml += '<br><span style="color: var(--prism-emerald);">âœ“ USDA API configured</span>';
+                statusHtml += '<br><span style="color: var(--prism-emerald);">✓ USDA API configured</span>';
             }
             if (!settings.apiKey && !settings.usdaApiKey) {
                 statusHtml = '<span style="color: var(--white-30);">No API keys configured</span>';
@@ -4314,7 +4314,7 @@
             if (!apiKey) { alert('Please enter a Claude API key'); return; }
             if (!apiKey.startsWith('sk-ant-')) { alert('Claude API keys start with sk-ant-'); return; }
             
-            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-amber);">â³ Testing Claude connection...</span>';
+            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-amber);">⏳ Testing Claude connection...</span>';
             
             try {
                 // Test Claude API
@@ -4343,28 +4343,28 @@
                 
                 // Test USDA API if provided
                 if (usdaApiKey) {
-                    document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">âœ“ Claude connected</span><br><span style="color: var(--prism-amber);">â³ Testing USDA connection...</span>';
+                    document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected</span><br><span style="color: var(--prism-amber);">⏳ Testing USDA connection...</span>';
                     
                     try {
                         const usdaResponse = await fetch(`${USDA_API_BASE}/foods/search?api_key=${usdaApiKey}&query=apple&pageSize=1`);
                         if (usdaResponse.ok) {
                             settings.usdaApiKey = usdaApiKey;
-                            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">âœ“ Claude connected</span><br><span style="color: var(--prism-emerald);">âœ“ USDA connected - nutrition data enhanced!</span>';
+                            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected</span><br><span style="color: var(--prism-emerald);">✓ USDA connected - nutrition data enhanced!</span>';
                         } else {
-                            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">âœ“ Claude connected</span><br><span style="color: var(--prism-rose);">âœ— USDA key invalid (not saved)</span>';
+                            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected</span><br><span style="color: var(--prism-rose);">✗ USDA key invalid (not saved)</span>';
                         }
                     } catch (e) {
-                        document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">âœ“ Claude connected</span><br><span style="color: var(--prism-rose);">âœ— USDA test failed</span>';
+                        document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected</span><br><span style="color: var(--prism-rose);">✗ USDA test failed</span>';
                     }
                 } else {
-                    document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">âœ“ Claude connected!</span>';
+                    document.getElementById('aiStatus').innerHTML = '<span style="color: var(--prism-emerald);">✓ Claude connected!</span>';
                 }
                 
                 localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(settings));
-                showToast('âœ“ Settings saved!');
+                showToast('✓ Settings saved!');
                 
             } catch (error) { 
-                document.getElementById('aiStatus').innerHTML = `<span style="color: var(--prism-rose);">âœ— Claude: ${error.message}</span>`; 
+                document.getElementById('aiStatus').innerHTML = `<span style="color: var(--prism-rose);">✗ Claude: ${error.message}</span>`; 
             }
         }
 
@@ -4388,7 +4388,7 @@
             } catch (error) { console.error('AI API Error:', error); return null; }
         }
 
-        function exportAllData() { const data = { exported: new Date().toISOString(), version: '1.2', ...appData }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `macra-backup-${getTodayKey()}.json`; a.click(); showToast('âœ“ Data exported!'); }
+        function exportAllData() { const data = { exported: new Date().toISOString(), version: '1.2', ...appData }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `macra-backup-${getTodayKey()}.json`; a.click(); showToast('✓ Data exported!'); }
         
         function importDataPrompt() { document.getElementById('importFileInput').click(); }
         
@@ -4403,16 +4403,16 @@
                     
                     // Validate it looks like MACRA data
                     if (!imported.activities && !imported.profile && !imported.goals) {
-                        showToast('âŒ Invalid backup file');
+                        showToast('❌ Invalid backup file');
                         return;
                     }
                     
                     // Show confirmation with details
                     const activityDays = imported.activities ? Object.keys(imported.activities).length : 0;
                     const msg = `Import backup from ${imported.exported ? new Date(imported.exported).toLocaleDateString() : 'unknown date'}?\n\n` +
-                        `â€¢ ${activityDays} days of activity data\n` +
-                        `â€¢ Profile: ${imported.profile?.name || 'Unknown'}\n\n` +
-                        `âš ï¸ This will REPLACE all current data!`;
+                        `• ${activityDays} days of activity data\n` +
+                        `• Profile: ${imported.profile?.name || 'Unknown'}\n\n` +
+                        `⚠️ This will REPLACE all current data!`;
                     
                     if (confirm(msg)) {
                         // Merge imported data into appData
@@ -4425,14 +4425,14 @@
                         if (imported.challenges) appData.challenges = imported.challenges;
                         
                         saveData();
-                        showToast('âœ… Data imported successfully!');
+                        showToast('✅ Data imported successfully!');
                         
                         // Reload to apply
                         setTimeout(() => location.reload(), 1000);
                     }
                 } catch (err) {
                     console.error('Import error:', err);
-                    showToast('âŒ Failed to import: Invalid JSON');
+                    showToast('❌ Failed to import: Invalid JSON');
                 }
             };
             reader.readAsText(file);
@@ -4487,7 +4487,7 @@
                     </div>
                 </div>
                 <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--white-10);">
-                    <div style="font-size:12px;color:var(--white-50);margin-bottom:8px;">ðŸ§ª Have a Beta Tester code?</div>
+                    <div style="font-size:12px;color:var(--white-50);margin-bottom:8px;">🧪 Have a Beta Tester code?</div>
                     <div style="display:flex;gap:8px;">
                         <input type="text" class="form-input" id="betaCodeInput" placeholder="Enter code" style="flex:1;text-transform:uppercase;">
                         <button class="btn btn-ghost" onclick="redeemBetaCode()">Redeem</button>
@@ -4495,7 +4495,7 @@
                     <div id="betaCodeStatus" style="font-size:11px;margin-top:6px;"></div>
                 </div>
                 <div style="margin-top:16px;text-align:center;">
-                    <button class="btn btn-ghost" onclick="closeDynamicModal();openDonationModal();">ðŸ’œ Love MACRA? Support us!</button>
+                    <button class="btn btn-ghost" onclick="closeDynamicModal();openDonationModal();">💜 Love MACRA? Support us!</button>
                 </div>
             </div>`;
             showModal(html);
@@ -4507,8 +4507,8 @@
             if (!code) { status.textContent = 'Please enter a code'; status.style.color = 'var(--prism-rose)'; return; }
             if (BETA_CODES.includes(code)) {
                 authState.user.tier = 'elite'; authState.user.betaTester = true; saveAuth();
-                status.textContent = 'âœ“ Beta Pass activated! Elite access unlocked.'; status.style.color = 'var(--prism-emerald)';
-                showToast('ðŸŽ‰ Elite Beta Pass Activated!');
+                status.textContent = '✓ Beta Pass activated! Elite access unlocked.'; status.style.color = 'var(--prism-emerald)';
+                showToast('🎉 Elite Beta Pass Activated!');
                 setTimeout(closeDynamicModal, 1500);
             } else {
                 status.textContent = 'Invalid code'; status.style.color = 'var(--prism-rose)';
@@ -4524,13 +4524,13 @@
         }
         
         function openDonationModal() {
-            let html = `<div style="padding:20px;"><h3 style="margin-bottom:12px;">ðŸ’œ Support MACRA</h3>
+            let html = `<div style="padding:20px;"><h3 style="margin-bottom:12px;">💜 Support MACRA</h3>
                 <p style="color:var(--white-70);margin-bottom:20px;">Love the app? Buy us a protein shake!</p>
                 <div style="display:grid;gap:12px;">
-                    <button class="btn btn-ghost" onclick="donate(5)" style="width:100%;display:flex;justify-content:space-between;"><span>â˜• Coffee</span><span>$5</span></button>
-                    <button class="btn btn-ghost" onclick="donate(10)" style="width:100%;display:flex;justify-content:space-between;"><span>ðŸ¥¤ Protein Shake</span><span>$10</span></button>
-                    <button class="btn btn-ghost" onclick="donate(25)" style="width:100%;display:flex;justify-content:space-between;"><span>ðŸ” Post-Workout Meal</span><span>$25</span></button>
-                    <button class="btn btn-primary" onclick="donate(50)" style="width:100%;display:flex;justify-content:space-between;"><span>ðŸ† Champion</span><span>$50</span></button>
+                    <button class="btn btn-ghost" onclick="donate(5)" style="width:100%;display:flex;justify-content:space-between;"><span>☕ Coffee</span><span>$5</span></button>
+                    <button class="btn btn-ghost" onclick="donate(10)" style="width:100%;display:flex;justify-content:space-between;"><span>🥤 Protein Shake</span><span>$10</span></button>
+                    <button class="btn btn-ghost" onclick="donate(25)" style="width:100%;display:flex;justify-content:space-between;"><span>🍔 Post-Workout Meal</span><span>$25</span></button>
+                    <button class="btn btn-primary" onclick="donate(50)" style="width:100%;display:flex;justify-content:space-between;"><span>🏆 Champion</span><span>$50</span></button>
                 </div>
             </div>`;
             showModal(html);
@@ -4550,7 +4550,7 @@
             modal.id = 'dynamicModal';
             modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9999;';
             modal.innerHTML = `<div style="background:var(--carbon);border-radius:12px;max-width:400px;width:90%;max-height:90vh;overflow:auto;position:relative;">
-                <button onclick="closeDynamicModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">Ã—</button>
+                <button onclick="closeDynamicModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--white-50);font-size:20px;cursor:pointer;">×</button>
                 ${content}
             </div>`;
             modal.onclick = (e) => { if (e.target === modal) closeDynamicModal(); };
@@ -4610,7 +4610,7 @@
             <div id="authLoginForm">
                 <form onsubmit="handleLogin(event)">
                     <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Email</label><input type="email" id="loginEmail" class="form-input" placeholder="you@example.com" required></div>
-                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Password</label><input type="password" id="loginPassword" class="form-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required></div>
+                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Password</label><input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required></div>
                     <div id="loginError" style="display:none;color:var(--prism-rose);font-size:12px;margin-bottom:12px;padding:8px;background:rgba(244,63,94,0.1);border-radius:6px;"></div>
                     <button type="submit" id="loginBtn" class="btn btn-primary" style="width:100%;">Login</button>
                 </form>
@@ -4621,7 +4621,7 @@
                 <form onsubmit="handleSignup(event)">
                     <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Name</label><input type="text" id="signupName" class="form-input" placeholder="Your name" required></div>
                     <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Email</label><input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" required></div>
-                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Password</label><input type="password" id="signupPassword" class="form-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" minlength="6" required></div>
+                    <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:var(--white-50);margin-bottom:6px;">Password</label><input type="password" id="signupPassword" class="form-input" placeholder="••••••••" minlength="6" required></div>
                     <div id="signupError" style="display:none;color:var(--prism-rose);font-size:12px;margin-bottom:12px;padding:8px;background:rgba(244,63,94,0.1);border-radius:6px;"></div>
                     <button type="submit" id="signupBtn" class="btn btn-primary" style="width:100%;">Create Account</button>
                 </form>
@@ -4643,7 +4643,6 @@
     <script src="macra-effects.js"></script>
 </body>
 </html>
-
 
 
 
