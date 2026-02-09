@@ -1520,7 +1520,13 @@
                 }, 1800); 
                 return; 
             }
-            
+            // Show donation reminder after 20 minutes of use
+            setTimeout(() => {
+                if (authState.isLoggedIn) {
+                    showDonationReminder();
+                }
+            }, 20 * 60 * 1000); // 20 minutes
+
             console.log('Logged in as:', authState.user?.email);
             
             if (!appData.profile.athleteCode || appData.profile.athleteCode === 'MACRA-0000') {
@@ -4534,6 +4540,28 @@
                 </div>
             </div>`;
             showModal(html);
+        }
+        function showDonationReminder() {
+            // Don't show if already shown this session
+            if (sessionStorage.getItem('donation_reminder_shown')) return;
+            sessionStorage.setItem('donation_reminder_shown', 'true');
+            
+            const modal = document.createElement('div');
+            modal.id = 'donationReminderModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;';
+            modal.innerHTML = `
+                <div style="background:linear-gradient(135deg, var(--carbon), var(--obsidian));border:1px solid var(--prism-violet);border-radius:16px;padding:32px;max-width:360px;width:90%;text-align:center;">
+                    <div style="font-size:48px;margin-bottom:16px;">💜</div>
+                    <h3 style="font-size:20px;margin-bottom:12px;">Enjoying MACRA?</h3>
+                    <p style="color:var(--white-70);margin-bottom:24px;font-size:14px;">You've been crushing it! Help us keep the servers running and features coming.</p>
+                    <div style="display:flex;flex-direction:column;gap:12px;">
+                        <button class="btn btn-primary" onclick="document.getElementById('donationReminderModal').remove();openDonationModal();" style="width:100%;">☕ Buy Us a Coffee</button>
+                        <button class="btn btn-ghost" onclick="document.getElementById('donationReminderModal').remove();" style="width:100%;">Maybe Later</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
         
         async function donate(amount) {
