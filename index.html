@@ -141,7 +141,7 @@
         .sidebar:hover .logo-text, .sidebar.expanded .logo-text { display: block; }
         .main-content {
             flex: 1; min-width: 0; padding: 24px 32px;
-            margin-left: var(--sidebar-collapsed);
+            margin-left: 0; /* Sidebar is now floating bubble */
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .sidebar-toggle {
@@ -4923,6 +4923,8 @@
     <script src="macra-crypto.js"></script>
 </body>
 </html>
+
+
 
 
 
