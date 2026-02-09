@@ -234,6 +234,12 @@
             background: var(--carbon); border: 1px solid var(--white-10); border-radius: 12px;
             padding: 20px; position: relative; overflow: hidden; transition: all 0.3s ease;
         }
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: var(--carbon); border: 1px solid var(--white-20); border-radius: 28px; transition: 0.3s; }
+        .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: var(--white-50); border-radius: 50%; transition: 0.3s; }
+        .toggle-switch input:checked + .toggle-slider { background: var(--prism-cyan); border-color: var(--prism-cyan); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); background: white; }
         .stat-card:hover { transform: translateY(-2px); border-color: var(--white-20); }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
         .stat-card.cyan::before { background: var(--prism-cyan); }
@@ -994,7 +1000,32 @@
                     </div>
                 </div>
                 
-                <div class="card"><div class="card-title" style="margin-bottom: 20px;">Profile</div><div class="form-group"><label class="form-label">Display Name</label><input type="text" class="form-input" id="settingsName" placeholder="Your name"></div><button class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button></div>
+                <div class="card">
+    <div class="card-title" style="margin-bottom: 20px;">👤 Profile</div>
+    <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input type="text" class="form-input" id="settingsName" placeholder="Your name">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Bio</label>
+        <input type="text" class="form-input" id="settingsBio" placeholder="CrossFit enthusiast, runner..." maxlength="100">
+        <div style="font-size: 11px; color: var(--white-30); margin-top: 4px;">Shown on your public profile</div>
+    </div>
+    <div style="margin: 20px 0; padding: 16px; background: var(--onyx); border-radius: 8px; border: 1px solid var(--white-10);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="font-weight: 600; margin-bottom: 4px;">🌐 Public Profile</div>
+                <div style="font-size: 12px; color: var(--white-50);">Allow others to discover and view your profile</div>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="settingsPublic" onchange="toggleProfilePrivacy()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div id="privacyStatus" style="margin-top: 12px; font-size: 11px; padding: 8px; border-radius: 6px; background: var(--carbon);"></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button>
+</div>
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Goals</div><div class="form-row"><div class="form-group"><label class="form-label">Daily Calories</label><input type="number" class="form-input" id="goalCalories" value="2000"></div><div class="form-group"><label class="form-label">Daily Protein (g)</label><input type="number" class="form-input" id="goalProtein" value="150"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Daily Carbs (g)</label><input type="number" class="form-input" id="goalCarbs" value="200"></div><div class="form-group"><label class="form-label">Daily Fat (g)</label><input type="number" class="form-input" id="goalFat" value="65"></div></div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--white-10);"><div class="form-row"><div class="form-group"><label class="form-label">⚖️ Current Weight (lbs)</label><input type="number" class="form-input" id="goalCurrentWeight" placeholder="185"></div><div class="form-group"><label class="form-label">🎯 Target Weight (lbs)</label><input type="number" class="form-input" id="goalTargetWeight" placeholder="175"></div></div></div><button class="btn btn-primary" onclick="saveGoals()">Save Goals</button></div>
                 <div class="card"><div class="card-title" style="margin-bottom: 20px;">Data</div><div style="display: flex; gap: 12px; flex-wrap: wrap;"><button class="btn btn-ghost" onclick="exportAllData()">📤 Export Data</button><button class="btn btn-ghost" onclick="importDataPrompt()">📥 Import Data</button><button class="btn btn-ghost" style="border-color: var(--prism-rose); color: var(--prism-rose);" onclick="clearAllData()">🗑️ Clear All Data</button></div><input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImportFile(event)"></div>
                 
@@ -4451,7 +4482,53 @@
             saveData(); 
         }
 
-        function saveProfileSettings() { appData.profile.name = document.getElementById('settingsName').value.trim() || 'Athlete'; saveData(); document.getElementById('userName').textContent = appData.profile.name; showToast('✓ Profile saved!'); }
+        async function saveProfileSettings() {
+            const name = document.getElementById('settingsName').value.trim() || 'Athlete';
+            const bio = document.getElementById('settingsBio').value.trim();
+            
+            appData.profile.name = name;
+            appData.profile.bio = bio;
+            saveData();
+            
+            document.getElementById('userName').textContent = name;
+            showToast('✓ Profile saved!');
+        }
+
+        async function toggleProfilePrivacy() {
+            const isPublic = document.getElementById('settingsPublic').checked;
+            updatePrivacyStatus(isPublic);
+            
+            try {
+                const response = await apiCall('/api/users/privacy', {
+                    method: 'POST',
+                    body: JSON.stringify({ isPublic })
+                });
+                
+                if (response.ok) {
+                    appData.profile.isPublic = isPublic;
+                    saveData();
+                    showToast(isPublic ? '🌐 Profile is now public' : '🔒 Profile is now private');
+                } else {
+                    // Revert toggle
+                    document.getElementById('settingsPublic').checked = !isPublic;
+                    updatePrivacyStatus(!isPublic);
+                    showToast('Failed to update privacy');
+                }
+            } catch (error) {
+                console.error('Privacy toggle error:', error);
+                document.getElementById('settingsPublic').checked = !isPublic;
+                updatePrivacyStatus(!isPublic);
+            }
+        }
+
+        function updatePrivacyStatus(isPublic) {
+            const status = document.getElementById('privacyStatus');
+            if (isPublic) {
+                status.innerHTML = '<span style="color: var(--prism-emerald);">✓ Your profile appears in "Who to Follow" and others can see your stats</span>';
+            } else {
+                status.innerHTML = '<span style="color: var(--white-50);">🔒 Your profile is hidden from discovery. Others can still follow you with your Athlete Code.</span>';
+            }
+        }
         function saveGoals() { appData.goals.calories = parseInt(document.getElementById('goalCalories').value) || 2000; appData.goals.protein = parseInt(document.getElementById('goalProtein').value) || 150; appData.goals.carbs = parseInt(document.getElementById('goalCarbs').value) || 200; appData.goals.fat = parseInt(document.getElementById('goalFat').value) || 65; appData.goals.currentWeight = parseFloat(document.getElementById('goalCurrentWeight').value) || null; appData.goals.targetWeight = parseFloat(document.getElementById('goalTargetWeight').value) || null; saveData(); renderDashboard(); showToast('✓ Goals saved!'); }
         function getAISettings() { return JSON.parse(localStorage.getItem('macra_ai_settings') || '{}'); }
         function loadAISettings() { 
@@ -4622,14 +4699,21 @@
             setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
         }
         
-        function loadSettingsForm() { 
-            document.getElementById('settingsName').value = appData.profile.name || ''; 
-            document.getElementById('goalCalories').value = appData.goals.calories; 
-            document.getElementById('goalProtein').value = appData.goals.protein; 
-            document.getElementById('goalCarbs').value = appData.goals.carbs; 
+        function loadSettingsForm() {
+            document.getElementById('settingsName').value = appData.profile.name || '';
+            document.getElementById('settingsBio').value = appData.profile.bio || '';
+            document.getElementById('goalCalories').value = appData.goals.calories;
+            document.getElementById('goalProtein').value = appData.goals.protein;
+            document.getElementById('goalCarbs').value = appData.goals.carbs;
             document.getElementById('goalFat').value = appData.goals.fat;
             if (appData.goals.currentWeight) document.getElementById('goalCurrentWeight').value = appData.goals.currentWeight;
             if (appData.goals.targetWeight) document.getElementById('goalTargetWeight').value = appData.goals.targetWeight;
+            
+            // Load privacy setting
+            const isPublic = appData.profile.isPublic !== false; // Default to true
+            document.getElementById('settingsPublic').checked = isPublic;
+            updatePrivacyStatus(isPublic);
+            
             if (authState.user) {
                 const el = document.getElementById('settingsEmail');
                 if (el) el.textContent = authState.user.email || '';
