@@ -159,7 +159,7 @@
         .sidebar:hover .logo-text, .sidebar.expanded .logo-text { display: block; }
         .main-content {
             flex: 1; min-width: 0; padding: 24px 32px;
-            margin-left: 0; /* Sidebar is now floating bubble */
+            margin-left: 0; padding-left: 90px; /* Space for floating bubble */
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .sidebar-toggle {
@@ -4891,7 +4891,7 @@
         @media (max-width: 768px) {
             #bottomNav { display: block !important; }
             .sidebar { display: none !important; }
-            .main-content { margin-left: 0 !important; padding-bottom: 100px !important; }
+            .main-content { margin-left: 0 !important; padding-left: 16px !important; padding-bottom: 100px !important; }
             .bottom-nav-item.active { color: var(--prism-cyan) !important; }
             .bottom-nav-item.active svg { filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.5)); }
         }
@@ -4941,6 +4941,8 @@
     <script src="macra-crypto.js"></script>
 </body>
 </html>
+
+
 
 
 
