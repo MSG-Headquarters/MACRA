@@ -3251,31 +3251,32 @@
         
         function updateSmartWorkoutPanel() {
             const panel = document.getElementById('smartWorkoutPanel');
-            const lastPanel = document.getElementById('lastExercisePanel');
             const suggestionsPanel = document.getElementById('exerciseSuggestions');
-            
+
             if (currentSession.active && currentSession.exercises.length > 0) {
                 panel.style.display = 'block';
-                document.getElementById('sessionExerciseCount').textContent = 
+                document.getElementById('sessionExerciseCount').textContent =
                     `${currentSession.exercises.length} exercise${currentSession.exercises.length > 1 ? 's' : ''} logged`;
-                
-                // Show last exercise quick-add
+
+                // Pre-fill the exercise input with last exercise info
                 if (currentSession.lastExercise) {
-                    lastPanel.style.display = 'block';
-                    document.getElementById('lastExerciseName').textContent = currentSession.lastExercise.name;
+                    document.getElementById('exerciseInput').placeholder = `Last: ${currentSession.lastExercise.name}`;
                     document.getElementById('quickWeight').value = currentSession.lastExercise.weight || '';
                     document.getElementById('quickReps').value = currentSession.lastExercise.reps || '';
                     document.getElementById('quickSets').value = 1;
                 }
-                
+
                 // Show exercise suggestions
                 const suggestions = getExerciseSuggestions();
-                if (suggestions.length > 0) {
+                if (suggestions.length > 0 && suggestionsPanel) {
                     suggestionsPanel.style.display = 'block';
-                    document.getElementById('suggestionChips').innerHTML = suggestions.map(s => 
-                        `<span class="hint-chip" onclick="setHint('${s.name} ${s.weight || ''}lbs ${s.sets || 3}x${s.reps || 8}')" style="font-size: 11px;">${s.name}</span>`
+                    document.getElementById('suggestionChips').innerHTML = suggestions.map(s =>
+                        `<div onclick="selectExercise('${s.name}')" style="background: var(--carbon); border-radius: 6px; padding: 8px 12px; cursor: pointer; border: 1px solid var(--white-10);">
+                            <div style="font-size: 12px; color: var(--white-90);">${s.name}</div>
+                            <div style="font-size: 10px; color: var(--white-40);">${s.weight || '?'}lbs × ${s.reps || '?'} reps</div>
+                        </div>`
                     ).join('');
-                } else {
+                } else if (suggestionsPanel) {
                     suggestionsPanel.style.display = 'none';
                 }
             } else {
