@@ -3121,23 +3121,35 @@
             btn.disabled = false;
         }
 
-        function processUnifiedResult(result, rawInput) {
-            const today = getTodayKey();
-            if (!appData.activities[today]) appData.activities[today] = [];
+       function processUnifiedResult(result, rawInput) {
+            // Check if a historic date was provided
+            let activityDate;
+            let dateKey;
             
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            if (result.logDate) {
+                activityDate = new Date(result.logDate);
+                dateKey = `${activityDate.getFullYear()}-${String(activityDate.getMonth() + 1).padStart(2, '0')}-${String(activityDate.getDate()).padStart(2, '0')}`;
+                console.log('Historic log date detected:', dateKey);
+            } else {
+                activityDate = new Date();
+                dateKey = getTodayKey();
+            }
             
+            if (!appData.activities[dateKey]) appData.activities[dateKey] = [];
+
+            const timeStr = activityDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
             const activity = {
                 id: Date.now(),
                 time: timeStr,
-                timestamp: now.toISOString(),
+                timestamp: activityDate.toISOString(),
                 type: result.type,
                 raw: rawInput,
-                data: result.data
+                data: result.data,
+                historic: !!result.logDate
             };
-            
-            appData.activities[today].push(activity);
+
+            appData.activities[dateKey].push(activity);
             
             // Handle workout session tracking
             if (result.type === 'workout' && result.data.exercises) {
@@ -3148,8 +3160,8 @@
             if (result.type === 'weight' && result.data.weight) {
                 if (!appData.weightHistory) appData.weightHistory = [];
                 appData.weightHistory.push({
-                    date: today,
-                    timestamp: now.toISOString(),
+                    date: dateKey,
+                    timestamp: activityDate.toISOString(),
                     weight: result.data.weight,
                     unit: result.data.unit || 'lbs',
                     bodyFat: result.data.bodyFat,
