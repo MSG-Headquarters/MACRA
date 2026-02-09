@@ -193,7 +193,8 @@ async function v2FinalizeWorkout(workoutName = null, notes = null) {
         console.error('Finalize workout error:', e);
     }
     return null;
-    async function v2CancelWorkout() {
+}
+async function v2CancelWorkout() {
     if (!v2State.activeWorkout) return;
     
     if (v2State.activeWorkout.exercises?.length > 0) {
@@ -213,7 +214,7 @@ async function v2FinalizeWorkout(workoutName = null, notes = null) {
     updateV2WorkoutUI();
     showToast('Workout cancelled');
 }
-}
+
 
 // ═══════════════════════════════════════════════════════════════
 // SMART PARSING
