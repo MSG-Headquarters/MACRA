@@ -654,20 +654,24 @@
                     <!-- Smart Workout Panel -->
                     <div id="smartWorkoutPanel" style="display: none; margin-top: 16px; padding: 16px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1)); border: 1px solid var(--prism-violet); border-radius: 12px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
+               <div style="display: flex; align-items: center; gap: 8px;">
                                 <span style="font-size: 20px;">💪</span>
                                 <div>
                                     <div style="font-weight: 600; font-size: 14px;">Active Workout</div>
                                     <div id="sessionExerciseCount" style="font-size: 11px; color: var(--white-50);">0 exercises logged</div>
                                 </div>
                             </div>
-                            <button class="btn btn-ghost btn-sm" onclick="endWorkoutSession()" style="font-size: 11px;">End Workout</button>
+                            <button class="btn btn-ghost btn-sm" onclick="endWorkoutSession()" style="font-size: 11px;">Finish Workout</button>
                         </div>
-                        
-                        <!-- Last Exercise Quick Add -->
-                        <div id="lastExercisePanel" style="display: none; padding: 12px; background: var(--carbon); border-radius: 8px; margin-bottom: 12px;">
-                            <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">Last Exercise: <span id="lastExerciseName" style="color: var(--prism-cyan);"></span></div>
-                            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+
+                        <!-- Exercise Input with Autocomplete -->
+                        <div style="padding: 12px; background: var(--carbon); border-radius: 8px; margin-bottom: 12px;">
+                            <div style="position: relative; margin-bottom: 12px;">
+                                <label style="font-size: 10px; color: var(--white-30); margin-bottom: 4px; display: block;">Exercise:</label>
+                                <input type="text" id="exerciseInput" class="form-input" style="padding: 10px; font-size: 14px; width: 100%;" placeholder="Start typing... (e.g., Bench Press)" oninput="showExerciseSuggestions(this.value)" onfocus="showExerciseSuggestions(this.value)" autocomplete="off">
+                                <div id="exerciseDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--obsidian); border: 1px solid var(--white-10); border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 100; margin-top: 4px;"></div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: flex-end; margin-bottom: 12px;">
                                 <div style="flex: 1;">
                                     <label style="font-size: 10px; color: var(--white-30);">Weight</label>
                                     <input type="number" id="quickWeight" class="form-input" style="padding: 8px; font-size: 14px;" placeholder="185">
@@ -682,19 +686,18 @@
                                 </div>
                             </div>
                             <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-primary btn-sm" onclick="quickAddSameSet()" style="flex: 1;">+ Same Again</button>
-                                <button class="btn btn-ghost btn-sm" onclick="quickAddEditedSet()" style="flex: 1;">+ Add Set</button>
+                                <button class="btn btn-primary btn-sm" onclick="logExerciseToSession()" style="flex: 2;">Log Exercise</button>
+                                <button class="btn btn-ghost btn-sm" onclick="addRepsToLastExercise()" style="flex: 1;">+ Add Reps</button>
                             </div>
                         </div>
-                        
-                        <!-- Exercise Suggestions -->
+
+                        <!-- Exercise Suggestions from Patterns -->
                         <div id="exerciseSuggestions" style="display: none;">
                             <div style="font-size: 11px; color: var(--white-50); margin-bottom: 8px;">💡 Based on your patterns:</div>
-                            <div id="suggestionChips" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                            <div id="suggestionChips" style="display: flex; flex-direction: column; gap: 8px;"></div>
                         </div>
                     </div>
                 </div>
-                <div class="macro-summary">
                     <div class="macro-card calories"><div class="macro-card-value" id="macroCalories">0</div><div class="macro-card-label">Calories</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroCaloriesBar" style="width: 0%;"></div></div></div>
                     <div class="macro-card protein"><div class="macro-card-value" id="macroProtein">0g</div><div class="macro-card-label">Protein</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroProteinBar" style="width: 0%;"></div></div></div>
                     <div class="macro-card carbs"><div class="macro-card-value" id="macroCarbs">0g</div><div class="macro-card-label">Carbs</div><div class="macro-card-bar"><div class="macro-card-bar-fill" id="macroCarbsBar" style="width: 0%;"></div></div></div>
@@ -3295,34 +3298,105 @@
             return suggestions;
         }
         
-        function quickAddSameSet() {
-            if (!currentSession.lastExercise) return;
-            const ex = currentSession.lastExercise;
-            const input = `${ex.name} ${ex.weight}lbs 1x${ex.reps}`;
-            document.getElementById('unifiedInput').value = input;
-            parseUnifiedInputV2();
+       // Exercise autocomplete dropdown
+        function showExerciseSuggestions(query) {
+            const dropdown = document.getElementById('exerciseDropdown');
+            if (!query || query.length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            
+            // Get all exercises from memory
+            const allExercises = Object.keys(appData.exerciseMemory || {});
+            const filtered = allExercises.filter(ex => 
+                ex.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 8);
+            
+            if (filtered.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            
+            dropdown.innerHTML = filtered.map(ex => {
+                const memory = appData.exerciseMemory[ex];
+                const lastWeight = memory?.lastWeight ? `${memory.lastWeight}lbs` : '';
+                const lastReps = memory?.lastReps ? `${memory.lastReps} reps` : '';
+                const info = [lastWeight, lastReps].filter(Boolean).join(' × ');
+                return `
+                    <div onclick="selectExercise('${ex}')" style="padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--white-10); display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='var(--carbon)'" onmouseout="this.style.background='transparent'">
+                        <span style="color: var(--white-90);">${ex}</span>
+                        <span style="font-size: 11px; color: var(--white-40);">${info}</span>
+                    </div>
+                `;
+            }).join('');
+            dropdown.style.display = 'block';
         }
         
-        function quickAddEditedSet() {
-            if (!currentSession.lastExercise) return;
+        function selectExercise(exerciseName) {
+            document.getElementById('exerciseInput').value = exerciseName;
+            document.getElementById('exerciseDropdown').style.display = 'none';
+            
+            // Pre-fill weight/reps from memory
+            const memory = appData.exerciseMemory[exerciseName.toLowerCase()] || appData.exerciseMemory[exerciseName];
+            if (memory) {
+                if (memory.lastWeight) document.getElementById('quickWeight').value = memory.lastWeight;
+                if (memory.lastReps) document.getElementById('quickReps').value = memory.lastReps;
+            }
+            document.getElementById('quickWeight').focus();
+        }
+        
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#exerciseInput') && !e.target.closest('#exerciseDropdown')) {
+                document.getElementById('exerciseDropdown').style.display = 'none';
+            }
+        });
+        
+        function logExerciseToSession() {
+            const exerciseName = document.getElementById('exerciseInput').value.trim();
+            if (!exerciseName) {
+                showToast('Please enter an exercise name');
+                return;
+            }
+            
+            const weight = document.getElementById('quickWeight').value || 0;
+            const reps = document.getElementById('quickReps').value || 0;
+            const sets = document.getElementById('quickSets').value || 1;
+            
+            const input = `${exerciseName} ${weight}lbs ${sets}x${reps}`;
+            document.getElementById('unifiedInput').value = input;
+            parseUnifiedInputV2();
+            
+            // Clear the exercise input for next entry
+            document.getElementById('exerciseInput').value = '';
+        }
+        
+        function addRepsToLastExercise() {
+            if (!currentSession.lastExercise) {
+                showToast('No previous exercise to add reps to');
+                return;
+            }
+            
             const weight = document.getElementById('quickWeight').value || currentSession.lastExercise.weight;
             const reps = document.getElementById('quickReps').value || currentSession.lastExercise.reps;
             const sets = document.getElementById('quickSets').value || 1;
+            
             const input = `${currentSession.lastExercise.name} ${weight}lbs ${sets}x${reps}`;
             document.getElementById('unifiedInput').value = input;
             parseUnifiedInputV2();
         }
         
+        // Keep old functions for backward compatibility
+        function quickAddSameSet() { addRepsToLastExercise(); }
+        function quickAddEditedSet() { addRepsToLastExercise(); }
+        
         function endWorkoutSession() {
             if (!currentSession.active) return;
-            
             const exerciseCount = currentSession.exercises.length;
-            const totalVolume = currentSession.exercises.reduce((sum, ex) => 
+            const totalVolume = currentSession.exercises.reduce((sum, ex) =>
                 sum + (ex.weight || 0) * (ex.sets || 1) * (ex.reps || 1), 0);
-            
             currentSession = { active: false, startTime: null, exercises: [], lastExercise: null };
             updateSmartWorkoutPanel();
-            
             showToast(`🏁 Workout complete! ${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs total`);
         }
 
