@@ -562,10 +562,13 @@
         
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         @media (max-width: 1000px) { .content-grid { grid-template-columns: 1fr; } }
+        .club-tab.active { color: var(--prism-cyan) !important; border-bottom-color: var(--prism-cyan) !important; }
+        .profile-tab.active { color: var(--prism-cyan) !important; border-bottom-color: var(--prism-cyan) !important; }
     </style>
     <!-- GSAP Animation Library -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/ScrollTrigger.min.js"></script>
+        
 </head>
 <body>
     <div class="splash-screen" id="splashScreen">
@@ -1097,10 +1100,7 @@
                     <button class="club-tab" onclick="setClubTab('challenges')" data-tab="challenges" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Challenges</button>
                     <button class="club-tab" onclick="setClubTab('clubs')" data-tab="clubs" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Clubs</button>
                 </div>
-                
-                <style>
-                    .club-tab.active { color: var(--prism-cyan) !important; border-bottom-color: var(--prism-cyan) !important; }
-                </style>
+
                 
                 <!-- Active Groups Content -->
                 <div id="clubsActiveContent">
@@ -1271,10 +1271,6 @@
                     <button class="profile-tab active" onclick="setProfileTab('progress')" data-tab="progress" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Progress</button>
                     <button class="profile-tab" onclick="setProfileTab('activities')" data-tab="activities" style="flex: 1; padding: 12px; background: none; border: none; color: var(--white-50); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;">Activities</button>
                 </div>
-                
-                <style>
-                    .profile-tab.active { color: var(--prism-cyan) !important; border-bottom-color: var(--prism-cyan) !important; }
-                </style>
                 
                 <!-- Progress Content -->
                 <div id="profileProgressContent">
