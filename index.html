@@ -4064,13 +4064,18 @@
                     result.mealsLogged++;
                     result.meals.push({ ...a, dateKey: key });
                     
-                    // Collect micronutrients from each food item
+                    // Collect micronutrients from each food item AND data level
                     const items = a.data?.items || [];
                     items.forEach(item => {
                         const micro = item.micronutrients || {};
                         Object.keys(result.micronutrients).forEach(key => {
                             result.micronutrients[key] += micro[key] || 0;
                         });
+                    });
+                    // Also check data-level micronutrients (from supplements)
+                    const dataMicro = a.data?.micronutrients || {};
+                    Object.keys(result.micronutrients).forEach(key => {
+                        result.micronutrients[key] += dataMicro[key] || 0;
                     });
                 });
             }
