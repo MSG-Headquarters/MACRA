@@ -193,6 +193,26 @@ async function v2FinalizeWorkout(workoutName = null, notes = null) {
         console.error('Finalize workout error:', e);
     }
     return null;
+    async function v2CancelWorkout() {
+    if (!v2State.activeWorkout) return;
+    
+    if (v2State.activeWorkout.exercises?.length > 0) {
+        if (!confirm('Cancel workout? Your logged exercises will be lost.')) return;
+    }
+    
+    try {
+        await v2ApiCall('/api/v2/workout/cancel', {
+            method: 'POST',
+            body: JSON.stringify({ session_id: v2State.activeWorkout.id })
+        });
+    } catch (e) {
+        console.log('Cancel API error (continuing anyway):', e);
+    }
+    
+    v2State.activeWorkout = null;
+    updateV2WorkoutUI();
+    showToast('Workout cancelled');
+}
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -445,9 +465,14 @@ function updateV2WorkoutUI() {
                 <span>•</span>
                 <span>${(workout.summary?.total_volume || 0).toLocaleString()} lbs</span>
             </div>
-            <button class="btn btn-primary" onclick="v2ShowFinalizeModal()">
-                ✅ Finalize Workout
-            </button>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-ghost" onclick="v2CancelWorkout()" style="color: var(--prism-rose);">
+                    ✖ Cancel
+                </button>
+                <button class="btn btn-primary" onclick="v2ShowFinalizeModal()">
+                    ✅ FINALIZE WORKOUT
+                </button>
+            </div>
         </div>
     `;
 }
