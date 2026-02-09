@@ -1529,10 +1529,16 @@
             
             console.log('Logged in as:', authState.user?.email);
             
-            if (!appData.profile.athleteCode) { 
-                appData.profile.athleteCode = authState.user?.athleteCode || 'MACRA-' + Math.random().toString(36).substring(2, 6).toUpperCase(); 
-                saveData(); 
-            }
+            if (!appData.profile.athleteCode || appData.profile.athleteCode === 'MACRA-0000') {
+    // Generate using crypto module if available, otherwise fallback
+    if (typeof MACRA_CRYPTO !== 'undefined') {
+        appData.profile.athleteCode = MACRA_CRYPTO.generateAthleteCode();
+        MACRA_CRYPTO.storeAthleteCode(appData.profile.athleteCode);
+    } else {
+        appData.profile.athleteCode = 'MACRA-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    }
+    saveData();
+}
             document.getElementById('userCode').textContent = appData.profile.athleteCode;
             document.getElementById('displayAthleteCode').textContent = appData.profile.athleteCode;
             document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
