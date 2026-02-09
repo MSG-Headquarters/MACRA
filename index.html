@@ -1902,92 +1902,171 @@
         }
         
         // ═══════════════════════════════════════════════════════════════
-        // FOLLOW SYSTEM
+        // FOLLOW SYSTEM (API-based discovery)
         // ═══════════════════════════════════════════════════════════════
-        let suggestedUsers = [
-            { id: 'rich-caruso', name: 'Rich Caruso', subtitle: 'Health Club @ Southpointe', avatar: 'R', stats: { workouts: 156, streak: 45 } },
-            { id: 'sarah-fit', name: 'Sarah Fitness', subtitle: 'Personal Trainer', avatar: 'S', stats: { workouts: 234, streak: 30 } },
-            { id: 'mike-gains', name: 'Mike Gains', subtitle: 'Bodybuilder', avatar: 'M', stats: { workouts: 312, streak: 60 } },
-            { id: 'lisa-strong', name: 'Lisa Strong', subtitle: 'CrossFit Athlete', avatar: 'L', stats: { workouts: 189, streak: 22 } },
-            { id: 'john-runner', name: 'John Runner', subtitle: 'Marathon Enthusiast', avatar: 'J', stats: { workouts: 267, streak: 90 } }
-        ];
-        
-        function loadFollowing() {
-            const stored = localStorage.getItem('macra_following');
-            if (stored) appData.friends = JSON.parse(stored);
+        let discoveredUsers = [];
+
+        async function fetchDiscoverUsers() {
+            try {
+                const response = await apiCall('/api/users/discover?limit=3');
+                if (response.ok) {
+                    const data = await response.json();
+                    discoveredUsers = data.users || [];
+                    return discoveredUsers;
+                }
+            } catch (error) {
+                console.error('Discover fetch error:', error);
+            }
+            return [];
         }
-        
-        function saveFollowing() {
-            localStorage.setItem('macra_following', JSON.stringify(appData.friends));
-        }
-        
-        function renderSuggestedFollows() {
+
+        async function renderSuggestedFollows() {
             const container = document.getElementById('suggestedFollows');
-            loadFollowing();
-            
-            // Filter out already followed users
-            const followedIds = appData.friends.map(f => f.id || f.athleteCode);
-            const suggestions = suggestedUsers.filter(u => !followedIds.includes(u.id));
-            
-            if (suggestions.length === 0) {
-                container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--white-50); font-size: 13px;">You\'re following everyone! 🎉</div>';
+            if (!container) return;
+
+            container.innerHTML = '<div style="padding: 20px; text-align: center;"><div class="loading-spinner"></div></div>';
+
+            const users = await fetchDiscoverUsers();
+
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 24px; text-align: center; color: var(--white-50);">
+                        <div style="font-size: 32px; margin-bottom: 8px;">🎉</div>
+                        <div style="font-size: 13px;">No new athletes to discover</div>
+                        <div style="font-size: 11px; margin-top: 4px; color: var(--white-30);">Check back later or invite friends!</div>
+                    </div>`;
                 return;
             }
-            
-            container.innerHTML = suggestions.slice(0, 3).map(user => `
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;">
-                    <div class="activity-avatar" style="background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet));">${user.avatar}</div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600;">${user.name}</div>
-                        <div style="font-size: 11px; color: var(--white-30);">${user.subtitle}</div>
-                        <div style="font-size: 10px; color: var(--white-50); margin-top: 2px;">🔥 ${user.stats.streak} day streak</div>
+
+            container.innerHTML = users.map(user => `
+                <div class="suggested-user-card" style="display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--white-10); cursor: pointer;" onclick="showProfilePreview('${user.athleteCode}')">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px;">${user.avatar}</div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</div>
+                        <div style="font-size: 11px; color: var(--white-40);">
+                            ${user.bio || `${user.stats.workouts} workouts • ${user.stats.streak} day streak`}
+                        </div>
                     </div>
-                    <button class="btn btn-primary btn-sm" onclick="followUser('${user.id}')">Follow</button>
+                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); followUserByCode('${user.athleteCode}')" style="font-size: 11px; padding: 6px 12px;">Follow</button>
                 </div>
             `).join('');
         }
-        
-        function followUser(userId) {
-            const user = suggestedUsers.find(u => u.id === userId);
-            if (!user) return;
-            
-            // Check if already following
-            if (appData.friends.some(f => f.id === userId)) {
-                showToast('Already following ' + user.name);
-                return;
+
+        async function showProfilePreview(athleteCode) {
+            try {
+                const response = await apiCall(`/api/users/profile/${athleteCode}`);
+                if (!response.ok) throw new Error('Failed to fetch profile');
+                
+                const data = await response.json();
+                const profile = data.profile;
+
+                const modal = document.createElement('div');
+                modal.id = 'profilePreviewModal';
+                modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;';
+                modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+                if (!profile.isPublic) {
+                    // Private profile
+                    modal.innerHTML = `
+                        <div style="background:var(--obsidian);border-radius:16px;padding:32px;max-width:320px;width:100%;text-align:center;border:1px solid var(--white-10);">
+                            <div style="width:80px;height:80px;border-radius:50%;background:var(--carbon);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;">🔒</div>
+                            <div style="font-size:18px;font-weight:600;margin-bottom:4px;">${profile.name}</div>
+                            <div style="font-size:12px;color:var(--white-40);margin-bottom:16px;">${profile.athleteCode}</div>
+                            <div style="background:var(--carbon);border-radius:8px;padding:16px;margin-bottom:20px;">
+                                <div style="font-size:13px;color:var(--white-50);">This profile is private</div>
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <button class="btn btn-ghost" onclick="this.closest('#profilePreviewModal').remove()" style="flex:1;">Close</button>
+                                <button class="btn btn-primary" onclick="followUserByCode('${profile.athleteCode}');this.closest('#profilePreviewModal').remove();" style="flex:1;">Follow Anyway</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Public profile
+                    const memberSince = profile.memberSince ? new Date(profile.memberSince).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Recently';
+                    modal.innerHTML = `
+                        <div style="background:var(--obsidian);border-radius:16px;padding:32px;max-width:360px;width:100%;text-align:center;border:1px solid var(--white-10);">
+                            <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg, var(--prism-cyan), var(--prism-violet));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;font-weight:600;">${profile.avatar}</div>
+                            <div style="font-size:20px;font-weight:600;margin-bottom:4px;">${profile.name}</div>
+                            <div style="font-size:12px;color:var(--prism-cyan);margin-bottom:8px;">${profile.athleteCode}</div>
+                            ${profile.bio ? `<div style="font-size:13px;color:var(--white-70);margin-bottom:16px;">${profile.bio}</div>` : ''}
+                            <div style="display:flex;justify-content:center;gap:24px;margin-bottom:20px;">
+                                <div style="text-align:center;">
+                                    <div style="font-size:24px;font-weight:600;color:var(--prism-emerald);">${profile.stats.workouts}</div>
+                                    <div style="font-size:11px;color:var(--white-40);">Workouts</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div style="font-size:24px;font-weight:600;color:var(--prism-amber);">${profile.stats.streak}</div>
+                                    <div style="font-size:11px;color:var(--white-40);">Day Streak</div>
+                                </div>
+                            </div>
+                            <div style="font-size:11px;color:var(--white-30);margin-bottom:20px;">Member since ${memberSince}</div>
+                            <div style="display:flex;gap:8px;">
+                                <button class="btn btn-ghost" onclick="this.closest('#profilePreviewModal').remove()" style="flex:1;">Close</button>
+                                <button class="btn btn-primary" onclick="followUserByCode('${profile.athleteCode}');this.closest('#profilePreviewModal').remove();" style="flex:1;">Follow</button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                document.body.appendChild(modal);
+            } catch (error) {
+                console.error('Profile preview error:', error);
+                showToast('Could not load profile');
             }
-            
-            appData.friends.push({
-                id: user.id,
-                name: user.name,
-                athleteCode: 'MACRA-' + Math.random().toString(36).substring(2, 6).toUpperCase(),
-                avatar: user.avatar,
-                subtitle: user.subtitle,
-                followed_at: new Date().toISOString()
-            });
-            
-            saveFollowing();
-            saveData();
-            renderSuggestedFollows();
-            renderSocial();
-            showToast(`✅ Now following ${user.name}!`);
         }
-        
-        function unfollowUser(userId) {
-            const user = appData.friends.find(f => f.id === userId);
-            if (user && confirm(`Unfollow ${user.name}?`)) {
-                appData.friends = appData.friends.filter(f => f.id !== userId);
-                saveFollowing();
-                saveData();
-                renderSuggestedFollows();
-                renderSocial();
-                showToast('Unfollowed');
+
+        async function followUserByCode(athleteCode) {
+            try {
+                const response = await apiCall('/api/users/follow', {
+                    method: 'POST',
+                    body: JSON.stringify({ athleteCode })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Add to local friends list
+                    appData.friends.push({
+                        id: data.user.id,
+                        name: data.user.name,
+                        athleteCode: data.user.athleteCode,
+                        followed_at: new Date().toISOString()
+                    });
+                    saveData();
+                    showToast(`✓ Now following ${data.user.name}`);
+                    renderSuggestedFollows(); // Refresh to show new suggestions
+                    renderLeaderboard();
+                } else {
+                    showToast(data.error || 'Could not follow user');
+                }
+            } catch (error) {
+                console.error('Follow error:', error);
+                showToast('Failed to follow user');
             }
         }
-        
+
+        async function unfollowUser(userId) {
+            try {
+                const response = await apiCall('/api/users/unfollow', {
+                    method: 'POST',
+                    body: JSON.stringify({ targetUserId: userId })
+                });
+
+                if (response.ok) {
+                    appData.friends = appData.friends.filter(f => f.id !== userId);
+                    saveData();
+                    showToast('✓ Unfollowed');
+                    renderSuggestedFollows();
+                    renderLeaderboard();
+                }
+            } catch (error) {
+                console.error('Unfollow error:', error);
+                showToast('Failed to unfollow');
+            }
+        }
+
         function refreshSuggestedFollows() {
-            // Shuffle suggestions
-            suggestedUsers = suggestedUsers.sort(() => Math.random() - 0.5);
             renderSuggestedFollows();
             showToast('🔄 Refreshed suggestions');
         }
