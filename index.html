@@ -1123,7 +1123,18 @@
                     </div>
                     <div id="feedActivityList"></div>
                 </div>
-                
+
+                <!-- Following -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">✅ Following</div>
+                        <span style="font-size: 12px; color: var(--white-40);" id="followingCount">0</span>
+                    </div>
+                    <div id="followingList">
+                        <div style="padding: 16px; text-align: center; color: var(--white-30); font-size: 13px;">Loading...</div>
+                    </div>
+                </div>
+
                 <!-- Who to Follow -->
                 <div class="card">
                     <div class="card-header">
@@ -1828,7 +1839,8 @@
             
             // Render activity feed
             renderFeedActivityList();
-            
+             // Load following list and render
+            loadFollowing().then(() => renderFollowingList());
             // Render suggested follows
             renderSuggestedFollows();
         }
@@ -1954,6 +1966,26 @@
         // ═══════════════════════════════════════════════════════════════
         // FOLLOW SYSTEM (API-based discovery)
         // ═══════════════════════════════════════════════════════════════
+        async function loadFollowing() {
+            try {
+                const response = await apiCall('/api/users/following');
+                if (response.ok) {
+                    const data = await response.json();
+                    appData.friends = (data.following || []).map(u => ({
+                        id: u.id,
+                        name: u.name,
+                        athleteCode: u.athleteCode,
+                        avatar: u.avatar || (u.name || 'A').charAt(0).toUpperCase(),
+                        stats: u.stats || { workouts: 0, streak: 0 },
+                        followed_at: u.followed_at
+                    }));
+                    saveData();
+                }
+            } catch (e) {
+                console.error('Load following error:', e);
+            }
+        }
+
         let discoveredUsers = [];
 
         async function fetchDiscoverUsers() {
@@ -1970,14 +2002,38 @@
             return [];
         }
 
+        function renderFollowingList() {
+            const container = document.getElementById('followingList');
+            const countEl = document.getElementById('followingCount');
+            if (!container) return;
+            if (countEl) countEl.textContent = appData.friends.length;
+            
+            if (appData.friends.length === 0) {
+                container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--white-30); font-size: 13px;">Not following anyone yet. Discover athletes below!</div>';
+                return;
+            }
+            
+            container.innerHTML = appData.friends.map(friend => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 10px; margin-bottom: 8px; cursor: pointer;" onclick="showProfilePreview('${friend.athleteCode}')">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px;">${(friend.name || 'A').charAt(0).toUpperCase()}</div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${friend.name}</div>
+                        <div style="font-size: 11px; color: var(--white-40);">${friend.stats?.workouts || 0} workouts • ${friend.stats?.streak || 0} day streak</div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); unfollowUser('${friend.id}')" style="font-size: 11px; padding: 4px 10px; color: var(--white-40);">Unfollow</button>
+                </div>
+            `).join('');
+        }
+
         async function renderSuggestedFollows() {
             const container = document.getElementById('suggestedFollows');
             if (!container) return;
 
             container.innerHTML = '<div style="padding: 20px; text-align: center;"><div class="loading-spinner"></div></div>';
 
-            const users = await fetchDiscoverUsers();
-
+            const allUsers = await fetchDiscoverUsers();
+            const followedCodes = appData.friends.map(f => f.athleteCode);
+            const users = allUsers.filter(u => !followedCodes.includes(u.athleteCode));
             if (users.length === 0) {
                 container.innerHTML = `
                     <div style="padding: 24px; text-align: center; color: var(--white-50);">
@@ -2085,6 +2141,7 @@
                     });
                     saveData();
                     showToast(`✓ Now following ${data.user.name}`);
+                    renderFollowingList();
                     renderSuggestedFollows(); // Refresh to show new suggestions
                     renderLeaderboard();
                 } else {
@@ -2107,6 +2164,7 @@
                     appData.friends = appData.friends.filter(f => f.id !== userId);
                     saveData();
                     showToast('✓ Unfollowed');
+                    renderFollowingList();
                     renderSuggestedFollows();
                     renderLeaderboard();
                 }
