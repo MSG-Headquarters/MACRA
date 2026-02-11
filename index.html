@@ -3227,6 +3227,19 @@
             btn.disabled = true;
 
             try {
+                // Quick intercept for plain water (avoid AI misparse)
+                const waterMatch = text.match(/^(\d+)\s*(?:oz|ounces?|ml|cups?|glasses?)?\s*(?:of\s+)?water$/i);
+                if (waterMatch) {
+                    const amt = parseInt(waterMatch[1]);
+                    const result = { type: 'food', data: { items: [{ name: 'Water', calories: 0, protein: 0, carbs: 0, fat: 0 }], totals: { calories: 0, protein: 0, carbs: 0, fat: 0 }, servings: 1 } };
+                    processUnifiedResult(result, text);
+                    input.value = '';
+                    btn.querySelector('.btn-text').style.display = 'inline';
+                    btn.querySelector('.btn-loading').style.display = 'none';
+                    btn.disabled = false;
+                    showToast(`💧 ${amt}oz water logged`);
+                    return;
+                }
                 const response = await apiCall('/api/ai/parse', { method: 'POST', body: JSON.stringify({ input: text }) });
                 if (!response.ok) {
                     const err = await response.json();
