@@ -4042,9 +4042,11 @@
                             if (Array.isArray(e.sets)) {
                                 return sum + e.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0);
                             }
-                            return sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1));}, 0);
-                            stats.push({ label: 'Exercises', value: exercises.length });
-                            if (totalVol > 0) stats.push({ label: 'Volume', value: totalVol.toLocaleString() + ' lbs' });
+                            return sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1));
+                        }, 0);
+                        stats.push({ label: 'Exercises', value: exercises.length });
+                        if (totalVol > 0) stats.push({ label: 'Volume', value: totalVol.toLocaleString() + ' lbs' });
+                    }
                     else if (activity.type === 'cardio') { title = '🏃 ' + (activity.data.activity || 'Cardio'); stats.push({ label: 'Duration', value: (activity.data.duration || 0) + ' min' }); if (activity.data.distance) stats.push({ label: 'Distance', value: activity.data.distance + ' mi' }); }
                     else if (activity.type === 'weight') { title = '⚖️ ' + activity.data.weight + ' ' + (activity.data.unit || 'lbs'); if (activity.data.bodyFat) stats.push({ label: 'Body Fat', value: activity.data.bodyFat + '%' }); stats.push({ label: 'Note', value: activity.data.note || 'Weigh-in' }); }
                     html += `<div class="history-item"><div class="history-item-header"><div><div class="history-item-title">${title}</div><div class="history-item-date">${isToday ? 'Today' : dateStr} at ${activity.time}</div></div></div><div> class="history-item-stats">${stats.map(s => `<div class="history-stat"><span class="history-stat-label">${s.label}:</span> <span class="history-stat-value">${s.value}</span></div>`).join('')}</div></div>`;
