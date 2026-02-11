@@ -3712,11 +3712,17 @@
                     const exercises = activity.data?.exercises || activity.exerciseDetails || [];
                     if (activity._consolidated) {
                         title = `Today's Workout`;
-                        const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
+                        const totalVolume = exercises.reduce((sum, e) => {
+                            if (Array.isArray(e.sets)) return sum + e.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0);
+                            return sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1));
+                        }, 0);
                         details = `${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs volume`;
                     } else {
                         title = exercises.map(e => e.name).join(', ') || 'Exercise';
-                        const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
+                        const totalVolume = exercises.reduce((sum, e) => {
+                            if (Array.isArray(e.sets)) return sum + e.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0);
+                            return sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1));
+                        }, 0);
                         details = `${totalVolume.toLocaleString()} lbs`;
                     }
                 }
@@ -3733,7 +3739,8 @@
                 }
                 
                 const activityId = activity._consolidated ? 'consolidated' : activity.id;
-                const expandBtn = activity._consolidated ? `<button class="btn btn-ghost btn-sm" style="font-size:11px;margin-top:8px;padding:4px 8px;" onclick="expandDailyWorkout()">View ${activity.data.exercises.length} exercises →</button>` : '';
+                const exerciseCount = activity.data?.exercises?.length || activity.exerciseDetails?.length || 0;
+const expandBtn = activity._consolidated ? `<button class="btn btn-ghost btn-sm" style="font-size:11px;margin-top:8px;padding:4px 8px;" onclick="expandDailyWorkout()">View ${exerciseCount} exercises →</button>` : '';
                 
                 return `<div class="timeline-item ${activity.type}">
                     <div class="timeline-time">${activity.time}</div>
@@ -4031,10 +4038,13 @@
                         const exercises = activity.data?.exercises || activity.exerciseDetails || [];
                         const workoutName = activity.name || exercises.map(e => e.name).join(', ') || 'Workout';
                         title = '💪 ' + workoutName;
-                        const totalVol = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
-                        stats.push({ label: 'Exercises', value: exercises.length });
-                        if (totalVol > 0) stats.push({ label: 'Volume', value: totalVol.toLocaleString() + ' lbs' });
-                    }
+                       const totalVol = exercises.reduce((sum, e) => {
+                            if (Array.isArray(e.sets)) {
+                                return sum + e.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0);
+                            }
+                            return sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1));}, 0);
+                            stats.push({ label: 'Exercises', value: exercises.length });
+                            if (totalVol > 0) stats.push({ label: 'Volume', value: totalVol.toLocaleString() + ' lbs' });
                     else if (activity.type === 'cardio') { title = '🏃 ' + (activity.data.activity || 'Cardio'); stats.push({ label: 'Duration', value: (activity.data.duration || 0) + ' min' }); if (activity.data.distance) stats.push({ label: 'Distance', value: activity.data.distance + ' mi' }); }
                     else if (activity.type === 'weight') { title = '⚖️ ' + activity.data.weight + ' ' + (activity.data.unit || 'lbs'); if (activity.data.bodyFat) stats.push({ label: 'Body Fat', value: activity.data.bodyFat + '%' }); stats.push({ label: 'Note', value: activity.data.note || 'Weigh-in' }); }
                     html += `<div class="history-item"><div class="history-item-header"><div><div class="history-item-title">${title}</div><div class="history-item-date">${isToday ? 'Today' : dateStr} at ${activity.time}</div></div></div><div class="history-item-stats">${stats.map(s => `<div class="history-stat"><span class="history-stat-label">${s.label}:</span> <span class="history-stat-value">${s.value}</span></div>`).join('')}</div></div>`;
@@ -4413,7 +4423,10 @@
                 if (w.type === 'workout') {
                     const exercises = w.data?.exercises || [];
                     const title = exercises.map(e => e.name).join(', ') || 'Workout';
-                    const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
+                    const totalVolume = exercises.reduce((sum, e) => {
+                        if (Array.isArray(e.sets)) return sum + e.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0);
+                        return sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1));
+                    }, 0);
                     return `<div class="timeline-item workout"><div class="timeline-time">${w.time}</div><div class="timeline-icon">💪</div><div class="timeline-content"><div class="timeline-content-title">${title}</div><div class="timeline-content-details">${exercises.length} exercises • ${totalVolume.toLocaleString()} lbs</div></div></div>`;
                 } else {
                     return `<div class="timeline-item cardio"><div class="timeline-time">${w.time}</div><div class="timeline-icon">🏃</div><div class="timeline-content"><div class="timeline-content-title">${w.data?.activity || 'Cardio'}</div><div class="timeline-content-details">${w.data?.duration || 0} min${w.data?.distance ? ' • ' + w.data.distance + ' miles' : ''}</div></div></div>`;
