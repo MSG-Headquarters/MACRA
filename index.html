@@ -3709,7 +3709,7 @@
                 }
                 else if (activity.type === 'workout') { 
                     icon = '💪'; badgeClass = 'workout'; 
-                    const exercises = activity.data.exercises || [];
+                    const exercises = activity.data?.exercises || activity.exerciseDetails || [];
                     if (activity._consolidated) {
                         title = `Today's Workout`;
                         const totalVolume = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
@@ -3767,11 +3767,11 @@
             let latestTimestamp = workouts[0].timestamp;
             
             workouts.forEach(w => {
-                if (w.data.exercises) {
-                    w.data.exercises.forEach(ex => {
-                        allExercises.push({ ...ex, _logTime: w.time, _originalId: w.id });
-                    });
-                }
+                // Support both old format (.data.exercises) and v2 format (.exerciseDetails)
+                const exercises = w.data?.exercises || w.exerciseDetails || [];
+                exercises.forEach(ex => {
+                    allExercises.push({ ...ex, _logTime: w.time, _originalId: w.id });
+                });
                 originalIds.push(w.id);
                 if (new Date(w.timestamp) > new Date(latestTimestamp)) {
                     latestTime = w.time;
@@ -4027,7 +4027,14 @@
                 activities.forEach(activity => {
                     let title, stats = [];
                     if (activity.type === 'food') { title = '🥗 ' + ((activity.data.items || []).map(i => i.name).join(', ') || 'Food'); const totals = activity.data.totals || {}; stats.push({ label: 'Calories', value: totals.calories || 0 }); stats.push({ label: 'Protein', value: (totals.protein || 0) + 'g' }); }
-                    else if (activity.type === 'workout') { title = '💪 ' + ((activity.data.exercises || []).map(e => e.name).join(', ') || 'Workout'); const exercises = activity.data.exercises || []; const totalVolume = exercises.reduce((sum, e) => sum + (e.weight * e.sets * e.reps), 0); stats.push({ label: 'Exercises', value: exercises.length }); stats.push({ label: 'Volume', value: totalVolume.toLocaleString() + ' lbs' }); }
+                    else if (activity.type === 'workout') {
+                        const exercises = activity.data?.exercises || activity.exerciseDetails || [];
+                        const workoutName = activity.name || exercises.map(e => e.name).join(', ') || 'Workout';
+                        title = '💪 ' + workoutName;
+                        const totalVol = exercises.reduce((sum, e) => sum + ((e.weight || 0) * (e.sets || 1) * (e.reps || 1)), 0);
+                        stats.push({ label: 'Exercises', value: exercises.length });
+                        if (totalVol > 0) stats.push({ label: 'Volume', value: totalVol.toLocaleString() + ' lbs' });
+                    }
                     else if (activity.type === 'cardio') { title = '🏃 ' + (activity.data.activity || 'Cardio'); stats.push({ label: 'Duration', value: (activity.data.duration || 0) + ' min' }); if (activity.data.distance) stats.push({ label: 'Distance', value: activity.data.distance + ' mi' }); }
                     else if (activity.type === 'weight') { title = '⚖️ ' + activity.data.weight + ' ' + (activity.data.unit || 'lbs'); if (activity.data.bodyFat) stats.push({ label: 'Body Fat', value: activity.data.bodyFat + '%' }); stats.push({ label: 'Note', value: activity.data.note || 'Weigh-in' }); }
                     html += `<div class="history-item"><div class="history-item-header"><div><div class="history-item-title">${title}</div><div class="history-item-date">${isToday ? 'Today' : dateStr} at ${activity.time}</div></div></div><div class="history-item-stats">${stats.map(s => `<div class="history-stat"><span class="history-stat-label">${s.label}:</span> <span class="history-stat-value">${s.value}</span></div>`).join('')}</div></div>`;
@@ -4367,7 +4374,7 @@
                     if (a.type === 'workout') {
                         result.workoutCount++;
                         result.workouts.push({ ...a, dateKey: key });
-                        const exercises = a.data?.exercises || [];
+                        const exercises = a.data?.exercises || a.exerciseDetails || [];
                         exercises.forEach(ex => {
                             result.exerciseCount++;
                             const volume = (ex.weight || 0) * (ex.sets || 1) * (ex.reps || 1);
