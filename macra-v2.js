@@ -17,7 +17,12 @@
  * 3. Unified session state management
  * 4. Fixed finalize button, add-set auto-populate, exercise data binding
  * 
- * @version 2.1.0
+ * BUGFIXES v2.1.2:
+ * - FIX #1: finalizeWorkout now saves summary to appData.activities[dateKey]
+ * - FIX #2: finalizeWorkout has timeout + error recovery to prevent ghost sessions
+ * - FIX #3: renderWorkoutPanel renders inline-editable weight/reps fields
+ * 
+ * @version 2.1.2
  * @author MSG Headquarters / Aurelius Koda
  */
 
@@ -131,6 +136,33 @@ async function unifiedApiCall(endpoint, options = {}) {
         if (!navigator.onLine && options.method !== 'GET') {
             UnifiedState.syncQueue.push({ endpoint, options, timestamp: Date.now() });
             showToast('📴 Saved offline - will sync when connected');
+        }
+        throw error;
+    }
+}
+
+/**
+ * API call with timeout to prevent hanging requests
+ * @param {string} endpoint 
+ * @param {Object} options 
+ * @param {number} timeoutMs - Timeout in milliseconds (default 15s)
+ */
+async function unifiedApiCallWithTimeout(endpoint, options = {}, timeoutMs = 15000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    try {
+        const response = await unifiedApiCall(endpoint, {
+            ...options,
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            console.error(`API call to ${endpoint} timed out after ${timeoutMs}ms`);
+            throw new Error(`Request timed out after ${timeoutMs / 1000}s`);
         }
         throw error;
     }
@@ -317,6 +349,38 @@ async function updateSet(exerciseId, setNum, weight, reps, rpe = null) {
 }
 
 /**
+ * Handle inline edit save - called from editable set fields
+ * Debounced to avoid rapid-fire API calls while typing
+ */
+const _pendingEdits = {};
+function handleInlineEdit(exerciseId, setNum) {
+    const key = `${exerciseId}-${setNum}`;
+    
+    // Clear any pending debounce for this set
+    if (_pendingEdits[key]) clearTimeout(_pendingEdits[key]);
+    
+    _pendingEdits[key] = setTimeout(() => {
+        const weightInput = document.querySelector(`[data-edit-weight="${exerciseId}-${setNum}"]`);
+        const repsInput = document.querySelector(`[data-edit-reps="${exerciseId}-${setNum}"]`);
+        
+        if (!weightInput || !repsInput) return;
+        
+        const newWeight = parseFloat(weightInput.value) || 0;
+        const newReps = parseInt(repsInput.value) || 0;
+        
+        // Only update if values actually changed
+        const exercise = UnifiedState.activeWorkout?.exercises?.find(e => e.id === exerciseId);
+        const set = exercise?.sets?.find(s => s.set_num === setNum);
+        
+        if (set && (set.weight !== newWeight || set.reps !== newReps)) {
+            updateSet(exerciseId, setNum, newWeight, newReps, set.rpe);
+        }
+        
+        delete _pendingEdits[key];
+    }, 800); // 800ms debounce
+}
+
+/**
  * Delete an exercise or specific set
  */
 async function deleteExercise(exerciseId, setNum = null) {
@@ -346,8 +410,10 @@ async function deleteExercise(exerciseId, setNum = null) {
 }
 
 /**
- * FINALIZE WORKOUT - The missing function!
- * Saves the workout to the database and clears the session
+ * FINALIZE WORKOUT
+ * ══════════════════════════════════════════════════════════════
+ * FIX #1: Now saves workout summary to appData.activities[dateKey]
+ * FIX #2: Has timeout + guaranteed state cleanup to prevent ghost sessions
  */
 async function finalizeWorkout(workoutName = null, notes = null) {
     if (!UnifiedState.activeWorkout) {
@@ -355,56 +421,133 @@ async function finalizeWorkout(workoutName = null, notes = null) {
         return null;
     }
     
+    // ── SNAPSHOT workout data BEFORE the API call ──
+    // This ensures we have the data even if the API clears it or times out
+    const workoutSnapshot = JSON.parse(JSON.stringify(UnifiedState.activeWorkout));
+    const sessionId = workoutSnapshot.id;
+    const finalName = workoutName || workoutSnapshot.workout_name || 'Workout';
+    
+    // Pre-calculate summary from local state (fallback if API summary is incomplete)
+    const localSummary = {
+        total_exercises: workoutSnapshot.exercises?.length || 0,
+        total_sets: workoutSnapshot.exercises?.reduce((sum, ex) => sum + (ex.sets?.length || 0), 0) || 0,
+        total_volume: workoutSnapshot.exercises?.reduce((sum, ex) => {
+            return sum + (ex.sets || []).reduce((setSum, set) => setSum + ((set.weight || 0) * (set.reps || 0)), 0);
+        }, 0) || 0,
+        exercises: workoutSnapshot.exercises?.map(ex => ({
+            name: ex.name,
+            category: ex.category || 'other',
+            sets: ex.sets?.map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe })) || []
+        })) || [],
+        duration: getElapsedTime(),
+        started_at: workoutSnapshot.started_at
+    };
+    
+    let apiResult = null;
+    let apiSuccess = false;
+    
     try {
         const finalizeData = {
-            session_id: UnifiedState.activeWorkout.id,
-            workout_name: workoutName || UnifiedState.activeWorkout.workout_name,
+            session_id: sessionId,
+            workout_name: finalName,
             notes: notes
         };
         
         const payload = MacraCrypto.encrypt(finalizeData, MacraCrypto.getAthleteCode());
         
-        const res = await unifiedApiCall('/api/v2/workout/finalize', {
+        // ── FIX #2: Use timeout to prevent hanging ──
+        const res = await unifiedApiCallWithTimeout('/api/v2/workout/finalize', {
             method: 'POST',
             body: JSON.stringify(payload)
-        });
+        }, 15000);
         
         if (res.ok) {
             const data = await res.json();
-            const summary = data.session?.summary || {};
-            
-            // Stop timer
-            stopWorkoutTimer();
-            
-            // Clear state
-            UnifiedState.activeWorkout = null;
-            UnifiedState.prediction = null;
-            UnifiedState.lastExercise = null;
-            
-            // Update UI
-            renderWorkoutPanel();
-            
-            // Success message
-            const exerciseCount = summary.total_exercises || 0;
-            const totalVolume = summary.total_volume || 0;
-            showToast(`🏁 ${workoutName || 'Workout'} complete! ${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs`);
-            
-            // Trigger dashboard refresh
-            if (typeof refreshDashboard === 'function') {
-                refreshDashboard();
-            }
-            
-            return data.session;
+            apiResult = data.session;
+            apiSuccess = true;
         } else {
-            const err = await res.json();
-            console.error('Finalize error:', err);
-            showToast('❌ Failed to finalize workout');
+            const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+            console.error('Finalize API error:', err);
+            // Don't return yet — still save locally and clean up state
         }
     } catch (e) {
         console.error('Finalize workout error:', e);
-        showToast('❌ Failed to finalize workout');
+        // Don't return — still save locally and clean up state
     }
-    return null;
+    
+    // ── FIX #1: Save workout to appData.activities for Today's Activity ──
+    try {
+        const dateKey = getTodayKey();
+        if (!appData.activities) appData.activities = {};
+        if (!appData.activities[dateKey]) appData.activities[dateKey] = [];
+        
+        // Use API summary if available, otherwise use local snapshot
+        const summary = apiResult?.summary || localSummary;
+        
+        const activityEntry = {
+            type: 'workout',
+            name: finalName,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: Date.now(),
+            notes: notes || '',
+            summary: {
+                exercises: summary.total_exercises || localSummary.total_exercises,
+                sets: summary.total_sets || localSummary.total_sets,
+                volume: summary.total_volume || localSummary.total_volume,
+                duration: localSummary.duration
+            },
+            exerciseDetails: localSummary.exercises,
+            sessionId: sessionId,
+            source: 'v2'
+        };
+        
+        appData.activities[dateKey].push(activityEntry);
+        
+        // Save to localStorage
+        if (typeof saveData === 'function') {
+            saveData();
+        }
+        
+        console.log('✅ Workout saved to appData.activities:', dateKey, activityEntry);
+    } catch (saveErr) {
+        console.error('Failed to save workout to activities:', saveErr);
+    }
+    
+    // ── ALWAYS clean up state (prevents ghost sessions) ──
+    stopWorkoutTimer();
+    UnifiedState.activeWorkout = null;
+    UnifiedState.prediction = null;
+    UnifiedState.lastExercise = null;
+    
+    // Update UI
+    renderWorkoutPanel();
+    
+    // Success/partial-success message
+    const exerciseCount = localSummary.total_exercises;
+    const totalVolume = localSummary.total_volume;
+    
+    if (apiSuccess) {
+        showToast(`🏁 ${finalName} complete! ${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs`);
+    } else {
+        showToast(`⚠️ ${finalName} saved locally (${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs) — cloud sync may have failed`);
+    }
+    
+    // Trigger dashboard refresh
+    if (typeof renderDashboard === 'function') {
+        renderDashboard();
+    }
+    if (typeof refreshDashboard === 'function') {
+        refreshDashboard();
+    }
+    
+    // Return result for integration patch
+    return {
+        success: true,
+        apiSuccess: apiSuccess,
+        session: apiResult,
+        summary: localSummary,
+        activitySaved: true
+    };
 }
 
 /**
@@ -558,6 +701,8 @@ function getCategoryEmoji(category) {
 
 /**
  * Main workout panel render function
+ * ══════════════════════════════════════════════════════════════
+ * FIX #3: Set rows now have inline-editable weight/reps inputs
  */
 function renderWorkoutPanel() {
     const panel = document.getElementById('v2WorkoutPanel');
@@ -583,7 +728,7 @@ function renderWorkoutPanel() {
     const workout = UnifiedState.activeWorkout;
     const elapsedTime = getElapsedTime();
     
-    // Build exercises HTML
+    // Build exercises HTML with inline-editable set fields
     let exercisesHTML = '';
     if (workout.exercises && workout.exercises.length > 0) {
         exercisesHTML = workout.exercises.map(ex => `
@@ -597,11 +742,35 @@ function renderWorkoutPanel() {
                     </div>
                 </div>
                 <div class="v2-sets-list">
+                    <div class="v2-set-header" style="display: flex; align-items: center; gap: 12px; padding: 4px 12px; font-size: 11px; color: var(--white-30); text-transform: uppercase; letter-spacing: 0.5px;">
+                        <span style="min-width: 50px;">Set</span>
+                        <span style="min-width: 80px;">Weight</span>
+                        <span style="min-width: 60px;">Reps</span>
+                        <span style="margin-left: auto; min-width: 20px;"></span>
+                    </div>
                     ${(ex.sets || []).map(set => `
-                        <div class="v2-set-row" data-set="${set.set_num}" style="display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--carbon); border-radius: 8px; margin-bottom: 6px; font-size: 14px;">
+                        <div class="v2-set-row" data-set="${set.set_num}" style="display: flex; align-items: center; gap: 12px; padding: 6px 12px; background: var(--carbon); border-radius: 8px; margin-bottom: 6px; font-size: 14px;">
                             <span class="v2-set-num" style="color: var(--white-50); min-width: 50px;">Set ${set.set_num}</span>
-                            <span class="v2-set-weight" style="color: var(--prism-cyan); font-weight: 600;">${set.weight} lbs</span>
-                            <span class="v2-set-reps" style="color: var(--prism-violet);">× ${set.reps}</span>
+                            <div style="min-width: 80px; display: flex; align-items: center; gap: 4px;">
+                                <input type="number" 
+                                    data-edit-weight="${ex.id}-${set.set_num}"
+                                    value="${set.weight}" 
+                                    style="width: 60px; background: var(--onyx); border: 1px solid var(--white-10); border-radius: 6px; color: var(--prism-cyan); font-weight: 600; font-size: 14px; padding: 4px 6px; text-align: right; -moz-appearance: textfield;"
+                                    onchange="handleInlineEdit('${ex.id}', ${set.set_num})"
+                                    onfocus="this.select()"
+                                >
+                                <span style="color: var(--white-30); font-size: 11px;">lbs</span>
+                            </div>
+                            <div style="min-width: 60px; display: flex; align-items: center; gap: 4px;">
+                                <span style="color: var(--white-30);">×</span>
+                                <input type="number" 
+                                    data-edit-reps="${ex.id}-${set.set_num}"
+                                    value="${set.reps}" 
+                                    style="width: 48px; background: var(--onyx); border: 1px solid var(--white-10); border-radius: 6px; color: var(--prism-violet); font-weight: 600; font-size: 14px; padding: 4px 6px; text-align: right; -moz-appearance: textfield;"
+                                    onchange="handleInlineEdit('${ex.id}', ${set.set_num})"
+                                    onfocus="this.select()"
+                                >
+                            </div>
                             ${set.rpe ? `<span class="v2-set-rpe" style="color: var(--prism-amber); font-size: 12px;">RPE ${set.rpe}</span>` : ''}
                             <button class="btn-icon-sm" onclick="deleteExercise('${ex.id}', ${set.set_num})" style="background: none; border: none; cursor: pointer; font-size: 12px; opacity: 0.5; margin-left: auto;">×</button>
                         </div>
@@ -750,6 +919,13 @@ function showFinalizeModal() {
 async function doFinalize() {
     const name = document.getElementById('finalizeWorkoutName')?.value;
     const notes = document.getElementById('finalizeWorkoutNotes')?.value;
+    
+    // Disable button to prevent double-click
+    const btn = document.querySelector('#finalizeModal .btn-primary');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Saving...';
+    }
     
     await finalizeWorkout(name, notes);
     document.getElementById('finalizeModal')?.remove();

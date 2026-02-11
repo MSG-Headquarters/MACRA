@@ -9,7 +9,12 @@
  * FLOW:
  * Log Anything → AI Parser → handleWorkoutSession() → v2 API → Workout Panel
  * 
- * @version 2.1.1
+ * v2.1.2 CHANGES:
+ * - Simplified finalizeWorkout override (v2 now saves to activities internally)
+ * - Added error handling for handleWorkoutSession
+ * - Better legacy session sync
+ * 
+ * @version 2.1.2
  */
 
 // ═══════════════════════════════════════════════════════════════
@@ -39,9 +44,17 @@ window.handleWorkoutSession = async function(exercises) {
         
         // Wait a moment for the workout to initialize
         await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Verify it started
+        if (!UnifiedState.activeWorkout) {
+            console.error('Failed to auto-start workout, falling back to legacy');
+            handleWorkoutSessionLegacy(exercises);
+            return;
+        }
     }
     
     // Add each exercise to the v2 system
+    let successCount = 0;
     for (const ex of exercises) {
         try {
             // Add to v2 API
@@ -56,10 +69,15 @@ window.handleWorkoutSession = async function(exercises) {
             // Also update local exercise memory for suggestions
             updateExerciseMemory(ex);
             
+            successCount++;
             console.log(`✓ Added: ${ex.name} ${ex.weight}lbs × ${ex.reps}`);
         } catch (error) {
             console.error('Failed to add exercise:', ex.name, error);
         }
+    }
+    
+    if (successCount < exercises.length) {
+        showToast(`⚠️ ${successCount}/${exercises.length} exercises added (some failed)`);
     }
     
     // Update the smart workout panel (legacy UI)
@@ -147,7 +165,7 @@ window.processUnifiedResult = async function(result, rawInput) {
     if (result.type === 'workout' && result.data.exercises && result.data.exercises.length > 0) {
         console.log('🎯 Workout detected, routing through v2 system...');
         
-        // Don't save to localStorage activities for workouts - v2 handles this
+        // Don't save to localStorage activities for workouts - v2 finalizeWorkout handles this
         // Just trigger the workout session handler
         await handleWorkoutSession(result.data.exercises);
         
@@ -161,7 +179,7 @@ window.processUnifiedResult = async function(result, rawInput) {
         appData.stats.points += points;
         appData.stats.weeklyPoints += points;
         
-        // Save memory and stats (but not the workout to activities)
+        // Save memory and stats (but not the workout to activities - that happens on finalize)
         saveData();
         
         // Update dashboard
@@ -188,42 +206,60 @@ const originalFinalizeWorkout = window.finalizeWorkout;
 
 /**
  * Enhanced finalizeWorkout that updates dashboard stats
+ * 
+ * NOTE: The v2.1.2 finalizeWorkout in macra-v2.js now handles:
+ *   - Saving to appData.activities[dateKey] ← FIX #1
+ *   - Timeout + guaranteed state cleanup ← FIX #2  
+ *   - Calling renderDashboard()
+ * 
+ * This override ONLY adds the legacy stats tracking on top.
  */
 window.finalizeWorkout = async function(workoutName, notes) {
-    // Call original finalize
-    const result = await originalFinalizeWorkout(workoutName, notes);
+    // Call the v2 finalize (which now saves to activities and cleans up state)
+    let result;
+    try {
+        result = await originalFinalizeWorkout(workoutName, notes);
+    } catch (e) {
+        console.error('Finalize failed:', e);
+        result = null;
+    }
     
-    if (result) {
-        // Update stats
+    if (result && result.success) {
+        // Update legacy stats counters
+        const summary = result.summary || {};
+        
         appData.stats.workouts = (appData.stats.workouts || 0) + 1;
         appData.stats.weeklyWorkouts = (appData.stats.weeklyWorkouts || 0) + 1;
         
-        // Calculate total volume from the workout
-        const totalVolume = result.summary?.total_volume || 0;
+        const totalVolume = summary.total_volume || 0;
         appData.stats.totalVolume = (appData.stats.totalVolume || 0) + totalVolume;
         appData.stats.weeklyVolume = (appData.stats.weeklyVolume || 0) + totalVolume;
         
         // Update streak
         updateStreak();
         
-        // Save to localStorage for dashboard
-        saveData();
+        // Save updated stats to localStorage
+        if (typeof saveData === 'function') {
+            saveData();
+        }
         
-        // Refresh dashboard
+        // Refresh dashboard (v2 already calls this, but call again for stats update)
         if (typeof renderDashboard === 'function') {
             renderDashboard();
         }
         
-        // Clear the legacy currentSession
-        currentSession = {
-            active: false,
-            startTime: null,
-            exercises: [],
-            lastExercise: null
-        };
-        
         console.log('✅ Workout finalized, stats updated');
+    } else {
+        console.warn('⚠️ Finalize returned no result — stats not updated');
     }
+    
+    // Clear the legacy currentSession regardless of API result
+    currentSession = {
+        active: false,
+        startTime: null,
+        exercises: [],
+        lastExercise: null
+    };
     
     return result;
 };
