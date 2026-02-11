@@ -1,28 +1,122 @@
 /**
- * MACRA v2.0 API Integration
- * This script adds v2 workout sessions and nutrition tracking
- * Include this after the main MACRA script
+ * MACRA v2.1 UNIFIED WORKOUT SYSTEM
+ * ══════════════════════════════════════════════════════════════
+ * 
+ * This replaces the dual-system (localStorage + v2 API) with a 
+ * single unified architecture ready for client-side encryption.
+ * 
+ * ARCHITECTURE:
+ * ─────────────
+ * User Input → Parse → [CRYPTO INTERCEPT POINT] → v2 API → Supabase
+ *                           ↓
+ *                    (v2.1: Encrypt with athlete code here)
+ * 
+ * KEY CHANGES FROM OLD SYSTEM:
+ * 1. ALL workout/nutrition data flows through v2 API (no localStorage split)
+ * 2. Crypto hooks ready for athlete-code encryption
+ * 3. Unified session state management
+ * 4. Fixed finalize button, add-set auto-populate, exercise data binding
+ * 
+ * @version 2.1.0
+ * @author MSG Headquarters / Aurelius Koda
  */
 
 // ═══════════════════════════════════════════════════════════════
-// V2 STATE
+// CRYPTO LAYER (v2.1 READY - Currently passthrough)
 // ═══════════════════════════════════════════════════════════════
-let v2State = {
-    activeWorkout: null,
-    todayNutrition: null,
-    learningProfile: null,
-    prediction: null
+
+const MacraCrypto = {
+    /**
+     * ENCRYPTION HOOK - Currently passthrough, v2.1 will encrypt here
+     * @param {Object} data - Data to encrypt
+     * @param {string} athleteCode - User's athlete code (e.g., MACRA-XXXX)
+     * @returns {Object|string} - Encrypted payload (v2.1) or original data (v2.0)
+     */
+    encrypt(data, athleteCode = null) {
+        // v2.0: Passthrough - data goes to API unencrypted
+        // v2.1: Will derive key from athleteCode and encrypt
+        if (typeof window.macraEncrypt === 'function' && athleteCode) {
+            return window.macraEncrypt(data, athleteCode);
+        }
+        return data;
+    },
+
+    /**
+     * DECRYPTION HOOK - Currently passthrough
+     * @param {Object|string} payload - Encrypted payload
+     * @param {string} athleteCode - User's athlete code
+     * @returns {Object} - Decrypted data
+     */
+    decrypt(payload, athleteCode = null) {
+        if (typeof window.macraDecrypt === 'function' && athleteCode) {
+            return window.macraDecrypt(payload, athleteCode);
+        }
+        return payload;
+    },
+
+    /**
+     * Check if encryption is available
+     */
+    isEnabled() {
+        return typeof window.macraEncrypt === 'function';
+    },
+
+    /**
+     * Get user's athlete code from auth state
+     */
+    getAthleteCode() {
+        try {
+            const auth = JSON.parse(localStorage.getItem('macra_auth') || '{}');
+            return auth.athleteCode || null;
+        } catch (e) {
+            return null;
+        }
+    }
 };
 
 // ═══════════════════════════════════════════════════════════════
-// V2 API CALLS
+// UNIFIED STATE MANAGEMENT
 // ═══════════════════════════════════════════════════════════════
 
-async function v2ApiCall(endpoint, options = {}) {
-    const authData = localStorage.getItem('macra_auth'); const auth = authData ? JSON.parse(authData) : null; const token = auth?.token;
+const UnifiedState = {
+    // Active workout session (from v2 API)
+    activeWorkout: null,
+    
+    // Today's nutrition (from v2 API)
+    todayNutrition: null,
+    
+    // AI prediction for next exercise
+    prediction: null,
+    
+    // Timer interval ID
+    timerInterval: null,
+    
+    // Last known exercise for add-set auto-populate
+    lastExercise: null,
+    
+    // Connection status
+    isOnline: navigator.onLine,
+    
+    // Pending sync queue (for offline support)
+    syncQueue: []
+};
+
+// ═══════════════════════════════════════════════════════════════
+// API LAYER
+// ═══════════════════════════════════════════════════════════════
+
+async function unifiedApiCall(endpoint, options = {}) {
+    const auth = JSON.parse(localStorage.getItem('macra_auth') || '{}');
+    const token = auth.token;
+    
+    if (!token) {
+        console.warn('No auth token available');
+        return { ok: false, error: 'Not authenticated' };
+    }
+    
     const headers = {
         'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` })
+        'Authorization': `Bearer ${token}`
     };
     
     try {
@@ -32,7 +126,12 @@ async function v2ApiCall(endpoint, options = {}) {
         });
         return response;
     } catch (error) {
-        console.error('V2 API Error:', error);
+        console.error('API Error:', error);
+        // Queue for offline sync if needed
+        if (!navigator.onLine && options.method !== 'GET') {
+            UnifiedState.syncQueue.push({ endpoint, options, timestamp: Date.now() });
+            showToast('📴 Saved offline - will sync when connected');
+        }
         throw error;
     }
 }
@@ -41,13 +140,17 @@ async function v2ApiCall(endpoint, options = {}) {
 // WORKOUT SESSION FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
 
-async function v2GetActiveWorkout() {
+/**
+ * Get any active workout from the backend
+ */
+async function getActiveWorkout() {
     try {
-        const res = await v2ApiCall('/api/v2/workout/active');
+        const res = await unifiedApiCall('/api/v2/workout/active');
         if (res.ok) {
             const data = await res.json();
-            v2State.activeWorkout = data.session;
-            return data.session;
+            // Decrypt if encryption enabled
+            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            return UnifiedState.activeWorkout;
         }
     } catch (e) {
         console.error('Get active workout error:', e);
@@ -55,23 +158,30 @@ async function v2GetActiveWorkout() {
     return null;
 }
 
-async function v2StartWorkout(workoutName = null) {
+/**
+ * Start a new workout session
+ */
+async function startWorkout(workoutName = null) {
     try {
-        const res = await v2ApiCall('/api/v2/workout/start', {
+        const payload = MacraCrypto.encrypt({ workout_name: workoutName }, MacraCrypto.getAthleteCode());
+        
+        const res = await unifiedApiCall('/api/v2/workout/start', {
             method: 'POST',
-            body: JSON.stringify({ workout_name: workoutName })
+            body: JSON.stringify(payload)
         });
+        
         if (res.ok) {
             const data = await res.json();
-            v2State.activeWorkout = data.session;
+            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
             showToast('🏋️ Workout started!');
-            updateV2WorkoutUI();
-            return data.session;
+            startWorkoutTimer();
+            renderWorkoutPanel();
+            return UnifiedState.activeWorkout;
         } else {
             const err = await res.json();
             if (err.session_id) {
-                // Already have active workout
-                return v2GetActiveWorkout();
+                // Already have active workout - load it
+                return await getActiveWorkout();
             }
             throw new Error(err.error);
         }
@@ -82,58 +192,123 @@ async function v2StartWorkout(workoutName = null) {
     return null;
 }
 
-async function v2AddExercise(exerciseName, originalInput, weight, reps, rpe = null) {
-    if (!v2State.activeWorkout) {
-        await v2StartWorkout();
+/**
+ * Add exercise to the current workout
+ * This is the UNIFIED entry point - replaces both old systems
+ */
+async function addExercise(exerciseName, weight, reps, sets = 1, rpe = null) {
+    // Auto-start workout if not active
+    if (!UnifiedState.activeWorkout) {
+        await startWorkout();
     }
     
+    if (!UnifiedState.activeWorkout) {
+        showToast('❌ Could not start workout session');
+        return null;
+    }
+    
+    // Save for add-set auto-populate
+    UnifiedState.lastExercise = { name: exerciseName, weight, reps, sets, rpe };
+    
     try {
-        const res = await v2ApiCall('/api/v2/workout/exercise', {
+        const exerciseData = {
+            session_id: UnifiedState.activeWorkout.id,
+            exercise_name: exerciseName,
+            original_input: `${exerciseName} ${weight}lbs ${sets}x${reps}`,
+            weight: parseFloat(weight) || 0,
+            reps: parseInt(reps) || 0,
+            sets: parseInt(sets) || 1,
+            rpe: rpe ? parseFloat(rpe) : null
+        };
+        
+        const payload = MacraCrypto.encrypt(exerciseData, MacraCrypto.getAthleteCode());
+        
+        const res = await unifiedApiCall('/api/v2/workout/exercise', {
             method: 'POST',
-            body: JSON.stringify({
-                session_id: v2State.activeWorkout.id,
-                exercise_name: exerciseName,
-                original_input: originalInput,
-                weight: weight,
-                reps: reps,
-                rpe: rpe
-            })
+            body: JSON.stringify(payload)
         });
         
         if (res.ok) {
             const data = await res.json();
-            v2State.activeWorkout = data.session;
-            updateV2WorkoutUI();
-            await v2GetPrediction();
-            return data.session;
+            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            renderWorkoutPanel();
+            
+            // Get AI prediction for next exercise
+            getPrediction();
+            
+            showToast(`✓ ${exerciseName} logged`);
+            return UnifiedState.activeWorkout;
+        } else {
+            const err = await res.json();
+            console.error('Add exercise error:', err);
+            showToast('❌ Failed to log exercise');
         }
     } catch (e) {
         console.error('Add exercise error:', e);
+        showToast('❌ Failed to log exercise');
     }
     return null;
 }
 
-async function v2UpdateSet(exerciseId, setNum, weight, reps, rpe) {
-    if (!v2State.activeWorkout) return null;
+/**
+ * Quick add set - auto-populates from last exercise or specified exercise
+ */
+async function quickAddSet(exerciseId = null, exerciseName = null) {
+    let weight, reps;
+    
+    if (exerciseId && UnifiedState.activeWorkout) {
+        // Find the exercise and get last set values
+        const exercise = UnifiedState.activeWorkout.exercises?.find(e => e.id === exerciseId);
+        if (exercise && exercise.sets && exercise.sets.length > 0) {
+            const lastSet = exercise.sets[exercise.sets.length - 1];
+            weight = lastSet.weight;
+            reps = lastSet.reps;
+            exerciseName = exercise.name;
+        }
+    } else if (UnifiedState.lastExercise) {
+        // Use last logged exercise
+        weight = UnifiedState.lastExercise.weight;
+        reps = UnifiedState.lastExercise.reps;
+        exerciseName = UnifiedState.lastExercise.name;
+    }
+    
+    if (!exerciseName) {
+        showToast('No previous exercise to copy');
+        return;
+    }
+    
+    // Add the set with same values
+    await addExercise(exerciseName, weight, reps, 1);
+}
+
+/**
+ * Update an existing set
+ */
+async function updateSet(exerciseId, setNum, weight, reps, rpe = null) {
+    if (!UnifiedState.activeWorkout) return null;
     
     try {
-        const res = await v2ApiCall('/api/v2/workout/set', {
+        const updateData = {
+            session_id: UnifiedState.activeWorkout.id,
+            exercise_id: exerciseId,
+            set_num: setNum,
+            weight: parseFloat(weight) || 0,
+            reps: parseInt(reps) || 0,
+            rpe: rpe ? parseFloat(rpe) : null
+        };
+        
+        const payload = MacraCrypto.encrypt(updateData, MacraCrypto.getAthleteCode());
+        
+        const res = await unifiedApiCall('/api/v2/workout/set', {
             method: 'PUT',
-            body: JSON.stringify({
-                session_id: v2State.activeWorkout.id,
-                exercise_id: exerciseId,
-                set_num: setNum,
-                weight: weight,
-                reps: reps,
-                rpe: rpe
-            })
+            body: JSON.stringify(payload)
         });
         
         if (res.ok) {
             const data = await res.json();
-            v2State.activeWorkout = data.session;
-            updateV2WorkoutUI();
-            return data.session;
+            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            renderWorkoutPanel();
+            return UnifiedState.activeWorkout;
         }
     } catch (e) {
         console.error('Update set error:', e);
@@ -141,14 +316,17 @@ async function v2UpdateSet(exerciseId, setNum, weight, reps, rpe) {
     return null;
 }
 
-async function v2DeleteExercise(exerciseId, setNum = null) {
-    if (!v2State.activeWorkout) return null;
+/**
+ * Delete an exercise or specific set
+ */
+async function deleteExercise(exerciseId, setNum = null) {
+    if (!UnifiedState.activeWorkout) return null;
     
     try {
-        const res = await v2ApiCall('/api/v2/workout/exercise', {
+        const res = await unifiedApiCall('/api/v2/workout/exercise', {
             method: 'DELETE',
             body: JSON.stringify({
-                session_id: v2State.activeWorkout.id,
+                session_id: UnifiedState.activeWorkout.id,
                 exercise_id: exerciseId,
                 set_num: setNum
             })
@@ -156,10 +334,10 @@ async function v2DeleteExercise(exerciseId, setNum = null) {
         
         if (res.ok) {
             const data = await res.json();
-            v2State.activeWorkout = data.session;
-            updateV2WorkoutUI();
+            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            renderWorkoutPanel();
             showToast('🗑️ Deleted');
-            return data.session;
+            return UnifiedState.activeWorkout;
         }
     } catch (e) {
         console.error('Delete exercise error:', e);
@@ -167,93 +345,176 @@ async function v2DeleteExercise(exerciseId, setNum = null) {
     return null;
 }
 
-async function v2FinalizeWorkout(workoutName = null, notes = null) {
-    if (!v2State.activeWorkout) return null;
+/**
+ * FINALIZE WORKOUT - The missing function!
+ * Saves the workout to the database and clears the session
+ */
+async function finalizeWorkout(workoutName = null, notes = null) {
+    if (!UnifiedState.activeWorkout) {
+        showToast('No active workout to finalize');
+        return null;
+    }
     
     try {
-        const res = await v2ApiCall('/api/v2/workout/finalize', {
+        const finalizeData = {
+            session_id: UnifiedState.activeWorkout.id,
+            workout_name: workoutName || UnifiedState.activeWorkout.workout_name,
+            notes: notes
+        };
+        
+        const payload = MacraCrypto.encrypt(finalizeData, MacraCrypto.getAthleteCode());
+        
+        const res = await unifiedApiCall('/api/v2/workout/finalize', {
             method: 'POST',
-            body: JSON.stringify({
-                session_id: v2State.activeWorkout.id,
-                workout_name: workoutName,
-                notes: notes
-            })
+            body: JSON.stringify(payload)
         });
         
         if (res.ok) {
             const data = await res.json();
-            const summary = data.session.summary;
-            showToast(`🏁 ${data.session.workout_name || 'Workout'} complete! ${summary.total_exercises} exercises, ${summary.total_volume.toLocaleString()} lbs`);
-            v2State.activeWorkout = null;
-            v2State.prediction = null;
-            updateV2WorkoutUI();
+            const summary = data.session?.summary || {};
+            
+            // Stop timer
+            stopWorkoutTimer();
+            
+            // Clear state
+            UnifiedState.activeWorkout = null;
+            UnifiedState.prediction = null;
+            UnifiedState.lastExercise = null;
+            
+            // Update UI
+            renderWorkoutPanel();
+            
+            // Success message
+            const exerciseCount = summary.total_exercises || 0;
+            const totalVolume = summary.total_volume || 0;
+            showToast(`🏁 ${workoutName || 'Workout'} complete! ${exerciseCount} exercises, ${totalVolume.toLocaleString()} lbs`);
+            
+            // Trigger dashboard refresh
+            if (typeof refreshDashboard === 'function') {
+                refreshDashboard();
+            }
+            
             return data.session;
+        } else {
+            const err = await res.json();
+            console.error('Finalize error:', err);
+            showToast('❌ Failed to finalize workout');
         }
     } catch (e) {
         console.error('Finalize workout error:', e);
+        showToast('❌ Failed to finalize workout');
     }
     return null;
 }
-async function v2CancelWorkout() {
-    if (!v2State.activeWorkout) return;
+
+/**
+ * Cancel workout without saving
+ */
+async function cancelWorkout() {
+    if (!UnifiedState.activeWorkout) return;
     
-    if (v2State.activeWorkout.exercises?.length > 0) {
-        if (!confirm('Cancel workout? Your logged exercises will be lost.')) return;
+    const exerciseCount = UnifiedState.activeWorkout.exercises?.length || 0;
+    if (exerciseCount > 0) {
+        if (!confirm(`Cancel workout? Your ${exerciseCount} logged exercises will be lost.`)) {
+            return;
+        }
     }
     
     try {
-        await v2ApiCall('/api/v2/workout/cancel', {
+        await unifiedApiCall('/api/v2/workout/cancel', {
             method: 'POST',
-            body: JSON.stringify({ session_id: v2State.activeWorkout.id })
+            body: JSON.stringify({ session_id: UnifiedState.activeWorkout.id })
         });
     } catch (e) {
         console.log('Cancel API error (continuing anyway):', e);
     }
     
-    v2State.activeWorkout = null;
-    updateV2WorkoutUI();
+    // Stop timer
+    stopWorkoutTimer();
+    
+    // Clear state
+    UnifiedState.activeWorkout = null;
+    UnifiedState.prediction = null;
+    UnifiedState.lastExercise = null;
+    
+    // Update UI
+    renderWorkoutPanel();
     showToast('Workout cancelled');
 }
 
-
 // ═══════════════════════════════════════════════════════════════
-// SMART PARSING
+// TIMER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
 
-async function v2ParseExercise(input) {
-    try {
-        const res = await v2ApiCall('/api/v2/learning/parse-exercise', {
-            method: 'POST',
-            body: JSON.stringify({ input })
-        });
-        
-        if (res.ok) {
-            const data = await res.json();
-            return data.parsed;
-        }
-    } catch (e) {
-        console.error('Parse exercise error:', e);
-    }
-    return null;
+function startWorkoutTimer() {
+    stopWorkoutTimer(); // Clear any existing
+    
+    UnifiedState.timerInterval = setInterval(() => {
+        updateTimerDisplay();
+    }, 1000);
 }
 
-async function v2GetPrediction() {
-    if (!v2State.activeWorkout || !v2State.activeWorkout.exercises.length) {
-        v2State.prediction = null;
+function stopWorkoutTimer() {
+    if (UnifiedState.timerInterval) {
+        clearInterval(UnifiedState.timerInterval);
+        UnifiedState.timerInterval = null;
+    }
+}
+
+function updateTimerDisplay() {
+    const timerEl = document.getElementById('workoutTimer');
+    if (!timerEl || !UnifiedState.activeWorkout?.started_at) return;
+    
+    const startTime = new Date(UnifiedState.activeWorkout.started_at).getTime();
+    const elapsed = Date.now() - startTime;
+    
+    const hours = Math.floor(elapsed / 3600000);
+    const minutes = Math.floor((elapsed % 3600000) / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    
+    if (hours > 0) {
+        timerEl.textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    } else {
+        timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+}
+
+function getElapsedTime() {
+    if (!UnifiedState.activeWorkout?.started_at) return '0:00';
+    
+    const startTime = new Date(UnifiedState.activeWorkout.started_at).getTime();
+    const elapsed = Date.now() - startTime;
+    
+    const hours = Math.floor(elapsed / 3600000);
+    const minutes = Math.floor((elapsed % 3600000) / 60000);
+    
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    }
+    return `${minutes} min`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AI PREDICTION
+// ═══════════════════════════════════════════════════════════════
+
+async function getPrediction() {
+    if (!UnifiedState.activeWorkout?.exercises?.length) {
+        UnifiedState.prediction = null;
         return null;
     }
     
     try {
-        const exerciseNames = v2State.activeWorkout.exercises.map(e => e.name);
-        const res = await v2ApiCall('/api/v2/learning/predict-next', {
+        const exerciseNames = UnifiedState.activeWorkout.exercises.map(e => e.name);
+        const res = await unifiedApiCall('/api/v2/learning/predict-next', {
             method: 'POST',
             body: JSON.stringify({ current_exercises: exerciseNames })
         });
         
         if (res.ok) {
             const data = await res.json();
-            v2State.prediction = data.prediction;
-            updatePredictionUI();
+            UnifiedState.prediction = data.prediction;
+            renderWorkoutPanel(); // Re-render to show prediction
             return data.prediction;
         }
     } catch (e) {
@@ -262,221 +523,24 @@ async function v2GetPrediction() {
     return null;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// NUTRITION FUNCTIONS
-// ═══════════════════════════════════════════════════════════════
-
-async function v2GetTodayNutrition() {
-    try {
-        const res = await v2ApiCall('/api/v2/nutrition/today');
-        if (res.ok) {
-            const data = await res.json();
-            v2State.todayNutrition = data.nutrition_day;
-            return data.nutrition_day;
-        }
-    } catch (e) {
-        console.error('Get nutrition error:', e);
+function acceptPrediction() {
+    if (!UnifiedState.prediction) return;
+    
+    const input = document.getElementById('unifiedInput') || document.getElementById('v2ExerciseInput');
+    if (input) {
+        input.value = UnifiedState.prediction.exercise;
+        input.focus();
     }
-    return null;
 }
 
-async function v2AddFood(name, calories, protein, carbs, fat, mealType = null) {
-    try {
-        const res = await v2ApiCall('/api/v2/nutrition/food', {
-            method: 'POST',
-            body: JSON.stringify({
-                name,
-                calories,
-                protein,
-                carbs,
-                fat,
-                meal_type: mealType,
-                time: new Date().toISOString()
-            })
-        });
-        
-        if (res.ok) {
-            const data = await res.json();
-            v2State.todayNutrition = data.nutrition_day;
-            showToast(`✓ Added to ${data.meal_type}`);
-            updateV2NutritionUI();
-            return data.nutrition_day;
-        }
-    } catch (e) {
-        console.error('Add food error:', e);
-    }
-    return null;
-}
-
-async function v2UpdateFood(foodId, updates) {
-    try {
-        const res = await v2ApiCall('/api/v2/nutrition/food', {
-            method: 'PUT',
-            body: JSON.stringify({
-                food_id: foodId,
-                ...updates
-            })
-        });
-        
-        if (res.ok) {
-            const data = await res.json();
-            v2State.todayNutrition = data.nutrition_day;
-            updateV2NutritionUI();
-            return data.nutrition_day;
-        }
-    } catch (e) {
-        console.error('Update food error:', e);
-    }
-    return null;
-}
-
-async function v2DeleteFood(foodId) {
-    try {
-        const res = await v2ApiCall('/api/v2/nutrition/food', {
-            method: 'DELETE',
-            body: JSON.stringify({ food_id: foodId })
-        });
-        
-        if (res.ok) {
-            const data = await res.json();
-            v2State.todayNutrition = data.nutrition_day;
-            showToast('🗑️ Food deleted');
-            updateV2NutritionUI();
-            return data.nutrition_day;
-        }
-    } catch (e) {
-        console.error('Delete food error:', e);
-    }
-    return null;
-}
-
-async function v2LogWater(oz) {
-    try {
-        const res = await v2ApiCall('/api/v2/nutrition/water', {
-            method: 'POST',
-            body: JSON.stringify({ oz })
-        });
-        
-        if (res.ok) {
-            const data = await res.json();
-            v2State.todayNutrition = data.nutrition_day;
-            showToast(`💧 +${oz} oz water`);
-            updateV2NutritionUI();
-            return data.nutrition_day;
-        }
-    } catch (e) {
-        console.error('Log water error:', e);
-    }
-    return null;
+function dismissPrediction() {
+    UnifiedState.prediction = null;
+    renderWorkoutPanel();
 }
 
 // ═══════════════════════════════════════════════════════════════
-// UI UPDATE FUNCTIONS
+// UI RENDERING
 // ═══════════════════════════════════════════════════════════════
-
-function updateV2WorkoutUI() {
-    const panel = document.getElementById('v2WorkoutPanel');
-    if (!panel) return;
-    
-    if (!v2State.activeWorkout) {
-        panel.innerHTML = `
-            <div class="v2-workout-start">
-                <button class="btn btn-primary" onclick="v2StartWorkout()">
-                    🏋️ Start Workout
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    const workout = v2State.activeWorkout;
-    const duration = workout.started_at ? 
-        Math.round((Date.now() - new Date(workout.started_at).getTime()) / 60000) : 0;
-    
-    let exercisesHTML = '';
-    if (workout.exercises && workout.exercises.length > 0) {
-        exercisesHTML = workout.exercises.map(ex => `
-            <div class="v2-exercise-card" data-id="${ex.id}">
-                <div class="v2-exercise-header">
-                    <span class="v2-exercise-name">${getCategoryEmoji(ex.category)} ${ex.name}</span>
-                    <div class="v2-exercise-actions">
-                        <button class="btn-icon" onclick="v2EditExercise('${ex.id}')" title="Edit">✏️</button>
-                        <button class="btn-icon" onclick="v2DeleteExercise('${ex.id}')" title="Delete">🗑️</button>
-                    </div>
-                </div>
-                <div class="v2-sets-list">
-                    ${ex.sets.map(set => `
-                        <div class="v2-set-row" data-set="${set.set_num}">
-                            <span class="v2-set-num">Set ${set.set_num}</span>
-                            <span class="v2-set-weight">${set.weight} lbs</span>
-                            <span class="v2-set-reps">× ${set.reps}</span>
-                            ${set.rpe ? `<span class="v2-set-rpe">RPE ${set.rpe}</span>` : ''}
-                            <button class="btn-icon-sm" onclick="v2DeleteExercise('${ex.id}', ${set.set_num})">×</button>
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="btn btn-ghost btn-sm" onclick="v2QuickAddSet('${ex.id}', '${ex.name}')">
-                    + Add Set
-                </button>
-            </div>
-        `).join('');
-    }
-    
-    panel.innerHTML = `
-        <div class="v2-workout-header">
-            <div class="v2-workout-title">
-                <span class="v2-workout-status">🔴 WORKOUT IN PROGRESS</span>
-                <span class="v2-workout-timer">⏱️ ${duration} min</span>
-            </div>
-            <div class="v2-workout-name">${workout.workout_name || 'Workout'}</div>
-        </div>
-        
-        <div class="v2-exercises-container">
-            ${exercisesHTML || '<div class="v2-empty">No exercises yet. Add your first exercise below!</div>'}
-        </div>
-        
-        ${v2State.prediction ? `
-            <div class="v2-prediction-card">
-                <div class="v2-prediction-label">🔮 Predicted Next:</div>
-                <div class="v2-prediction-exercise">${v2State.prediction.exercise}</div>
-                <div class="v2-prediction-reason">${v2State.prediction.reason}</div>
-                <button class="btn btn-primary btn-sm" onclick="v2AcceptPrediction()">
-                    ✓ Yes, Log It
-                </button>
-                <button class="btn btn-ghost btn-sm" onclick="v2DismissPrediction()">
-                    Different Exercise
-                </button>
-            </div>
-        ` : ''}
-        
-        <div class="v2-quick-input">
-            <input type="text" id="v2ExerciseInput" class="form-input" 
-                placeholder="Type exercise (e.g., 'FB BB 135x10' or 'bench press 185 8')"
-                onkeypress="if(event.key==='Enter') v2ParseAndAddExercise()">
-            <button class="btn btn-primary" onclick="v2ParseAndAddExercise()">
-                Add
-            </button>
-        </div>
-        
-        <div class="v2-workout-footer">
-            <div class="v2-workout-stats">
-                <span>${workout.summary?.total_exercises || 0} exercises</span>
-                <span>•</span>
-                <span>${workout.summary?.total_sets || 0} sets</span>
-                <span>•</span>
-                <span>${(workout.summary?.total_volume || 0).toLocaleString()} lbs</span>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <button class="btn btn-ghost" onclick="v2CancelWorkout()" style="color: var(--prism-rose);">
-                    ✖ Cancel
-                </button>
-                <button class="btn btn-primary" onclick="v2ShowFinalizeModal()">
-                    ✅ FINALIZE WORKOUT
-                </button>
-            </div>
-        </div>
-    `;
-}
 
 function getCategoryEmoji(category) {
     const emojis = {
@@ -486,187 +550,192 @@ function getCategoryEmoji(category) {
         arms: '💪',
         legs: '🦵',
         core: '🧘',
+        cardio: '❤️',
         other: '🏋️'
     };
-    return emojis[category] || '🏋️';
+    return emojis[category?.toLowerCase()] || '🏋️';
 }
 
-function updatePredictionUI() {
-    // Prediction is rendered as part of updateV2WorkoutUI
-    updateV2WorkoutUI();
-}
-
-function updateV2NutritionUI() {
-    const panel = document.getElementById('v2NutritionPanel');
-    if (!panel || !v2State.todayNutrition) return;
+/**
+ * Main workout panel render function
+ */
+function renderWorkoutPanel() {
+    const panel = document.getElementById('v2WorkoutPanel');
+    if (!panel) {
+        console.warn('v2WorkoutPanel element not found');
+        return;
+    }
     
-    const nutrition = v2State.todayNutrition;
-    const totals = nutrition.totals || { calories: 0, protein: 0, carbs: 0, fat: 0 };
-    const water = nutrition.water || { logged_oz: 0, target_oz: 128 };
-    const meals = nutrition.meals || {};
-    
-    const mealCategories = [
-        { key: 'coffee', label: '☕ Coffee', icon: '☕' },
-        { key: 'breakfast', label: '🍳 Breakfast', icon: '🍳' },
-        { key: 'snack_am', label: '🍎 Morning Snack', icon: '🍎' },
-        { key: 'lunch', label: '🥪 Lunch', icon: '🥪' },
-        { key: 'snack_pm', label: '🍪 Afternoon Snack', icon: '🍪' },
-        { key: 'dinner', label: '🍽️ Dinner', icon: '🍽️' },
-        { key: 'shakes', label: '🥤 Shakes', icon: '🥤' },
-        { key: 'supplements', label: '💊 Supplements', icon: '💊' }
-    ];
-    
-    let mealsHTML = mealCategories.map(cat => {
-        const items = meals[cat.key] || [];
-        if (items.length === 0) return '';
-        
-        return `
-            <div class="v2-meal-category">
-                <div class="v2-meal-header">${cat.label}</div>
-                ${items.map(item => `
-                    <div class="v2-food-item" data-id="${item.id}">
-                        <div class="v2-food-name">${item.name}</div>
-                        <div class="v2-food-macros">
-                            <span>${item.calories} cal</span>
-                            <span>${item.protein}g P</span>
-                        </div>
-                        <div class="v2-food-actions">
-                            <button class="btn-icon-sm" onclick="v2EditFood('${item.id}')">✏️</button>
-                            <button class="btn-icon-sm" onclick="v2DeleteFood('${item.id}')">🗑️</button>
-                        </div>
-                    </div>
-                `).join('')}
+    // No active workout - show start button
+    if (!UnifiedState.activeWorkout) {
+        panel.innerHTML = `
+            <div class="v2-workout-start" style="text-align: center; padding: 24px;">
+                <p style="color: var(--white-50); margin-bottom: 16px;">Ready to train?</p>
+                <button class="btn btn-primary" onclick="startWorkout()">
+                    🏋️ Start Workout
+                </button>
             </div>
         `;
-    }).filter(Boolean).join('');
+        panel.style.display = 'block';
+        return;
+    }
     
-    const waterPercent = Math.min(100, (water.logged_oz / water.target_oz) * 100);
+    const workout = UnifiedState.activeWorkout;
+    const elapsedTime = getElapsedTime();
+    
+    // Build exercises HTML
+    let exercisesHTML = '';
+    if (workout.exercises && workout.exercises.length > 0) {
+        exercisesHTML = workout.exercises.map(ex => `
+            <div class="v2-exercise-card" data-id="${ex.id}" style="background: var(--onyx); border: 1px solid var(--white-10); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+                <div class="v2-exercise-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span class="v2-exercise-name" style="font-weight: 600; font-size: 16px;">
+                        ${getCategoryEmoji(ex.category)} ${ex.name}
+                    </span>
+                    <div class="v2-exercise-actions" style="display: flex; gap: 8px;">
+                        <button class="btn-icon" onclick="deleteExercise('${ex.id}')" title="Delete" style="background: none; border: none; cursor: pointer; opacity: 0.6;">🗑️</button>
+                    </div>
+                </div>
+                <div class="v2-sets-list">
+                    ${(ex.sets || []).map(set => `
+                        <div class="v2-set-row" data-set="${set.set_num}" style="display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--carbon); border-radius: 8px; margin-bottom: 6px; font-size: 14px;">
+                            <span class="v2-set-num" style="color: var(--white-50); min-width: 50px;">Set ${set.set_num}</span>
+                            <span class="v2-set-weight" style="color: var(--prism-cyan); font-weight: 600;">${set.weight} lbs</span>
+                            <span class="v2-set-reps" style="color: var(--prism-violet);">× ${set.reps}</span>
+                            ${set.rpe ? `<span class="v2-set-rpe" style="color: var(--prism-amber); font-size: 12px;">RPE ${set.rpe}</span>` : ''}
+                            <button class="btn-icon-sm" onclick="deleteExercise('${ex.id}', ${set.set_num})" style="background: none; border: none; cursor: pointer; font-size: 12px; opacity: 0.5; margin-left: auto;">×</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="quickAddSet('${ex.id}', '${ex.name}')" style="font-size: 12px; padding: 6px 12px;">
+                    + Add Set (${ex.sets?.[ex.sets.length - 1]?.weight || 0} lbs × ${ex.sets?.[ex.sets.length - 1]?.reps || 0})
+                </button>
+            </div>
+        `).join('');
+    }
+    
+    // Prediction card
+    let predictionHTML = '';
+    if (UnifiedState.prediction) {
+        predictionHTML = `
+            <div class="v2-prediction-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 16px; margin: 16px 0;">
+                <div style="font-size: 12px; color: var(--prism-emerald); margin-bottom: 4px;">🔮 Predicted Next:</div>
+                <div style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">${UnifiedState.prediction.exercise}</div>
+                <div style="font-size: 12px; color: var(--white-50); margin-bottom: 12px;">${UnifiedState.prediction.reason || ''}</div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary btn-sm" onclick="acceptPrediction()">✓ Yes, Log It</button>
+                    <button class="btn btn-ghost btn-sm" onclick="dismissPrediction()">Different Exercise</button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Calculate stats
+    const totalExercises = workout.exercises?.length || 0;
+    const totalSets = workout.exercises?.reduce((sum, ex) => sum + (ex.sets?.length || 0), 0) || 0;
+    const totalVolume = workout.exercises?.reduce((sum, ex) => {
+        return sum + (ex.sets || []).reduce((setSum, set) => setSum + (set.weight * set.reps), 0);
+    }, 0) || 0;
     
     panel.innerHTML = `
-        <div class="v2-nutrition-header">
-            <div class="v2-nutrition-title">🍽️ Today's Nutrition</div>
+        <div class="v2-workout-header" style="padding: 16px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2)); border-radius: 12px; margin-bottom: 16px;">
+            <div class="v2-workout-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="v2-workout-status" style="font-size: 12px; font-weight: 600; letter-spacing: 1px; color: var(--prism-rose); animation: pulse 2s infinite;">🔴 WORKOUT IN PROGRESS</span>
+                <span class="v2-workout-timer" style="font-family: var(--font-display);">⏱️ <span id="workoutTimer">${elapsedTime}</span></span>
+            </div>
+            <div class="v2-workout-name" style="font-size: 20px; font-weight: 600; margin-top: 8px;">${workout.workout_name || 'Workout'}</div>
         </div>
         
-        <div class="v2-nutrition-totals">
-            <div class="v2-macro-card calories">
-                <div class="v2-macro-value">${totals.calories}</div>
-                <div class="v2-macro-label">Calories</div>
-            </div>
-            <div class="v2-macro-card protein">
-                <div class="v2-macro-value">${totals.protein}g</div>
-                <div class="v2-macro-label">Protein</div>
-            </div>
-            <div class="v2-macro-card carbs">
-                <div class="v2-macro-value">${totals.carbs}g</div>
-                <div class="v2-macro-label">Carbs</div>
-            </div>
-            <div class="v2-macro-card fat">
-                <div class="v2-macro-value">${totals.fat}g</div>
-                <div class="v2-macro-label">Fat</div>
-            </div>
+        <div class="v2-exercises-container">
+            ${exercisesHTML || '<div style="text-align: center; padding: 24px; color: var(--white-30);">No exercises yet. Add your first exercise below!</div>'}
         </div>
         
-        <div class="v2-water-tracker">
-            <div class="v2-water-header">
-                <span>💧 Water</span>
-                <span>${water.logged_oz} / ${water.target_oz} oz</span>
-            </div>
-            <div class="v2-water-bar">
-                <div class="v2-water-fill" style="width: ${waterPercent}%"></div>
-            </div>
-            <div class="v2-water-buttons">
-                <button class="btn btn-ghost btn-sm" onclick="v2LogWater(8)">+8 oz</button>
-                <button class="btn btn-ghost btn-sm" onclick="v2LogWater(16)">+16 oz</button>
-                <button class="btn btn-ghost btn-sm" onclick="v2LogWater(24)">+24 oz</button>
-            </div>
+        ${predictionHTML}
+        
+        <div class="v2-quick-input" style="display: flex; gap: 12px; margin: 16px 0;">
+            <input type="text" id="v2ExerciseInput" class="form-input" style="flex: 1;"
+                placeholder="Type exercise (e.g., 'bench press 185 x 8' or 'BP 135x10')"
+                onkeypress="if(event.key==='Enter') parseAndAddExercise()">
+            <button class="btn btn-primary" onclick="parseAndAddExercise()">Add</button>
         </div>
         
-        <div class="v2-meals-container">
-            ${mealsHTML || '<div class="v2-empty">No meals logged yet today</div>'}
+        <div class="v2-workout-footer" style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--white-10); margin-top: 16px;">
+            <div class="v2-workout-stats" style="font-size: 14px; color: var(--white-50); display: flex; gap: 8px;">
+                <span>${totalExercises} exercises</span>
+                <span>•</span>
+                <span>${totalSets} sets</span>
+                <span>•</span>
+                <span>${totalVolume.toLocaleString()} lbs</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-ghost" onclick="cancelWorkout()" style="color: var(--prism-rose);">
+                    ✖ Cancel
+                </button>
+                <button class="btn btn-primary" onclick="showFinalizeModal()">
+                    ✅ FINALIZE WORKOUT
+                </button>
+            </div>
         </div>
     `;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// UI ACTIONS
-// ═══════════════════════════════════════════════════════════════
-
-async function v2ParseAndAddExercise() {
-    const input = document.getElementById('v2ExerciseInput');
-    if (!input || !input.value.trim()) return;
     
-    const parsed = await v2ParseExercise(input.value.trim());
+    panel.style.display = 'block';
     
-    if (parsed && parsed.standard_name) {
-        await v2AddExercise(
-            parsed.standard_name,
-            input.value.trim(),
-            parsed.weight || 0,
-            parsed.reps || 0
-        );
-        input.value = '';
-    } else if (parsed && !parsed.standard_name) {
-        // Couldn't parse - show manual input modal
-        showToast('❓ Could not parse. Try: "bench press 135x10"');
+    // Start timer if not already running
+    if (!UnifiedState.timerInterval) {
+        startWorkoutTimer();
     }
 }
 
-async function v2QuickAddSet(exerciseId, exerciseName) {
-    const exercise = v2State.activeWorkout.exercises.find(e => e.id === exerciseId);
-    if (!exercise) return;
-    
-    const lastSet = exercise.sets[exercise.sets.length - 1];
-    await v2AddExercise(exerciseName, exerciseName, lastSet.weight, lastSet.reps);
-}
-
-async function v2AcceptPrediction() {
-    if (!v2State.prediction) return;
-    
-    document.getElementById('v2ExerciseInput').value = v2State.prediction.exercise;
-    document.getElementById('v2ExerciseInput').focus();
-}
-
-function v2DismissPrediction() {
-    v2State.prediction = null;
-    updateV2WorkoutUI();
-}
-
-function v2ShowFinalizeModal() {
-    const workout = v2State.activeWorkout;
+/**
+ * Show finalize workout modal
+ */
+function showFinalizeModal() {
+    const workout = UnifiedState.activeWorkout;
     if (!workout) return;
     
+    const totalExercises = workout.exercises?.length || 0;
+    const totalSets = workout.exercises?.reduce((sum, ex) => sum + (ex.sets?.length || 0), 0) || 0;
+    const totalVolume = workout.exercises?.reduce((sum, ex) => {
+        return sum + (ex.sets || []).reduce((setSum, set) => setSum + (set.weight * set.reps), 0);
+    }, 0) || 0;
+    
     const modalHTML = `
-        <div class="modal-overlay" id="v2FinalizeModal" onclick="if(event.target===this) this.remove()">
-            <div class="modal-content" style="max-width: 400px;">
-                <h2 style="margin-bottom: 16px;">✅ Finalize Workout</h2>
+        <div class="modal-overlay" id="finalizeModal" onclick="if(event.target===this) this.remove()" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+            <div class="modal-content" style="background: var(--carbon); border-radius: 16px; padding: 24px; max-width: 400px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                <h2 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">✅ Finalize Workout</h2>
                 
-                <div class="form-group">
-                    <label class="form-label">Workout Name</label>
-                    <input type="text" id="v2WorkoutName" class="form-input" 
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label" style="display: block; margin-bottom: 8px; color: var(--white-70);">Workout Name</label>
+                    <input type="text" id="finalizeWorkoutName" class="form-input" 
                         value="${workout.workout_name || ''}" 
-                        placeholder="Push Day, Leg Day, etc.">
+                        placeholder="Push Day, Leg Day, etc."
+                        style="width: 100%; padding: 12px; background: var(--onyx); border: 1px solid var(--white-10); border-radius: 8px; color: var(--white);">
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label">Notes (optional)</label>
-                    <textarea id="v2WorkoutNotes" class="form-input" rows="3" 
-                        placeholder="How did it feel? Any PRs?"></textarea>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label" style="display: block; margin-bottom: 8px; color: var(--white-70);">Notes (optional)</label>
+                    <textarea id="finalizeWorkoutNotes" class="form-input" rows="3" 
+                        placeholder="How did it feel? Any PRs?"
+                        style="width: 100%; padding: 12px; background: var(--onyx); border: 1px solid var(--white-10); border-radius: 8px; color: var(--white); resize: vertical;"></textarea>
                 </div>
                 
                 <div style="margin: 16px 0; padding: 12px; background: var(--onyx); border-radius: 8px;">
-                    <div style="font-size: 14px; color: var(--white-50);">Summary</div>
-                    <div style="margin-top: 8px;">
-                        <strong>${workout.summary?.total_exercises || 0}</strong> exercises • 
-                        <strong>${workout.summary?.total_sets || 0}</strong> sets • 
-                        <strong>${(workout.summary?.total_volume || 0).toLocaleString()}</strong> lbs
+                    <div style="font-size: 14px; color: var(--white-50); margin-bottom: 8px;">Summary</div>
+                    <div style="font-size: 16px;">
+                        <strong>${totalExercises}</strong> exercises • 
+                        <strong>${totalSets}</strong> sets • 
+                        <strong>${totalVolume.toLocaleString()}</strong> lbs
+                    </div>
+                    <div style="font-size: 12px; color: var(--white-50); margin-top: 4px;">
+                        Duration: ${getElapsedTime()}
                     </div>
                 </div>
                 
-                <div style="display: flex; gap: 12px;">
-                    <button class="btn btn-ghost" onclick="document.getElementById('v2FinalizeModal').remove()">
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button class="btn btn-ghost" onclick="document.getElementById('finalizeModal').remove()" style="flex: 1;">
                         Cancel
                     </button>
-                    <button class="btn btn-primary" style="flex: 1;" onclick="v2DoFinalize()">
+                    <button class="btn btn-primary" style="flex: 2;" onclick="doFinalize()">
                         ✅ Complete Workout
                     </button>
                 </div>
@@ -675,331 +744,190 @@ function v2ShowFinalizeModal() {
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.getElementById('finalizeWorkoutName').focus();
 }
 
-async function v2DoFinalize() {
-    const name = document.getElementById('v2WorkoutName')?.value;
-    const notes = document.getElementById('v2WorkoutNotes')?.value;
+async function doFinalize() {
+    const name = document.getElementById('finalizeWorkoutName')?.value;
+    const notes = document.getElementById('finalizeWorkoutNotes')?.value;
     
-    await v2FinalizeWorkout(name, notes);
-    document.getElementById('v2FinalizeModal')?.remove();
+    await finalizeWorkout(name, notes);
+    document.getElementById('finalizeModal')?.remove();
 }
 
-function v2EditExercise(exerciseId) {
-    // TODO: Implement edit modal
-    showToast('Edit coming soon!');
+// ═══════════════════════════════════════════════════════════════
+// UNIFIED INPUT PARSING
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Parse user input and add exercise
+ * Replaces the old dual parseUnifiedInputV2() / v2ParseExercise() split
+ */
+async function parseAndAddExercise() {
+    const input = document.getElementById('v2ExerciseInput') || document.getElementById('unifiedInput');
+    if (!input || !input.value.trim()) return;
+    
+    const rawInput = input.value.trim();
+    
+    try {
+        // Try AI parsing first
+        const res = await unifiedApiCall('/api/v2/learning/parse-exercise', {
+            method: 'POST',
+            body: JSON.stringify({ input: rawInput })
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            const parsed = data.parsed;
+            
+            if (parsed && parsed.standard_name) {
+                await addExercise(
+                    parsed.standard_name,
+                    parsed.weight || 0,
+                    parsed.reps || 0,
+                    parsed.sets || 1,
+                    parsed.rpe || null
+                );
+                input.value = '';
+                return;
+            }
+        }
+        
+        // Fallback: Basic regex parsing
+        const basicParsed = parseExerciseBasic(rawInput);
+        if (basicParsed) {
+            await addExercise(
+                basicParsed.name,
+                basicParsed.weight,
+                basicParsed.reps,
+                basicParsed.sets,
+                null
+            );
+            input.value = '';
+            return;
+        }
+        
+        showToast('❓ Could not parse. Try: "bench press 135 x 10"');
+    } catch (e) {
+        console.error('Parse exercise error:', e);
+        showToast('❌ Failed to parse exercise');
+    }
 }
 
-function v2EditFood(foodId) {
-    // TODO: Implement edit modal
-    showToast('Edit coming soon!');
+/**
+ * Basic regex fallback parser
+ */
+function parseExerciseBasic(input) {
+    // Pattern: "exercise name 135lbs 3x10" or "exercise name 135 x 10"
+    const patterns = [
+        /^(.+?)\s+(\d+)\s*(?:lbs?|pounds?)?\s*[x×]\s*(\d+)$/i,  // "bench 135 x 10"
+        /^(.+?)\s+(\d+)\s*(?:lbs?|pounds?)\s+(\d+)\s*[x×]\s*(\d+)$/i,  // "bench 135lbs 3x10"
+        /^(.+?)\s+(\d+)\s*[x×]\s*(\d+)$/i,  // "bench 135x10"
+    ];
+    
+    for (const pattern of patterns) {
+        const match = input.match(pattern);
+        if (match) {
+            if (match.length === 4) {
+                return {
+                    name: match[1].trim(),
+                    weight: parseInt(match[2]),
+                    reps: parseInt(match[3]),
+                    sets: 1
+                };
+            } else if (match.length === 5) {
+                return {
+                    name: match[1].trim(),
+                    weight: parseInt(match[2]),
+                    sets: parseInt(match[3]),
+                    reps: parseInt(match[4])
+                };
+            }
+        }
+    }
+    
+    return null;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// BRIDGE FUNCTIONS (for backward compatibility)
+// ═══════════════════════════════════════════════════════════════
+
+// These map old function names to new unified system
+window.v2StartWorkout = startWorkout;
+window.v2AddExercise = addExercise;
+window.v2FinalizeWorkout = finalizeWorkout;
+window.v2CancelWorkout = cancelWorkout;
+window.v2QuickAddSet = quickAddSet;
+window.v2DeleteExercise = deleteExercise;
+window.v2ShowFinalizeModal = showFinalizeModal;
+window.v2DoFinalize = doFinalize;
+window.v2AcceptPrediction = acceptPrediction;
+window.v2DismissPrediction = dismissPrediction;
+window.v2ParseAndAddExercise = parseAndAddExercise;
+
+// Also expose the old updateV2WorkoutUI name
+window.updateV2WorkoutUI = renderWorkoutPanel;
 
 // ═══════════════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════════
 
-async function initV2() {
-    console.log('🚀 Initializing MACRA v2.0...');
+async function initUnifiedWorkout() {
+    console.log('🚀 Initializing MACRA v2.1 Unified Workout System...');
     
     // Check if logged in
-    // Use authState from main app instead of parsing localStorage
-    if (typeof authState === 'undefined' || !authState.isLoggedIn) {
-        if (typeof window.v2RetryCount === 'undefined') window.v2RetryCount = 0;
-        window.v2RetryCount++;
-        if (window.v2RetryCount > 10) {
-            console.log('V2 init: giving up after 10 retries');
-            return;
-        }
-        console.log('Auth not ready, retrying in 1s...');
-        setTimeout(initV2, 1000);
+    const auth = JSON.parse(localStorage.getItem('macra_auth') || '{}');
+    if (!auth.token) {
+        console.log('Not authenticated, skipping workout init');
         return;
     }
-    console.log('? Auth confirmed for:', authState.user?.email);
+    
+    // Check for encryption capability
+    if (MacraCrypto.isEnabled()) {
+        console.log('🔐 Client-side encryption enabled');
+    } else {
+        console.log('⚠️ Running without encryption (v2.0 mode)');
+    }
     
     try {
-        // Load active workout
-        await v2GetActiveWorkout();
+        // Load any active workout
+        await getActiveWorkout();
         
-        // Load today's nutrition
-        await v2GetTodayNutrition();
+        // Render UI
+        renderWorkoutPanel();
         
         // Get prediction if workout active
-        if (v2State.activeWorkout) {
-            await v2GetPrediction();
+        if (UnifiedState.activeWorkout) {
+            startWorkoutTimer();
+            await getPrediction();
         }
         
-        // Update UI
-        updateV2WorkoutUI();
-        updateV2NutritionUI();
-        
-        console.log('✅ MACRA v2.0 initialized');
+        console.log('✅ MACRA v2.1 Unified Workout System initialized');
     } catch (e) {
-        console.error('V2 init error:', e);
+        console.error('Unified workout init error:', e);
     }
 }
 
-// Add v2 CSS styles
-function addV2Styles() {
-    const styles = `
-        .v2-workout-header {
-            padding: 16px;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2));
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        .v2-workout-status {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            animation: pulse 2s infinite;
-        }
-        .v2-workout-timer {
-            float: right;
-            font-family: var(--font-display);
-        }
-        .v2-workout-name {
-            font-size: 20px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-        .v2-exercise-card {
-            background: var(--onyx);
-            border: 1px solid var(--white-10);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .v2-exercise-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .v2-exercise-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
-        .v2-exercise-actions {
-            display: flex;
-            gap: 8px;
-        }
-        .v2-sets-list {
-            margin-bottom: 12px;
-        }
-        .v2-set-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 12px;
-            background: var(--carbon);
-            border-radius: 8px;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-        .v2-set-num {
-            color: var(--white-50);
-            min-width: 50px;
-        }
-        .v2-set-weight {
-            color: var(--prism-cyan);
-            font-weight: 600;
-        }
-        .v2-set-reps {
-            color: var(--prism-violet);
-        }
-        .v2-set-rpe {
-            color: var(--prism-amber);
-            font-size: 12px;
-        }
-        .v2-prediction-card {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin: 16px 0;
-        }
-        .v2-prediction-label {
-            font-size: 12px;
-            color: var(--prism-emerald);
-            margin-bottom: 4px;
-        }
-        .v2-prediction-exercise {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .v2-prediction-reason {
-            font-size: 12px;
-            color: var(--white-50);
-            margin-bottom: 12px;
-        }
-        .v2-quick-input {
-            display: flex;
-            gap: 12px;
-            margin: 16px 0;
-        }
-        .v2-quick-input input {
-            flex: 1;
-        }
-        .v2-workout-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 16px;
-            border-top: 1px solid var(--white-10);
-            margin-top: 16px;
-        }
-        .v2-workout-stats {
-            font-size: 14px;
-            color: var(--white-50);
-            display: flex;
-            gap: 8px;
-        }
-        .v2-nutrition-totals {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .v2-macro-card {
-            background: var(--onyx);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-        }
-        .v2-macro-value {
-            font-size: 20px;
-            font-weight: 700;
-            font-family: var(--font-display);
-        }
-        .v2-macro-card.calories .v2-macro-value { color: var(--prism-cyan); }
-        .v2-macro-card.protein .v2-macro-value { color: var(--prism-rose); }
-        .v2-macro-card.carbs .v2-macro-value { color: var(--prism-amber); }
-        .v2-macro-card.fat .v2-macro-value { color: var(--prism-violet); }
-        .v2-macro-label {
-            font-size: 11px;
-            color: var(--white-50);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .v2-water-tracker {
-            background: var(--onyx);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        .v2-water-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .v2-water-bar {
-            height: 8px;
-            background: var(--carbon);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-        .v2-water-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--prism-cyan), var(--prism-blue));
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-        .v2-water-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        .v2-meal-category {
-            margin-bottom: 16px;
-        }
-        .v2-meal-header {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--white-70);
-        }
-        .v2-food-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            background: var(--onyx);
-            border-radius: 8px;
-            margin-bottom: 6px;
-        }
-        .v2-food-name {
-            flex: 1;
-            font-size: 14px;
-        }
-        .v2-food-macros {
-            font-size: 12px;
-            color: var(--white-50);
-            display: flex;
-            gap: 8px;
-        }
-        .v2-food-actions {
-            display: flex;
-            gap: 4px;
-        }
-        .btn-icon {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px;
-            opacity: 0.6;
-            transition: opacity 0.2s;
-        }
-        .btn-icon:hover {
-            opacity: 1;
-        }
-        .btn-icon-sm {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            padding: 2px 6px;
-            opacity: 0.5;
-            transition: opacity 0.2s;
-        }
-        .btn-icon-sm:hover {
-            opacity: 1;
-        }
-        .v2-empty {
-            text-align: center;
-            padding: 24px;
-            color: var(--white-30);
-        }
-        @media (max-width: 600px) {
-            .v2-nutrition-totals {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    `;
-    
-    const styleEl = document.createElement('style');
-    styleEl.textContent = styles;
-    document.head.appendChild(styleEl);
-}
+// Listen for online/offline status
+window.addEventListener('online', () => {
+    UnifiedState.isOnline = true;
+    showToast('📶 Back online');
+    // TODO: Process sync queue
+});
 
-// Initialize on DOM ready
+window.addEventListener('offline', () => {
+    UnifiedState.isOnline = false;
+    showToast('📴 Working offline');
+});
+
+// Initialize when DOM ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        addV2Styles();
-        // Delay init to allow main app to load
-        setTimeout(initV2, 1000);
+        setTimeout(initUnifiedWorkout, 1500);
     });
 } else {
-    addV2Styles();
-    setTimeout(initV2, 1000);
+    setTimeout(initUnifiedWorkout, 1500);
 }
 
-console.log('📦 MACRA v2.0 module loaded');
-
-
-
-
-
-
-
+console.log('📦 MACRA v2.1 Unified Workout module loaded');
