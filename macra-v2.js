@@ -1069,7 +1069,23 @@ async function initUnifiedWorkout() {
     try {
         // Load any active workout
         await getActiveWorkout();
-        
+
+             // Auto-cancel stale sessions (older than 4 hours)
+        if (UnifiedState.activeWorkout?.started_at) {
+            const age = Date.now() - new Date(UnifiedState.activeWorkout.started_at).getTime();
+            const FOUR_HOURS = 4 * 60 * 60 * 1000;
+            if (age > FOUR_HOURS) {
+                console.warn('⚠️ Stale workout detected (' + Math.round(age / 3600000) + 'h old), auto-cancelling...');
+                try {
+                    await unifiedApiCall('/api/v2/workout/cancel', {
+                        method: 'POST',
+                        body: JSON.stringify({ session_id: UnifiedState.activeWorkout.id })
+                    });
+                } catch (e) { console.log('Stale cancel error:', e); }
+                UnifiedState.activeWorkout = null;
+            }
+        }
+                
         // Render UI
         renderWorkoutPanel();
         
