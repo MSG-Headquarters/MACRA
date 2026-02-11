@@ -3740,7 +3740,7 @@
                 
                 const activityId = activity._consolidated ? 'consolidated' : activity.id;
                 const exerciseCount = activity.data?.exercises?.length || activity.exerciseDetails?.length || 0;
-const expandBtn = activity._consolidated ? `<button class="btn btn-ghost btn-sm" style="font-size:11px;margin-top:8px;padding:4px 8px;" onclick="expandDailyWorkout()">View ${exerciseCount} exercises →</button>` : '';
+                const expandBtn = activity._consolidated ? `<button class="btn btn-ghost btn-sm" style="font-size:11px;margin-top:8px;padding:4px 8px;" onclick="expandDailyWorkout()">View ${exercises.length} exercises →</button>` : '';
                 
                 return `<div class="timeline-item ${activity.type}">
                     <div class="timeline-time">${activity.time}</div>
@@ -4421,7 +4421,7 @@ const expandBtn = activity._consolidated ? `<button class="btn btn-ghost btn-sm"
             }
             container.innerHTML = workouts.map(w => {
                 if (w.type === 'workout') {
-                    const exercises = w.data?.exercises || [];
+                    const exercises = w.data?.exercises || w.exerciseDetails || [];
                     const title = exercises.map(e => e.name).join(', ') || 'Workout';
                     const totalVolume = exercises.reduce((sum, e) => {
                         if (Array.isArray(e.sets)) return sum + e.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0);
