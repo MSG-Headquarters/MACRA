@@ -4622,7 +4622,8 @@
 
         function renderSocial() {
             const friendsContainer = document.getElementById('friendsList');
-            if (appData.friends.length === 0) { friendsContainer.innerHTML = '<div style="color: var(--white-30); font-size: 13px;">No friends yet. Share your Athlete Code!</div>'; }
+            if (!friendsContainer) { /* Following list now handled by renderFollowingList */ }
+            else if (appData.friends.length === 0) { friendsContainer.innerHTML = '<div style="color: var(--white-30); font-size: 13px;">No friends yet. Share your Athlete Code!</div>'; }
             else { friendsContainer.innerHTML = appData.friends.map(f => `<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 8px; margin-bottom: 8px;"><div class="activity-avatar">${f.name.charAt(0)}</div><div style="flex: 1;"><div style="font-weight: 600;">${f.name}</div><div style="font-size: 11px; color: var(--white-30);">${f.code}</div></div><div style="text-align: right;"><div style="font-size: 12px; color: var(--prism-amber);">🔥 ${f.streak} days</div></div></div>`).join(''); }
             const feedContainer = document.getElementById('activityFeed');
             const feedItems = [];
