@@ -753,18 +753,44 @@
             </div>
             <div class="view" id="view-social">
                 <header class="header"><div class="header-left"><h1>Community</h1><p>Connect with your crew</p></div></header>
+                
                 <div class="athlete-code-card">
                     <div class="athlete-code-label">Your Athlete Code</div>
                     <div class="athlete-code-value" id="displayAthleteCode">MACRA-XXXX</div>
                     <div class="athlete-code-share"><button class="btn btn-ghost btn-sm" onclick="copyAthleteCode()">📋 Copy</button><button class="btn btn-primary btn-sm" onclick="shareAthleteCode()">📤 Share</button></div>
                 </div>
+                
                 <div class="card">
-                    <div class="card-header"><div class="card-title">👥 Add Friend</div></div>
-                    <div class="add-friend-form"><input type="text" class="add-friend-input" id="friendCodeInput" placeholder="Enter friend's Athlete Code (MACRA-XXXX)"><button class="btn btn-primary" onclick="addFriend()">Add</button></div>
-                    <div id="friendsList" style="margin-top: 16px;"></div>
+                    <div class="card-header"><div class="card-title">🔍 Find Athletes</div></div>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" class="form-input" id="friendCodeInput" placeholder="Enter Athlete Code or search by name..." style="flex: 1;">
+                        <button class="btn btn-primary" onclick="searchOrAddFriend()">Search</button>
+                    </div>
+                    <div id="searchResults" style="margin-top: 12px;"></div>
                 </div>
-                <div class="card"><div class="card-header"><div class="card-title">📰 Activity Feed</div></div><div class="activity-feed" id="activityFeed"></div></div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">✅ Following</div>
+                        <span style="font-size: 13px; color: var(--white-40);" id="followingCount">0</span>
+                    </div>
+                    <div id="followingList">Loading...</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🌐 Who to Follow</div>
+                        <button class="btn btn-ghost btn-sm" onclick="refreshSuggestedFollows()" style="font-size: 11px;">🔄 Refresh</button>
+                    </div>
+                    <div id="suggestedFollows">Loading...</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><div class="card-title">📰 Activity Feed</div></div>
+                    <div class="activity-feed" id="activityFeed"></div>
+                </div>
             </div>
+
             <div class="view" id="view-leaderboard">
                 <header class="header"><div class="header-left"><h1>Leaderboard</h1><p>Weekly rankings</p></div></header>
                 <div class="card"><div class="card-header"><div class="card-title">🏆 Points This Week</div></div><div class="leaderboard-list" id="leaderboardList"></div></div>
@@ -1038,7 +1064,7 @@
                     <div id="passwordSuccess" style="display: none; color: var(--prism-emerald); font-size: 12px; margin-bottom: 12px;"></div>
                     <button class="btn btn-primary" onclick="changePassword()" id="changePasswordBtn">Update Password</button>
                 </div>
-                
+
                 <div class="card">
     <div class="card-title" style="margin-bottom: 20px;">👤 Profile</div>
     <div class="form-group">
@@ -1818,6 +1844,8 @@
             if (viewId === 'feed') renderFeedView();
             if (viewId === 'clubs') renderClubsView();
             if (viewId === 'profile') renderProfileView();
+            if (viewId === 'social') { loadFollowing().then(() => renderFollowingList()); renderSuggestedFollows(); renderSocial(); }
+
         }
         
         // Open Quick Log modal/panel
@@ -4535,16 +4563,62 @@
         function copyAthleteCode() { navigator.clipboard.writeText(appData.profile.athleteCode); showToast('✓ Athlete Code copied!'); }
         function shareAthleteCode() { if (navigator.share) { navigator.share({ title: 'Join me on MACRA!', text: `Add me on MACRA: ${appData.profile.athleteCode}`, url: 'https://macra.umbrassi.com' }); } else copyAthleteCode(); }
 
-        function addFriend() {
+       async function searchOrAddFriend() {
             const input = document.getElementById('friendCodeInput');
-            const code = input.value.trim().toUpperCase();
-            if (!code) { alert('Please enter a friend code'); return; }
-            if (!code.startsWith('MACRA-') || code.length < 10) { alert('Invalid Athlete Code format'); return; }
-            if (code === appData.profile.athleteCode) { alert("That's your own code!"); return; }
-            if (appData.friends.find(f => f.code === code)) { alert('Already added this friend'); return; }
-            appData.friends.push({ code: code, name: 'Friend ' + (appData.friends.length + 1), addedAt: new Date().toISOString(), streak: Math.floor(Math.random() * 30), weeklyPoints: Math.floor(Math.random() * 300) + 50 });
-            saveData(); input.value = ''; renderSocial(); renderLeaderboard(); showToast('✓ Friend added!');
+            const query = input.value.trim();
+            const resultsEl = document.getElementById('searchResults');
+            if (!query) { showToast('Enter a code or name to search'); return; }
+            
+            // If it looks like an athlete code, try direct follow
+            if (query.toUpperCase().startsWith('MACRA-')) {
+                const code = query.toUpperCase();
+                if (code === appData.profile.athleteCode) { showToast("That's your own code!"); return; }
+                if (appData.friends.find(f => f.athleteCode === code)) { showToast('Already following this athlete'); return; }
+                await followUserByCode(code);
+                input.value = '';
+                resultsEl.innerHTML = '';
+                return;
+            }
+            
+            // Otherwise search by name
+            resultsEl.innerHTML = '<div style="padding: 12px; text-align: center;"><div class="loading-spinner"></div></div>';
+            try {
+                const response = await apiCall(`/api/users/search?q=${encodeURIComponent(query)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const users = (data.users || []).filter(u => u.athleteCode !== appData.profile.athleteCode);
+                    const followedCodes = appData.friends.map(f => f.athleteCode);
+                    
+                    if (users.length === 0) {
+                        resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--white-40); font-size: 13px;">No athletes found matching "' + query + '"</div>';
+                        return;
+                    }
+                    
+                    resultsEl.innerHTML = users.map(user => {
+                        const isFollowing = followedCodes.includes(user.athleteCode);
+                        return `
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--onyx); border-radius: 10px; margin-bottom: 8px; cursor: pointer;" onclick="showProfilePreview('${user.athleteCode}')">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); display: flex; align-items: center; justify-content: center; font-weight: 600;">${(user.name || 'A').charAt(0).toUpperCase()}</div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="font-weight: 600; font-size: 14px;">${user.name}</div>
+                                    <div style="font-size: 11px; color: var(--white-40);">${user.athleteCode} • ${user.stats?.workouts || 0} workouts</div>
+                                </div>
+                                ${isFollowing 
+                                    ? '<span style="font-size: 11px; color: var(--prism-emerald); padding: 4px 10px;">✓ Following</span>'
+                                    : `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); followUserByCode('${user.athleteCode}')" style="font-size: 11px; padding: 6px 12px;">Follow</button>`
+                                }
+                            </div>`;
+                    }).join('');
+                } else {
+                    resultsEl.innerHTML = '<div style="padding: 12px; color: var(--prism-rose); font-size: 13px;">Search failed. Try again.</div>';
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsEl.innerHTML = '<div style="padding: 12px; color: var(--prism-rose); font-size: 13px;">Search failed. Try again.</div>';
+            }
         }
+
+        function addFriend() { searchOrAddFriend(); }
 
         function renderSocial() {
             const friendsContainer = document.getElementById('friendsList');
