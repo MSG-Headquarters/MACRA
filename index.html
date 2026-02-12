@@ -1173,8 +1173,8 @@
                 <!-- Following -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">✅ Following</div>
-                        <span style="font-size: 12px; color: var(--white-40);" id="feedFollowingCount">0</span>
+                        <div class="card-title">👥 Friends</div>
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('social')">Manage</button>
                     </div>
                     <div id="feedFollowingList">
                         <div style="padding: 16px; text-align: center; color: var(--white-30); font-size: 13px;">Loading...</div>
@@ -1184,11 +1184,11 @@
                 <!-- Who to Follow -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">👥 Who to Follow</div>
-                        <button class="btn btn-ghost btn-sm" onclick="refreshSuggestedFollows()">🔄</button>
+                        <div class="card-title">🌐 Discover Athletes</div>
+                        <button class="btn btn-ghost btn-sm" onclick="switchView('social')">See All</button>
                     </div>
                     <div id="feedSuggestedFollows">
-                        <!-- Will be populated dynamically -->
+                        <div style="padding: 16px; text-align: center; color: var(--white-30); font-size: 13px;">Loading...</div>
                     </div>
                 </div>
             </div>
@@ -1887,10 +1887,8 @@
             
             // Render activity feed
             renderFeedActivityList();
-             // Load following list and render
-            loadFollowing().then(() => renderFollowingList());
-            // Render suggested follows
-            renderSuggestedFollows();
+            renderFeedFriends();
+            renderFeedDiscover();
         }
         
         function quickLogWeight() {
@@ -1948,7 +1946,53 @@
             document.body.appendChild(modal);
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
-        
+
+        async function renderFeedFriends() {
+            const container = document.getElementById('feedFollowingList');
+            if (!container) return;
+            
+            await loadFollowing();
+            
+            if (appData.friends.length === 0) {
+                container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--white-30); font-size: 13px;">No friends yet. <a href="#" onclick="switchView(\'social\')" style="color: var(--prism-cyan);">Find athletes</a></div>';
+                return;
+            }
+            
+            container.innerHTML = '<div style="display: flex; gap: 12px; overflow-x: auto; padding: 4px 0;">' +
+                appData.friends.slice(0, 8).map(friend => `
+                    <div onclick="showProfilePreview('${friend.athleteCode}')" style="flex-shrink: 0; width: 80px; text-align: center; cursor: pointer; padding: 8px 4px; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='var(--onyx)'" onmouseout="this.style.background='transparent'">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px; margin: 0 auto 6px;">${(friend.name || 'A').charAt(0).toUpperCase()}</div>
+                        <div style="font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${friend.name || 'Athlete'}</div>
+                        <div style="font-size: 10px; color: var(--white-30);">🔥 ${friend.stats?.streak || 0}</div>
+                    </div>
+                `).join('') + '</div>';
+        }
+
+        async function renderFeedDiscover() {
+            const container = document.getElementById('feedSuggestedFollows');
+            if (!container) return;
+            
+            const allUsers = await fetchDiscoverUsers();
+            const followedCodes = appData.friends.map(f => f.athleteCode);
+            const users = allUsers.filter(u => !followedCodes.includes(u.athleteCode));
+            
+            if (users.length === 0) {
+                container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--white-30); font-size: 13px;">No new athletes to discover right now</div>';
+                return;
+            }
+            
+            container.innerHTML = users.slice(0, 3).map(user => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid var(--white-05);">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--prism-cyan), var(--prism-violet)); display: flex; align-items: center; justify-content: center; font-weight: 600;">${user.avatar}</div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 500; font-size: 13px;">${user.name}</div>
+                        <div style="font-size: 11px; color: var(--white-40);">${user.stats.workouts} workouts</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); followUserByCode('${user.athleteCode}')" style="font-size: 11px; padding: 4px 10px;">Follow</button>
+                </div>
+            `).join('');
+        }
+
         function renderFeedActivityList() {
             const container = document.getElementById('feedActivityList');
             const feedItems = [];
@@ -4512,13 +4556,18 @@
                         result.workoutCount++;
                         result.workouts.push({ ...a, dateKey: key });
                         const exercises = a.data?.exercises || a.exerciseDetails || [];
-                        exercises.forEach(ex => {
+                         exercises.forEach(ex => {
                             result.exerciseCount++;
-                            const volume = (ex.weight || 0) * (ex.sets || 1) * (ex.reps || 1);
+                            let volume = 0;
+                            if (Array.isArray(ex.sets)) {
+                                volume = ex.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0);
+                            } else {
+                                volume = (ex.weight || 0) * (parseInt(ex.sets) || 1) * (ex.reps || 1);
+                            }
                             result.totalVolume += volume;
                             const category = (ex.category || 'other').toLowerCase();
                             if (result.muscleGroups[category] !== undefined) {
-                                result.muscleGroups[category] += ex.sets || 1;
+                                result.muscleGroups[category] += Array.isArray(ex.sets) ? ex.sets.length : (parseInt(ex.sets) || 1);
                             }
                         });
                     } else if (a.type === 'cardio') {
