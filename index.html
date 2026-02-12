@@ -1562,7 +1562,7 @@
             const btn = document.getElementById('signupBtn');
             const error = document.getElementById('signupError');
             btn.disabled = true; btn.textContent = 'Creating account...'; error.style.display = 'none';
-            try { await signup(email, password, name); showToast('✓ Account created! Please log in.'); showLoginForm(); }
+            try { await signup(email, password, name); showToast('✓ Account created! Check your email to verify, then log in.'); showLoginForm(); }
             catch (err) { error.textContent = err.message; error.style.display = 'block'; }
             finally { btn.disabled = false; btn.textContent = 'Create Account'; }
         }
