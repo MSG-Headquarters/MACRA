@@ -69,10 +69,14 @@ const MacraCrypto = {
     /**
      * Get user's athlete code from auth state
      */
-    getAthleteCode() {
+   getAthleteCode() {
         try {
             const auth = JSON.parse(localStorage.getItem('macra_auth') || '{}');
-            return auth.athleteCode || null;
+            const code = auth.user?.athleteCode || auth.athleteCode || null;
+            if (code) return code;
+            // Fallback: check appData profile
+            const data = JSON.parse(localStorage.getItem('macra-v1.4') || '{}');
+            return data.profile?.athleteCode || null;
         } catch (e) {
             return null;
         }
