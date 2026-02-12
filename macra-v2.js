@@ -961,11 +961,22 @@ async function parseAndAddExercise() {
             const parsed = data.parsed;
             
             if (parsed && parsed.standard_name) {
+                let weight = parsed.weight || 0;
+                let reps = parsed.reps || 0;
+                let sets = parsed.sets || 1;
+                if (!weight && !reps) {
+                    const fallback = parseExerciseBasic(rawInput);
+                    if (fallback) {
+                        weight = fallback.weight || 0;
+                        reps = fallback.reps || 0;
+                        sets = fallback.sets || 1;
+                    }
+                }
                 await addExercise(
                     parsed.standard_name,
-                    parsed.weight || 0,
-                    parsed.reps || 0,
-                    parsed.sets || 1,
+                    weight,
+                    reps,
+                    sets,
                     parsed.rpe || null
                 );
                 input.value = '';
