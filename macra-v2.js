@@ -73,7 +73,7 @@ const MacraCrypto = {
         try {
             const auth = JSON.parse(localStorage.getItem('macra_auth') || '{}');
             const code = auth.user?.athleteCode || auth.athleteCode || null;
-            if (code) return code;
+            if (code && code !== 'MACRA-0000') return code;
             // Fallback: check appData profile
             const data = JSON.parse(localStorage.getItem('macra-v1.4') || '{}');
             return data.profile?.athleteCode || null;
