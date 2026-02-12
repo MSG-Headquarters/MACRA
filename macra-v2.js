@@ -185,7 +185,7 @@ async function getActiveWorkout() {
         if (res.ok) {
             const data = await res.json();
             // Decrypt if encryption enabled
-            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            UnifiedState.activeWorkout = await MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
             return UnifiedState.activeWorkout;
         }
     } catch (e) {
@@ -199,7 +199,7 @@ async function getActiveWorkout() {
  */
 async function startWorkout(workoutName = null) {
     try {
-        const payload = MacraCrypto.encrypt({ workout_name: workoutName }, MacraCrypto.getAthleteCode());
+        const payload = await MacraCrypto.encrypt({ workout_name: workoutName }, MacraCrypto.getAthleteCode());
         
         const res = await unifiedApiCall('/api/v2/workout/start', {
             method: 'POST',
@@ -208,7 +208,7 @@ async function startWorkout(workoutName = null) {
         
         if (res.ok) {
             const data = await res.json();
-            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            UnifiedState.activeWorkout = await MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
             showToast('🏋️ Workout started!');
             startWorkoutTimer();
             renderWorkoutPanel();
@@ -257,7 +257,7 @@ async function addExercise(exerciseName, weight, reps, sets = 1, rpe = null) {
             rpe: rpe ? parseFloat(rpe) : null
         };
         
-        const payload = MacraCrypto.encrypt(exerciseData, MacraCrypto.getAthleteCode());
+        const payload = await MacraCrypto.encrypt(exerciseData, MacraCrypto.getAthleteCode());
         
         const res = await unifiedApiCall('/api/v2/workout/exercise', {
             method: 'POST',
@@ -266,7 +266,7 @@ async function addExercise(exerciseName, weight, reps, sets = 1, rpe = null) {
         
         if (res.ok) {
             const data = await res.json();
-            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            UnifiedState.activeWorkout = await MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
             renderWorkoutPanel();
             
             // Get AI prediction for next exercise
@@ -333,7 +333,7 @@ async function updateSet(exerciseId, setNum, weight, reps, rpe = null) {
             rpe: rpe ? parseFloat(rpe) : null
         };
         
-        const payload = MacraCrypto.encrypt(updateData, MacraCrypto.getAthleteCode());
+        const payload = await MacraCrypto.encrypt(updateData, MacraCrypto.getAthleteCode());
         
         const res = await unifiedApiCall('/api/v2/workout/set', {
             method: 'PUT',
@@ -342,7 +342,7 @@ async function updateSet(exerciseId, setNum, weight, reps, rpe = null) {
         
         if (res.ok) {
             const data = await res.json();
-            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            UnifiedState.activeWorkout = await MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
             renderWorkoutPanel();
             return UnifiedState.activeWorkout;
         }
@@ -402,7 +402,7 @@ async function deleteExercise(exerciseId, setNum = null) {
         
         if (res.ok) {
             const data = await res.json();
-            UnifiedState.activeWorkout = MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
+            UnifiedState.activeWorkout = await MacraCrypto.decrypt(data.session, MacraCrypto.getAthleteCode());
             renderWorkoutPanel();
             showToast('🗑️ Deleted');
             return UnifiedState.activeWorkout;
@@ -457,7 +457,7 @@ async function finalizeWorkout(workoutName = null, notes = null) {
             notes: notes
         };
         
-        const payload = MacraCrypto.encrypt(finalizeData, MacraCrypto.getAthleteCode());
+        const payload = await MacraCrypto.encrypt(finalizeData, MacraCrypto.getAthleteCode());
         
         // ── FIX #2: Use timeout to prevent hanging ──
         const res = await unifiedApiCallWithTimeout('/api/v2/workout/finalize', {
